@@ -1,0 +1,272 @@
+
+<style>
+  .rm-wrap { padding: 8px 0 16px; font-family: var(--font-sans); }
+  .rm-phase { display: flex; gap: 0; margin-bottom: 0; }
+  .rm-spine { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; }
+  .rm-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+  .rm-line { width: 2px; flex: 1; min-height: 8px; }
+  .rm-card { flex: 1; margin: 0 0 10px 10px; padding: 12px 14px; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .rm-card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+  .rm-badge { font-size: 11px; font-weight: 400; padding: 2px 8px; border-radius: 99px; }
+  .rm-items { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .rm-tag { font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+  .rm-livrable { margin-top: 8px; font-size: 11px; color: var(--color-text-tertiary); border-top: 1px solid var(--color-border-tertiary); padding-top: 6px; }
+
+  .p0 .rm-dot  { background: #D3D1C7; color: #444441; }
+  .p0 .rm-line { background: #D3D1C7; }
+  .p0 .rm-tag  { background: #F1EFE8; color: #5F5E5A; }
+  .p0 .rm-badge { background: #F1EFE8; color: #5F5E5A; }
+
+  .p1 .rm-dot  { background: #AFA9EC; color: #26215C; }
+  .p1 .rm-line { background: #CECBF6; }
+  .p1 .rm-tag  { background: #EEEDFE; color: #3C3489; }
+  .p1 .rm-badge { background: #EEEDFE; color: #3C3489; }
+
+  .p2 .rm-dot  { background: #85B7EB; color: #042C53; }
+  .p2 .rm-line { background: #B5D4F4; }
+  .p2 .rm-tag  { background: #E6F1FB; color: #0C447C; }
+  .p2 .rm-badge { background: #E6F1FB; color: #0C447C; }
+
+  .p3 .rm-dot  { background: #5DCAA5; color: #04342C; }
+  .p3 .rm-line { background: #9FE1CB; }
+  .p3 .rm-tag  { background: #E1F5EE; color: #085041; }
+  .p3 .rm-badge { background: #E1F5EE; color: #085041; }
+
+  .p4 .rm-dot  { background: #EF9F27; color: #412402; }
+  .p4 .rm-line { background: #FAC775; }
+  .p4 .rm-tag  { background: #FAEEDA; color: #633806; }
+  .p4 .rm-badge { background: #FAEEDA; color: #633806; }
+
+  .p5 .rm-dot  { background: #F0997B; color: #4A1B0C; }
+  .p5 .rm-line { background: #F5C4B3; }
+  .p5 .rm-tag  { background: #FAECE7; color: #712B13; }
+  .p5 .rm-badge { background: #FAECE7; color: #712B13; }
+
+  .p6 .rm-dot  { background: #97C459; color: #173404; }
+  .p6 .rm-line { background: #C0DD97; }
+  .p6 .rm-tag  { background: #EAF3DE; color: #27500A; }
+  .p6 .rm-badge { background: #EAF3DE; color: #27500A; }
+
+  .p7 .rm-dot  { background: #ED93B1; color: #4B1528; }
+  .p7 .rm-line { background: #F4C0D1; }
+  .p7 .rm-tag  { background: #FBEAF0; color: #72243E; }
+  .p7 .rm-badge { background: #FBEAF0; color: #72243E; }
+
+  .p8 .rm-dot  { background: #7F77DD; color: #26215C; }
+  .p8 .rm-line { background: #CECBF6; }
+  .p8 .rm-tag  { background: #EEEDFE; color: #3C3489; }
+  .p8 .rm-badge { background: #EEEDFE; color: #3C3489; }
+
+  .p9 .rm-dot  { background: #1D9E75; color: #04342C; }
+  .p9 .rm-line { background: #5DCAA5; }
+  .p9 .rm-tag  { background: #E1F5EE; color: #085041; }
+  .p9 .rm-badge { background: #E1F5EE; color: #085041; }
+</style>
+<div class="rm-wrap">
+
+  <!-- Phase 0 -->
+  <div class="rm-phase p0">
+    <div class="rm-spine">
+      <div class="rm-dot">0</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Mise en place du projet <span class="rm-badge">Socle</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Structure des modules Gradle</span>
+        <span class="rm-tag">Hilt — configuration globale</span>
+        <span class="rm-tag">Navigation Compose — skeleton</span>
+        <span class="rm-tag">Thème Material 3 (clair/sombre)</span>
+        <span class="rm-tag">Bottom Nav Bar</span>
+        <span class="rm-tag">CI basique (lint + tests)</span>
+      </div>
+      <div class="rm-livrable">Livrable : app qui se lance, navigue entre 3 onglets vides, thème fonctionnel</div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="rm-phase p1">
+    <div class="rm-spine">
+      <div class="rm-dot">1</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Couche Domaine <span class="rm-badge">:core:domain</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Entités métier (Deck, Box, Card, Session…)</span>
+        <span class="rm-tag">Enums et sealed classes</span>
+        <span class="rm-tag">Interfaces Repository</span>
+        <span class="rm-tag">AnswerNormalizer</span>
+        <span class="rm-tag">LevenshteinCalculator</span>
+        <span class="rm-tag">NextSessionDateCalculator</span>
+        <span class="rm-tag">Tous les Use Cases</span>
+        <span class="rm-tag">Tests unitaires exhaustifs</span>
+      </div>
+      <div class="rm-livrable">Livrable : couche domaine 100% testée, zéro dépendance Android — base immuable pour la suite</div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="rm-phase p2">
+    <div class="rm-spine">
+      <div class="rm-dot">2</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Couche Données <span class="rm-badge">:core:data</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Entités Room + DAOs</span>
+        <span class="rm-tag">LeitnerDatabase</span>
+        <span class="rm-tag">Proto DataStore (settings)</span>
+        <span class="rm-tag">Mappers domaine ↔ entité</span>
+        <span class="rm-tag">Implémentations Repository</span>
+        <span class="rm-tag">Modules Hilt data</span>
+        <span class="rm-tag">Tests Room (in-memory)</span>
+      </div>
+      <div class="rm-livrable">Livrable : persistance opérationnelle, repositories branchés sur le domaine, vérifiée par tests</div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="rm-phase p3">
+    <div class="rm-spine">
+      <div class="rm-dot">3</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Decks et cartes <span class="rm-badge">:feature:decks / :feature:cards</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Liste des decks + empty state</span>
+        <span class="rm-tag">Création / édition d'un deck</span>
+        <span class="rm-tag">Détail d'un deck</span>
+        <span class="rm-tag">Configuration des boîtes</span>
+        <span class="rm-tag">Liste des cartes + filtres</span>
+        <span class="rm-tag">Création / édition d'une carte</span>
+        <span class="rm-tag">Navigation complète</span>
+      </div>
+      <div class="rm-livrable">Livrable : première version utilisable — on peut créer des decks et y ajouter des cartes</div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="rm-phase p4">
+    <div class="rm-spine">
+      <div class="rm-dot">4</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Session de révision <span class="rm-badge">:feature:session — cœur de l'app</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Sélection de session + fusion</span>
+        <span class="rm-tag">FlipCard (animation retournement)</span>
+        <span class="rm-tag">Swipe gestuel</span>
+        <span class="rm-tag">Évaluation + déplacement des cartes</span>
+        <span class="rm-tag">saisieRequise + vérification Levenshtein</span>
+        <span class="rm-tag">Undo</span>
+        <span class="rm-tag">Indicateur de progression</span>
+        <span class="rm-tag">État maîtrisée</span>
+        <span class="rm-tag">Report de session + streak</span>
+        <span class="rm-tag">Écran de résultat</span>
+      </div>
+      <div class="rm-livrable">Livrable : boucle d'apprentissage complète et fonctionnelle — l'app tient sa promesse principale</div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="rm-phase p5">
+    <div class="rm-spine">
+      <div class="rm-dot">5</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Dashboard et paramètres <span class="rm-badge">:feature:dashboard / :feature:settings</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Dashboard (résumé du jour, streak)</span>
+        <span class="rm-tag">Écran paramètres (jours exclus, horaire, thème)</span>
+        <span class="rm-tag">WorkManager — SessionReminderWorker</span>
+        <span class="rm-tag">NotificationHelper + canal Android</span>
+        <span class="rm-tag">Permission POST_NOTIFICATIONS (Android 13+)</span>
+        <span class="rm-tag">Tailles de police dynamiques (sp)</span>
+      </div>
+      <div class="rm-livrable">Livrable : app autonome — elle notifie, respecte les jours exclus, applique les préférences</div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="rm-phase p6">
+    <div class="rm-spine">
+      <div class="rm-dot">6</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Statistiques <span class="rm-badge">:feature:stats</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Répartition cartes par deck/boîte</span>
+        <span class="rm-tag">Taux de réussite et de maîtrise</span>
+        <span class="rm-tag">Historique des sessions</span>
+        <span class="rm-tag">Empty states historique</span>
+      </div>
+      <div class="rm-livrable">Livrable : l'utilisateur peut mesurer sa progression dans le temps</div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div class="rm-phase p7">
+    <div class="rm-spine">
+      <div class="rm-dot">7</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Import / Export CSV <span class="rm-badge">:feature:importexport</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">CsvParser (RFC 4180)</span>
+        <span class="rm-tag">CsvExporter</span>
+        <span class="rm-tag">Détection doublons (même question)</span>
+        <span class="rm-tag">Gestion fichier mal formé</span>
+        <span class="rm-tag">Partage via intent Android (SAF)</span>
+        <span class="rm-tag">Écran Import/Export</span>
+      </div>
+      <div class="rm-livrable">Livrable : échange de données avec l'extérieur (partage entre utilisateurs, sauvegarde)</div>
+    </div>
+  </div>
+
+  <!-- Phase 8 -->
+  <div class="rm-phase p8">
+    <div class="rm-spine">
+      <div class="rm-dot">8</div>
+      <div class="rm-line"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Challenge <span class="rm-badge">:feature:challenge</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Écran de lancement du challenge</span>
+        <span class="rm-tag">Réutilisation écran de session</span>
+        <span class="rm-tag">Indicateur "Maîtrisées X / Y"</span>
+        <span class="rm-tag">Règle V1 (carte reste maîtrisée)</span>
+      </div>
+      <div class="rm-livrable">Livrable : fonctionnalité bonus sur les cartes maîtrisées, réutilisant le socle session</div>
+    </div>
+  </div>
+
+  <!-- Phase 9 -->
+  <div class="rm-phase p9">
+    <div class="rm-spine">
+      <div class="rm-dot">9</div>
+      <div class="rm-line" style="min-height:0"></div>
+    </div>
+    <div class="rm-card">
+      <div class="rm-card-title">Polish et qualité <span class="rm-badge">V1 finale</span></div>
+      <div class="rm-items">
+        <span class="rm-tag">Animations Lottie (confetti maîtrise + session)</span>
+        <span class="rm-tag">Illustrations empty states</span>
+        <span class="rm-tag">Tests UI Compose</span>
+        <span class="rm-tag">Profiling (CPU, mémoire, recompositions)</span>
+        <span class="rm-tag">Accessibilité (TalkBack, contrastes)</span>
+        <span class="rm-tag">Revue Detekt + ktlint</span>
+        <span class="rm-tag">Internationalisation — vérification strings</span>
+      </div>
+      <div class="rm-livrable">Livrable : app V1 distribuable — stable, accessible, performante</div>
+    </div>
+  </div>
+
+</div>
