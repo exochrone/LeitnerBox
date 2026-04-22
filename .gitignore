@@ -1,23 +1,18 @@
-# Build
-**/build/
-*.class
-*.jar
-
-# Gradle
+# Android / Gradle
+*.iml
 .gradle/
-gradle/wrapper/gradle-wrapper.jar
+**/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+local.properties
 
 # Android Studio / IntelliJ
 .idea/
 *.iml
-local.properties
 
-# Fichiers générés
-**/generated/
-**/.transforms/
-
-# Rapports de tests (générés automatiquement)
-**/reports/
+# Kotlin
+.kotlin/
 
 # OS
 .DS_Store
