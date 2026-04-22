@@ -58,9 +58,6 @@ fun MainScreen() {
                                 // on the back stack as users select items
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
-                                    if (screen == Screen.Decks) {
-                                        inclusive = true
-                                    }
                                 }
                                 // Avoid multiple copies of the same destination when
                                 // reselecting the same item

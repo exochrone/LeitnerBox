@@ -1,18 +1,16 @@
-package com.jb.leitnerbox.core.domain.di
+package com.jb.leitnerbox.di
 
+import com.jb.leitnerbox.core.data.local.dao.CardDao
+import com.jb.leitnerbox.core.data.migration.CardMigrationHelper
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
-import com.jb.leitnerbox.core.domain.service.SchedulingService
-import com.jb.leitnerbox.core.domain.usecase.card.AddCardUseCase
-import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
-import com.jb.leitnerbox.core.domain.usecase.card.GetCardByIdUseCase
-import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
-import com.jb.leitnerbox.core.domain.usecase.card.UpdateCardUseCase
-import com.jb.leitnerbox.core.domain.usecase.card.ValidateResponseUseCase
+import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
+import com.jb.leitnerbox.core.domain.usecase.card.*
 import com.jb.leitnerbox.core.domain.usecase.deck.*
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetStatisticsUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.NextSessionDateCalculator
 import com.jb.leitnerbox.core.domain.usecase.session.PostponeBoxSessionUseCase
 import dagger.Module
 import dagger.Provides
@@ -26,11 +24,15 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideSchedulingService(): SchedulingService = SchedulingService()
+    fun provideNextSessionDateCalculator(): NextSessionDateCalculator = NextSessionDateCalculator()
 
     @Provides
     @Singleton
     fun provideGetDecksUseCase(repository: DeckRepository): GetDecksUseCase = GetDecksUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetDeckByIdUseCase(repository: DeckRepository): GetDeckByIdUseCase = GetDeckByIdUseCase(repository)
 
     @Provides
     @Singleton
@@ -62,15 +64,19 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideValidateResponseUseCase(): ValidateResponseUseCase = ValidateResponseUseCase()
+    fun provideDeleteCardUseCase(repository: CardRepository): DeleteCardUseCase = DeleteCardUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideCheckAnswerUseCase(): CheckAnswerUseCase = CheckAnswerUseCase()
 
     @Provides
     @Singleton
     fun provideEvaluateCardUseCase(
-        schedulingService: SchedulingService,
+        nextSessionDateCalculator: NextSessionDateCalculator,
         cardRepository: CardRepository,
         settingsRepository: SettingsRepository
-    ): EvaluateCardUseCase = EvaluateCardUseCase(cardRepository, settingsRepository, schedulingService)
+    ): EvaluateCardUseCase = EvaluateCardUseCase(cardRepository, settingsRepository, nextSessionDateCalculator)
 
     @Provides
     @Singleton
@@ -84,8 +90,9 @@ object DomainModule {
     fun providePostponeBoxSessionUseCase(
         deckRepository: DeckRepository,
         cardRepository: CardRepository,
-        schedulingService: SchedulingService
-    ): PostponeBoxSessionUseCase = PostponeBoxSessionUseCase(deckRepository, cardRepository, schedulingService)
+        settingsRepository: SettingsRepository,
+        nextSessionDateCalculator: NextSessionDateCalculator
+    ): PostponeBoxSessionUseCase = PostponeBoxSessionUseCase(deckRepository, cardRepository, settingsRepository, nextSessionDateCalculator)
 
     @Provides
     @Singleton
@@ -93,4 +100,11 @@ object DomainModule {
         deckRepository: DeckRepository,
         cardRepository: CardRepository
     ): GetStatisticsUseCase = GetStatisticsUseCase(deckRepository, cardRepository)
+
+    @Provides
+    @Singleton
+    fun provideCardMigrationHelper(
+        cardDao: CardDao,
+        answerNormalizer: AnswerNormalizer
+    ): CardMigrationHelper = CardMigrationHelper(cardDao, answerNormalizer)
 }
