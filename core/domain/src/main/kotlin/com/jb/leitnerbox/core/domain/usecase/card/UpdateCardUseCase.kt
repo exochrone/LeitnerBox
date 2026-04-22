@@ -5,7 +5,8 @@ import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 
 class UpdateCardUseCase(
-    private val repository: CardRepository
+    private val repository: CardRepository,
+    private val answerNormalizer: AnswerNormalizer
 ) {
     suspend operator fun invoke(card: Card): Result<Unit> {
         if (card.recto.isBlank() || card.verso.isBlank()) {
@@ -13,8 +14,8 @@ class UpdateCardUseCase(
         }
 
         val cardToUpdate = card.copy(
-            rectoNormalized = AnswerNormalizer.normalize(card.recto),
-            answerNormalized = AnswerNormalizer.normalize(card.verso)
+            rectoNormalized = answerNormalizer.normalize(card.recto),
+            answerNormalized = answerNormalizer.normalize(card.verso)
         )
 
         repository.updateCard(cardToUpdate)

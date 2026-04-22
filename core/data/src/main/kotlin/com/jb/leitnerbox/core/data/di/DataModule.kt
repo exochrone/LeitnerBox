@@ -39,6 +39,14 @@ object DataModule {
 
     @Provides
     @Singleton
+    fun provideDeckDao(db: LeitnerDatabase) = db.deckDao
+
+    @Provides
+    @Singleton
+    fun provideCardDao(db: LeitnerDatabase) = db.cardDao
+
+    @Provides
+    @Singleton
     fun provideDeckRepository(db: LeitnerDatabase): DeckRepository {
         return DeckRepositoryImpl(db.deckDao)
     }

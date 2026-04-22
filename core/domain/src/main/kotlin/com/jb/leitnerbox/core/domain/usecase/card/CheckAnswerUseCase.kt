@@ -4,14 +4,16 @@ import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import kotlin.math.floor
 
-class CheckAnswerUseCase {
+class CheckAnswerUseCase(
+    private val answerNormalizer: AnswerNormalizer
+) {
 
     operator fun invoke(card: Card, userInput: String): Boolean {
         if (card.verso.isEmpty()) return true
         if (userInput.isEmpty()) return false
 
         val normalizedExpected = card.answerNormalized
-        val normalizedActual = AnswerNormalizer.normalize(userInput)
+        val normalizedActual = answerNormalizer.normalize(userInput)
 
         if (normalizedExpected.length <= 4) {
             return normalizedExpected == normalizedActual

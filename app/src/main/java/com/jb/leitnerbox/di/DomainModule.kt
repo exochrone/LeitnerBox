@@ -24,6 +24,10 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideAnswerNormalizer(): AnswerNormalizer = AnswerNormalizer()
+
+    @Provides
+    @Singleton
     fun provideNextSessionDateCalculator(): NextSessionDateCalculator = NextSessionDateCalculator()
 
     @Provides
@@ -48,7 +52,10 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideAddCardUseCase(repository: CardRepository): AddCardUseCase = AddCardUseCase(repository)
+    fun provideAddCardUseCase(
+        repository: CardRepository,
+        answerNormalizer: AnswerNormalizer
+    ): AddCardUseCase = AddCardUseCase(repository, answerNormalizer)
 
     @Provides
     @Singleton
@@ -60,7 +67,10 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideUpdateCardUseCase(repository: CardRepository): UpdateCardUseCase = UpdateCardUseCase(repository)
+    fun provideUpdateCardUseCase(
+        repository: CardRepository,
+        answerNormalizer: AnswerNormalizer
+    ): UpdateCardUseCase = UpdateCardUseCase(repository, answerNormalizer)
 
     @Provides
     @Singleton
@@ -68,7 +78,7 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideCheckAnswerUseCase(): CheckAnswerUseCase = CheckAnswerUseCase()
+    fun provideCheckAnswerUseCase(answerNormalizer: AnswerNormalizer): CheckAnswerUseCase = CheckAnswerUseCase(answerNormalizer)
 
     @Provides
     @Singleton
