@@ -2,19 +2,19 @@ package com.jb.leitnerbox.core.domain.usecase.card
 
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
-import com.jb.leitnerbox.core.domain.service.SchedulingService
+import com.jb.leitnerbox.core.domain.usecase.session.NextSessionDateCalculator
 import kotlinx.coroutines.flow.first
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 
 class EvaluateCardUseCase(
     private val cardRepository: CardRepository,
     private val settingsRepository: SettingsRepository,
-    private val schedulingService: SchedulingService
+    private val nextSessionDateCalculator: NextSessionDateCalculator
 ) {
     suspend operator fun invoke(
         card: Card, 
@@ -51,7 +51,7 @@ class EvaluateCardUseCase(
             )
         } else {
             val intervalInDays = deck.intervals[nextBox - 1]
-            val nextDate = schedulingService.calculateNextReviewDate(today, intervalInDays, excludedDays)
+            val nextDate = nextSessionDateCalculator.calculateNextReviewDate(today, intervalInDays, excludedDays)
             card.copy(
                 box = nextBox,
                 nextReviewDate = nextDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
@@ -65,14 +65,14 @@ class EvaluateCardUseCase(
         today: LocalDate, 
         excludedDays: Set<java.time.DayOfWeek>
     ): Card {
-        val nextBox = if (deck.backToFirstOnFail) {
+        val nextBox = if (deck.wrongAnswerRule == WrongAnswerRule.BACK_TO_BOX_ONE) {
             1
         } else {
             (card.box - 1).coerceAtLeast(1)
         }
 
         val intervalInDays = deck.intervals[nextBox - 1]
-        val nextDate = schedulingService.calculateNextReviewDate(today, intervalInDays, excludedDays)
+        val nextDate = nextSessionDateCalculator.calculateNextReviewDate(today, intervalInDays, excludedDays)
         
         return card.copy(
             box = nextBox,

@@ -4,7 +4,7 @@ import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
-import com.jb.leitnerbox.core.domain.service.SchedulingService
+import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -21,15 +21,17 @@ class PostponeBoxSessionUseCaseTest {
 
     private val deckRepository = mockk<DeckRepository>()
     private val cardRepository = mockk<CardRepository>()
-    private val schedulingService = mockk<SchedulingService>()
-    private val useCase = PostponeBoxSessionUseCase(deckRepository, cardRepository, schedulingService)
+    private val settingsRepository = mockk<SettingsRepository>()
+    private val nextSessionDateCalculator = mockk<NextSessionDateCalculator>()
+    private val useCase = PostponeBoxSessionUseCase(deckRepository, cardRepository, settingsRepository, nextSessionDateCalculator)
 
     @Test
     fun `invoke postpones only cards due in the specified box`() = runTest {
         // Given
         val deckId = 1L
         val boxNumber = 1
-        val deck = Deck(id = deckId, name = "Test Deck", excludedDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY))
+        val excludedDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+        val deck = Deck(id = deckId, name = "Test Deck")
         
         val now = Instant.now()
         val today = now.atZone(ZoneId.systemDefault()).toLocalDate()
@@ -45,7 +47,8 @@ class PostponeBoxSessionUseCaseTest {
 
         every { deckRepository.getDeckById(deckId) } returns flowOf(deck)
         every { cardRepository.getCardsByDeckId(deckId) } returns flowOf(cards)
-        every { schedulingService.calculateNextReviewDate(today, 1, deck.excludedDays) } returns tomorrow
+        every { settingsRepository.getExcludedDays() } returns flowOf(excludedDays)
+        every { nextSessionDateCalculator.calculateNextReviewDate(today, 1, excludedDays) } returns tomorrow
         coEvery { cardRepository.updateCard(any()) } returns Unit
 
         // When

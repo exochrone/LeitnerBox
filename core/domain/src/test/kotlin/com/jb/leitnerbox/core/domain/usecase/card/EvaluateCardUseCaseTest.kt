@@ -2,9 +2,10 @@ package com.jb.leitnerbox.core.domain.usecase.card
 
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
-import com.jb.leitnerbox.core.domain.service.SchedulingService
+import com.jb.leitnerbox.core.domain.usecase.session.NextSessionDateCalculator
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -23,18 +24,18 @@ class EvaluateCardUseCaseTest {
     private lateinit var useCase: EvaluateCardUseCase
     private val cardRepository = mockk<CardRepository>(relaxed = true)
     private val settingsRepository = mockk<SettingsRepository>()
-    private val schedulingService = SchedulingService()
+    private val nextSessionDateCalculator = NextSessionDateCalculator()
 
     private val defaultDeck = Deck(
         id = 1,
         name = "Test Deck",
         intervals = listOf(1, 3, 5, 7, 14),
-        backToFirstOnFail = true
+        wrongAnswerRule = WrongAnswerRule.BACK_TO_BOX_ONE
     )
 
     @BeforeEach
     fun setUp() {
-        useCase = EvaluateCardUseCase(cardRepository, settingsRepository, schedulingService)
+        useCase = EvaluateCardUseCase(cardRepository, settingsRepository, nextSessionDateCalculator)
         coEvery { settingsRepository.getExcludedDays() } returns flowOf(emptySet())
     }
 
@@ -83,7 +84,7 @@ class EvaluateCardUseCaseTest {
     @Test
     fun `P1-UT-54 Mauvaise reponse, regle PREVIOUS_BOX`() = runTest {
         val card = Card(id = 1, deckId = 1, recto = "Q", verso = "A", box = 3)
-        val customDeck = defaultDeck.copy(backToFirstOnFail = false)
+        val customDeck = defaultDeck.copy(wrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX)
         
         useCase(card, customDeck, false)
 

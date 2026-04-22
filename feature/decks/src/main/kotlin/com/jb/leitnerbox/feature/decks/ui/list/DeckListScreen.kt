@@ -62,14 +62,14 @@ fun DeckListScreen(
             )
         } else {
             LazyColumn(modifier = Modifier.padding(padding)) {
-                items(decks) { deck ->
+                items(decks) { item ->
                     ListItem(
-                        headlineContent = { Text(deck.name) },
+                        headlineContent = { Text(item.deck.name) },
                         supportingContent = { 
-                            Text("${deck.intervals.size} boîtes • ${deck.cardCount} cartes") 
+                            Text("${item.deck.intervals.size} boîtes • ${item.cardCount} cartes") 
                         },
                         modifier = Modifier
-                            .clickable { onDeckClick(deck.id) }
+                            .clickable { onDeckClick(item.deck.id) }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }

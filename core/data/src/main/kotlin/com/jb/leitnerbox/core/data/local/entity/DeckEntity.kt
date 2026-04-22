@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.PresentationOrder
+import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import java.time.DayOfWeek
 
 @Entity(tableName = "decks")
@@ -13,8 +14,7 @@ data class DeckEntity(
     val name: String,
     val description: String,
     val intervals: List<Int>,
-    val excludedDays: Set<DayOfWeek>,
-    val backToFirstOnFail: Boolean,
+    val wrongAnswerRule: WrongAnswerRule,
     val presentationOrder: PresentationOrder
 ) {
     fun toDomain(): Deck = Deck(
@@ -22,8 +22,7 @@ data class DeckEntity(
         name = name,
         description = description,
         intervals = intervals,
-        excludedDays = excludedDays,
-        backToFirstOnFail = backToFirstOnFail,
+        wrongAnswerRule = wrongAnswerRule,
         presentationOrder = presentationOrder
     )
 
@@ -33,8 +32,7 @@ data class DeckEntity(
             name = deck.name,
             description = deck.description,
             intervals = deck.intervals,
-            excludedDays = deck.excludedDays,
-            backToFirstOnFail = deck.backToFirstOnFail,
+            wrongAnswerRule = deck.wrongAnswerRule,
             presentationOrder = deck.presentationOrder
         )
     }

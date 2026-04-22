@@ -2,6 +2,7 @@ package com.jb.leitnerbox.core.data.local.converters
 
 import androidx.room.TypeConverter
 import com.jb.leitnerbox.core.domain.model.PresentationOrder
+import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import java.time.DayOfWeek
 import java.time.Instant
 
@@ -17,6 +18,12 @@ class RoomConverters {
 
     @TypeConverter
     fun toPresentationOrder(value: String): PresentationOrder = PresentationOrder.valueOf(value)
+
+    @TypeConverter
+    fun fromWrongAnswerRule(value: WrongAnswerRule): String = value.name
+
+    @TypeConverter
+    fun toWrongAnswerRule(value: String): WrongAnswerRule = WrongAnswerRule.valueOf(value)
 
     @TypeConverter
     fun fromDayOfWeekSet(value: Set<DayOfWeek>): String = value.joinToString(",") { it.name }

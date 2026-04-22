@@ -1,16 +1,17 @@
 package com.jb.leitnerbox.core.domain.usecase.card
 
-import java.text.Normalizer
+import com.jb.leitnerbox.core.domain.model.Card
+import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import kotlin.math.floor
 
-class ValidateResponseUseCase {
+class CheckAnswerUseCase {
 
-    operator fun invoke(expected: String, actual: String): Boolean {
-        if (expected.isEmpty()) return true // Si attendu vide, on considère OK (devrait pas arriver avec saisieRequise=true)
-        if (actual.isEmpty()) return false
+    operator fun invoke(card: Card, userInput: String): Boolean {
+        if (card.verso.isEmpty()) return true
+        if (userInput.isEmpty()) return false
 
-        val normalizedExpected = normalize(expected)
-        val normalizedActual = normalize(actual)
+        val normalizedExpected = card.answerNormalized
+        val normalizedActual = AnswerNormalizer.normalize(userInput)
 
         if (normalizedExpected.length <= 4) {
             return normalizedExpected == normalizedActual
@@ -20,15 +21,6 @@ class ValidateResponseUseCase {
         val distance = levenshtein(normalizedExpected, normalizedActual)
 
         return distance <= threshold
-    }
-
-    fun normalize(input: String): String {
-        return Normalizer.normalize(input, Normalizer.Form.NFD)
-            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "") // Supprime accents
-            .lowercase()
-            .replace("[^a-z0-9\\s]".toRegex(), "") // Ne garde que alphanumérique et espaces
-            .trim()
-            .replace("\\s+".toRegex(), " ") // Espaces multiples -> un seul
     }
 
     private fun levenshtein(s1: String, s2: String): Int {

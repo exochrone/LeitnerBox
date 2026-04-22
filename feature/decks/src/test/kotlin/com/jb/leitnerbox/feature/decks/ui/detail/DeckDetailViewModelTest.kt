@@ -2,8 +2,10 @@ package com.jb.leitnerbox.feature.decks.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.domain.repository.CardRepository
-import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -23,15 +25,15 @@ import org.junit.Test
 class DeckDetailViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var deckRepository: DeckRepository
-    private lateinit var cardRepository: CardRepository
+    private val getDeckByIdUseCase = mockk<GetDeckByIdUseCase>()
+    private val getCardsUseCase = mockk<GetCardsUseCase>()
+    private val deleteDeckUseCase = mockk<DeleteDeckUseCase>()
+    private val addDeckUseCase = mockk<AddDeckUseCase>()
     private lateinit var viewModel: DeckDetailViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        deckRepository = mockk()
-        cardRepository = mockk()
     }
 
     @After
@@ -45,11 +47,11 @@ class DeckDetailViewModelTest {
         val deckId = 1L
         val deck = Deck(id = deckId, name = "Test Deck")
         
-        every { deckRepository.getDeckById(deckId) } returns flowOf(deck)
-        every { cardRepository.getCardsByDeckId(deckId) } returns flowOf(emptyList())
+        every { getDeckByIdUseCase(deckId) } returns flowOf(deck)
+        every { getCardsUseCase(deckId) } returns flowOf(emptyList())
         
         val savedStateHandle = SavedStateHandle(mapOf("deckId" to deckId))
-        viewModel = DeckDetailViewModel(deckRepository, cardRepository, savedStateHandle)
+        viewModel = DeckDetailViewModel(getDeckByIdUseCase, getCardsUseCase, deleteDeckUseCase, addDeckUseCase, savedStateHandle)
 
         // Then
         advanceUntilIdle()

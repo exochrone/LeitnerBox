@@ -4,6 +4,7 @@ import com.jb.leitnerbox.core.data.local.dao.DeckDao
 import com.jb.leitnerbox.core.data.local.entity.DeckEntity
 import com.jb.leitnerbox.core.data.local.entity.DeckWithCount
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.model.DeckWithCardCount
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,10 +18,13 @@ class DeckRepositoryImpl(
         }
     }
 
-    override fun getDecksWithCardCount(): Flow<List<Deck>> {
+    override fun getDecksWithCardCount(): Flow<List<DeckWithCardCount>> {
         return dao.getDecksWithCardCount().map { list ->
             list.map { item ->
-                item.deck.toDomain().copy(cardCount = item.cardCount)
+                DeckWithCardCount(
+                    deck = item.deck.toDomain(),
+                    cardCount = item.cardCount
+                )
             }
         }
     }

@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.domain.repository.CardRepository
-import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -14,21 +16,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeckDetailViewModel @Inject constructor(
-    private val deckRepository: DeckRepository,
-    private val cardRepository: CardRepository,
+    private val getDeckByIdUseCase: GetDeckByIdUseCase,
+    private val getCardsUseCase: GetCardsUseCase,
+    private val deleteDeckUseCase: DeleteDeckUseCase,
+    private val addDeckUseCase: AddDeckUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     val deckId: Long = checkNotNull(savedStateHandle["deckId"])
 
-    val deck: StateFlow<Deck?> = deckRepository.getDeckById(deckId)
+    val deck: StateFlow<Deck?> = getDeckByIdUseCase(deckId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = null
         )
 
-    val cards: StateFlow<List<Card>> = cardRepository.getCardsByDeckId(deckId)
+    val cards: StateFlow<List<Card>> = getCardsUseCase(deckId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -39,7 +43,7 @@ class DeckDetailViewModel @Inject constructor(
         viewModelScope.launch {
             deck.value?.let {
                 val deckToDelete = it
-                deckRepository.deleteDeck(deckToDelete)
+                deleteDeckUseCase(deckToDelete)
                 onDeleted(deckToDelete)
             }
         }
@@ -47,7 +51,7 @@ class DeckDetailViewModel @Inject constructor(
 
     fun undoDelete(deck: Deck) {
         viewModelScope.launch {
-            deckRepository.insertDeck(deck)
+            addDeckUseCase(deck)
         }
     }
 }

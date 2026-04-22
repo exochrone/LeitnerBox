@@ -62,7 +62,7 @@ fun DeckDetailScreen(
         }
     ) { padding ->
         deck?.let { currentDeck ->
-            if (currentDeck.intervals.isEmpty()) {
+            if (cards.isEmpty()) {
                 EmptyState(
                     message = "Ce deck n'a pas encore de cartes.",
                     actionText = "Ajouter une carte",

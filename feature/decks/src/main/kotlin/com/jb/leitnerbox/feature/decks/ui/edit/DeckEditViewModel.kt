@@ -62,7 +62,7 @@ class DeckEditViewModel @Inject constructor(
             val deck = Deck(
                 name = name,
                 intervals = defaultIntervals,
-                backToFirstOnFail = wrongAnswerRule == WrongAnswerRule.BACK_TO_BOX_ONE
+                wrongAnswerRule = wrongAnswerRule
             )
             
             addDeckUseCase(deck)

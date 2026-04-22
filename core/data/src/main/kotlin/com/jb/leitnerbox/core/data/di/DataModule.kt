@@ -32,7 +32,9 @@ object DataModule {
             context,
             LeitnerDatabase::class.java,
             LeitnerDatabase.DATABASE_NAME
-        ).build()
+        )
+            .addMigrations(LeitnerDatabase.MIGRATION_1_2)
+            .build()
     }
 
     @Provides

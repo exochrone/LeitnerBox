@@ -20,7 +20,7 @@ interface DeckDao {
     @Query("SELECT * FROM decks WHERE id = :id")
     fun getDeckById(id: Long): Flow<DeckEntity?>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertDeck(deck: DeckEntity): Long
 
     @Update

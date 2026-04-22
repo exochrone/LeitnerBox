@@ -4,6 +4,7 @@ import com.jb.leitnerbox.core.data.local.dao.DeckDao
 import com.jb.leitnerbox.core.data.local.entity.DeckEntity
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.PresentationOrder
+import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -23,7 +24,7 @@ class DeckRepositoryImplTest {
     fun `getDecks returns domain models`() = runTest {
         // Given
         val entities = listOf(
-            DeckEntity(id = 1, name = "Deck 1", description = "Desc 1", intervals = listOf(1), excludedDays = emptySet(), backToFirstOnFail = true, presentationOrder = PresentationOrder.RANDOM)
+            DeckEntity(id = 1, name = "Deck 1", description = "Desc 1", intervals = listOf(1), wrongAnswerRule = WrongAnswerRule.BACK_TO_BOX_ONE, presentationOrder = PresentationOrder.RANDOM)
         )
         every { dao.getDecks() } returns flowOf(entities)
 

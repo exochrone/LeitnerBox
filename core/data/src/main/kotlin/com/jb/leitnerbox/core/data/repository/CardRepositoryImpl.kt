@@ -39,7 +39,7 @@ class CardRepositoryImpl(
         dao.deleteCard(CardEntity.fromDomain(card))
     }
 
-    override suspend fun getCardByRecto(deckId: Long, recto: String): Card? {
-        return dao.getCardByRecto(deckId, recto)?.toDomain()
+    override suspend fun getCardByRectoNormalized(deckId: Long, rectoNormalized: String): Card? {
+        return dao.getCardByRectoNormalized(deckId, rectoNormalized)?.toDomain()
     }
 }

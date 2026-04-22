@@ -2,6 +2,7 @@ package com.jb.leitnerbox.core.domain.usecase.card
 
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.repository.CardRepository
+import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import java.time.Instant
 
 class AddCardUseCase(
@@ -12,17 +13,18 @@ class AddCardUseCase(
             return Result.failure(IllegalArgumentException("Recto and Verso cannot be empty"))
         }
         
-        val existingCard = repository.getCardByRecto(card.deckId, card.recto)
+        val rectoNormalized = AnswerNormalizer.normalize(card.recto)
+        val existingCard = repository.getCardByRectoNormalized(card.deckId, rectoNormalized)
         if (existingCard != null) {
             return Result.failure(IllegalStateException("Une carte avec cette question existe déjà dans ce deck"))
         }
 
-        val cardWithDate = if (card.nextReviewDate == null) {
-            card.copy(nextReviewDate = Instant.now())
-        } else {
-            card
-        }
+        val cardToInsert = card.copy(
+            rectoNormalized = rectoNormalized,
+            nextReviewDate = card.nextReviewDate ?: Instant.now(),
+            answerNormalized = AnswerNormalizer.normalize(card.verso)
+        )
 
-        return Result.success(repository.insertCard(cardWithDate))
+        return Result.success(repository.insertCard(cardToInsert))
     }
 }

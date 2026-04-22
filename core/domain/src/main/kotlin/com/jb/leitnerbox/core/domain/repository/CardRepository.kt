@@ -10,5 +10,5 @@ interface CardRepository {
     suspend fun insertCard(card: Card): Long
     suspend fun updateCard(card: Card)
     suspend fun deleteCard(card: Card)
-    suspend fun getCardByRecto(deckId: Long, recto: String): Card?
+    suspend fun getCardByRectoNormalized(deckId: Long, rectoNormalized: String): Card?
 }

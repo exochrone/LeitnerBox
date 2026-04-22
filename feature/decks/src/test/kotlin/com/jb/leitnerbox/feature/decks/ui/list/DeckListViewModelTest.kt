@@ -1,7 +1,11 @@
 package com.jb.leitnerbox.feature.decks.ui.list
 
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.model.DeckWithCardCount
+import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.GetDecksUseCase
+import com.jb.leitnerbox.feature.decks.ui.list.model.DeckDisplayItem
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +23,14 @@ import org.junit.Test
 class DeckListViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: DeckRepository
+    private val getDecksUseCase = mockk<GetDecksUseCase>()
+    private val deleteDeckUseCase = mockk<DeleteDeckUseCase>()
+    private val addDeckUseCase = mockk<AddDeckUseCase>()
     private lateinit var viewModel: DeckListViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        repository = mockk()
     }
 
     @After
@@ -36,28 +41,29 @@ class DeckListViewModelTest {
     @Test
     fun `P3-UT-01 - decks should be empty when repository is empty`() {
         // Given
-        every { repository.getDecksWithCardCount() } returns flowOf(emptyList())
+        every { getDecksUseCase.executeWithCardCount() } returns flowOf(emptyList())
 
         // When
-        viewModel = DeckListViewModel(repository)
+        viewModel = DeckListViewModel(getDecksUseCase, deleteDeckUseCase, addDeckUseCase)
 
         // Then
-        assertEquals(emptyList<Deck>(), viewModel.decks.value)
+        assertEquals(emptyList<DeckDisplayItem>(), viewModel.decks.value)
     }
 
     @Test
     fun `decks should emit list from repository`() {
         // Given
         val mockDecks = listOf(
-            Deck(id = 1, name = "Deck 1"),
-            Deck(id = 2, name = "Deck 2")
+            DeckWithCardCount(Deck(id = 1, name = "Deck 1"), 0),
+            DeckWithCardCount(Deck(id = 2, name = "Deck 2"), 0)
         )
-        every { repository.getDecksWithCardCount() } returns flowOf(mockDecks)
+        every { getDecksUseCase.executeWithCardCount() } returns flowOf(mockDecks)
 
         // When
-        viewModel = DeckListViewModel(repository)
+        viewModel = DeckListViewModel(getDecksUseCase, deleteDeckUseCase, addDeckUseCase)
 
         // Then
-        assertEquals(mockDecks, viewModel.decks.value)
+        val expected = mockDecks.map { DeckDisplayItem(it.deck, it.cardCount) }
+        assertEquals(expected, viewModel.decks.value)
     }
 }

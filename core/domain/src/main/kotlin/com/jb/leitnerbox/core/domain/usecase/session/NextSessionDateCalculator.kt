@@ -1,11 +1,9 @@
-package com.jb.leitnerbox.core.domain.service
+package com.jb.leitnerbox.core.domain.usecase.session
 
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.ZonedDateTime
 
-class SchedulingService {
+class NextSessionDateCalculator {
 
     /**
      * Calcule la date de la prochaine session en ajoutant l'intervalle et en sautant

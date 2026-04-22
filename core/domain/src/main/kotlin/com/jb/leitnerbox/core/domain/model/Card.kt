@@ -6,7 +6,9 @@ data class Card(
     val id: Long = 0,
     val deckId: Long,
     val recto: String,
+    val rectoNormalized: String = "",
     val verso: String,
+    val answerNormalized: String = "",
     val box: Int = 1, // 1 to 7
     val lastReviewDate: Instant? = null,
     val nextReviewDate: Instant? = null,
