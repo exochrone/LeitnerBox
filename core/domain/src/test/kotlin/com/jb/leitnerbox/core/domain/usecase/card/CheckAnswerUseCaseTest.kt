@@ -12,15 +12,18 @@ class CheckAnswerUseCaseTest {
 
     @BeforeEach
     fun setUp() {
-        useCase = CheckAnswerUseCase()
+        useCase = CheckAnswerUseCase(AnswerNormalizer())
     }
 
-    private fun createCard(verso: String) = Card(
-        deckId = 1,
-        recto = "Question",
-        verso = verso,
-        answerNormalized = AnswerNormalizer.normalize(verso)
-    )
+    private fun createCard(verso: String): Card {
+        val normalizer = AnswerNormalizer()
+        return Card(
+            deckId = 1,
+            recto = "Question",
+            verso = verso,
+            answerNormalized = normalizer.normalize(verso)
+        )
+    }
 
     @Test
     fun `P1-UT-20 isMatch avec seuil de 1 pour azote`() {

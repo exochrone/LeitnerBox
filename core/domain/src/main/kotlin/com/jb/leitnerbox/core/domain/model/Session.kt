@@ -9,5 +9,7 @@ data class Session(
     val cardCount: Int,
     val successCount: Int,
     val masteredCount: Int,
+    val advancedCount: Int = 0,
+    val retreatedCount: Int = 0,
     val isReported: Boolean = false
 )

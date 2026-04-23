@@ -8,18 +8,21 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.jb.leitnerbox.core.data.local.converters.RoomConverters
 import com.jb.leitnerbox.core.data.local.dao.CardDao
 import com.jb.leitnerbox.core.data.local.dao.DeckDao
+import com.jb.leitnerbox.core.data.local.dao.SessionDao
 import com.jb.leitnerbox.core.data.local.entity.CardEntity
 import com.jb.leitnerbox.core.data.local.entity.DeckEntity
+import com.jb.leitnerbox.core.data.local.entity.SessionEntity
 
 @Database(
-    entities = [DeckEntity::class, CardEntity::class],
-    version = 2,
+    entities = [DeckEntity::class, CardEntity::class, SessionEntity::class],
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(RoomConverters::class)
 abstract class LeitnerDatabase : RoomDatabase() {
     abstract val deckDao: DeckDao
     abstract val cardDao: CardDao
+    abstract val sessionDao: SessionDao
 
     companion object {
         const val DATABASE_NAME = "leitner_db"
@@ -75,6 +78,24 @@ abstract class LeitnerDatabase : RoomDatabase() {
                 database.execSQL("""
                     CREATE INDEX IF NOT EXISTS index_cards_deckId_rectoNormalized
                     ON cards (deckId, rectoNormalized)
+                """.trimIndent())
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS sessions (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        date INTEGER NOT NULL,
+                        deckIds TEXT NOT NULL,
+                        cardCount INTEGER NOT NULL,
+                        successCount INTEGER NOT NULL,
+                        masteredCount INTEGER NOT NULL,
+                        advancedCount INTEGER NOT NULL,
+                        retreatedCount INTEGER NOT NULL,
+                        isReported INTEGER NOT NULL
+                    )
                 """.trimIndent())
             }
         }

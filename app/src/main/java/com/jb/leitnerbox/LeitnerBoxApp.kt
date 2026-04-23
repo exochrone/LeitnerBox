@@ -2,6 +2,7 @@ package com.jb.leitnerbox
 
 import android.app.Application
 import com.jb.leitnerbox.core.data.migration.CardMigrationHelper
+import com.jb.leitnerbox.core.domain.usecase.session.HandleMissedDaysUseCase
 import com.jb.leitnerbox.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -12,6 +13,7 @@ import javax.inject.Inject
 class LeitnerBoxApp : Application() {
 
     @Inject lateinit var cardMigrationHelper: CardMigrationHelper
+    @Inject lateinit var handleMissedDays: HandleMissedDaysUseCase
     @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
     override fun onCreate() {
@@ -19,7 +21,8 @@ class LeitnerBoxApp : Application() {
 
         // Recalcul de fond pour les cartes migrées (une seule fois)
         applicationScope.launch {
-            cardMigrationHelper.repopulateNormalizedFields()
+            launch { cardMigrationHelper.repopulateNormalizedFields() }
+            launch { handleMissedDays() }
         }
     }
 }

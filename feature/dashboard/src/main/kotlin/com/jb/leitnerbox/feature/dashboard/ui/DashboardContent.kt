@@ -86,12 +86,7 @@ private fun SessionSummary(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "$totalCards",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Text(
-                    text = stringResource(R.string.dashboard_cards_to_review),
+                    text = stringResource(R.string.dashboard_cards_to_review, totalCards),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )

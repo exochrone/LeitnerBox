@@ -4,14 +4,12 @@ import com.jb.leitnerbox.core.data.local.dao.CardDao
 import com.jb.leitnerbox.core.data.migration.CardMigrationHelper
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.repository.SessionRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import com.jb.leitnerbox.core.domain.usecase.card.*
 import com.jb.leitnerbox.core.domain.usecase.deck.*
-import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
-import com.jb.leitnerbox.core.domain.usecase.session.GetStatisticsUseCase
-import com.jb.leitnerbox.core.domain.usecase.session.NextSessionDateCalculator
-import com.jb.leitnerbox.core.domain.usecase.session.PostponeBoxSessionUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -110,6 +108,12 @@ object DomainModule {
         deckRepository: DeckRepository,
         cardRepository: CardRepository
     ): GetStatisticsUseCase = GetStatisticsUseCase(deckRepository, cardRepository)
+
+    @Provides
+    @Singleton
+    fun provideHandleMissedDaysUseCase(
+        sessionRepository: SessionRepository
+    ): HandleMissedDaysUseCase = HandleMissedDaysUseCase(sessionRepository)
 
     @Provides
     @Singleton

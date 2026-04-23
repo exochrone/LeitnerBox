@@ -6,11 +6,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.jb.leitnerbox.core.data.local.LeitnerDatabase
+import com.jb.leitnerbox.core.data.local.dao.SessionDao
 import com.jb.leitnerbox.core.data.repository.CardRepositoryImpl
 import com.jb.leitnerbox.core.data.repository.DeckRepositoryImpl
+import com.jb.leitnerbox.core.data.repository.SessionRepositoryImpl
 import com.jb.leitnerbox.core.data.repository.SettingsRepositoryImpl
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.repository.SessionRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -33,7 +36,7 @@ object DataModule {
             LeitnerDatabase::class.java,
             LeitnerDatabase.DATABASE_NAME
         )
-            .addMigrations(LeitnerDatabase.MIGRATION_1_2)
+            .addMigrations(LeitnerDatabase.MIGRATION_1_2, LeitnerDatabase.MIGRATION_2_3)
             .build()
     }
 
@@ -47,6 +50,10 @@ object DataModule {
 
     @Provides
     @Singleton
+    fun provideSessionDao(db: LeitnerDatabase) = db.sessionDao
+
+    @Provides
+    @Singleton
     fun provideDeckRepository(db: LeitnerDatabase): DeckRepository {
         return DeckRepositoryImpl(db.deckDao)
     }
@@ -55,6 +62,12 @@ object DataModule {
     @Singleton
     fun provideCardRepository(db: LeitnerDatabase): CardRepository {
         return CardRepositoryImpl(db.cardDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSessionRepository(sessionDao: SessionDao): SessionRepository {
+        return SessionRepositoryImpl(sessionDao)
     }
 
     @Provides

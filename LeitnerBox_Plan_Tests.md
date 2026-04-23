@@ -211,7 +211,15 @@ Conventions utilisées dans ce document :
 ## Phase 4 — Session de révision
 
 **Objectif :** valider le cœur fonctionnel de l'app — la boucle d'apprentissage complète.
+### UT — HandleMissedDaysUseCase
 
+| ID | Description | Résultat attendu |
+|---|---|---|
+| P4-UT-00-01 | Aucune session en base | Aucune insertion |
+| P4-UT-00-02 | Dernière session hier | Aucune insertion (streak non cassé) |
+| P4-UT-00-03 | Dernière session aujourd'hui | Aucune insertion |
+| P4-UT-00-04 | Dernière session il y a 2 jours | Insertion d'une session `isReported = true` |
+| P4-UT-00-05 | Session `isReported` déjà présente aujourd'hui | Aucune insertion (idempotence) |
 ### UT — SessionViewModel
 
 | ID | Description | Résultat attendu |

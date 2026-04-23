@@ -42,4 +42,13 @@ class RoomConverters {
         if (value.isEmpty()) return emptyList()
         return value.split(",").map { it.toInt() }
     }
+
+    @TypeConverter
+    fun fromLongList(value: List<Long>): String = value.joinToString(",")
+
+    @TypeConverter
+    fun toLongList(value: String): List<Long> {
+        if (value.isEmpty()) return emptyList()
+        return value.split(",").map { it.toLong() }
+    }
 }
