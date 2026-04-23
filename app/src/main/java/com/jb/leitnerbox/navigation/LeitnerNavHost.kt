@@ -22,6 +22,7 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardEditScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardEditViewModel
 import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
+import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -125,6 +126,14 @@ fun LeitnerNavHost(
         }
         composable(Screen.Settings.route) {
             SettingsScreen()
+        }
+        composable(Screen.SessionSelection.route) {
+            SessionSelectionScreen(
+                onStartSession = {
+                    // TODO: US-03/US-05 Navigate to Session
+                },
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

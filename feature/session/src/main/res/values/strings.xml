@@ -1,0 +1,9 @@
+<resources>
+    <string name="session_selection_title">Révisions du jour</string>
+    <string name="back">Retour</string>
+    <string name="total_cards_to_review">%d cartes à réviser</string>
+    <string name="start_session">Démarrer</string>
+    <string name="nothing_to_review_today">Rien à réviser aujourd\'hui</string>
+    <string name="box_number">Boîte %d</string>
+    <string name="card_count">%d cartes</string>
+</resources>
