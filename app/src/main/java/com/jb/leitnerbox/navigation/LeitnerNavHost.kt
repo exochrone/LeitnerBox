@@ -17,6 +17,7 @@ import com.jb.leitnerbox.feature.decks.ui.detail.DeckDetailViewModel
 import com.jb.leitnerbox.feature.decks.ui.detail.BoxDetailScreen
 import com.jb.leitnerbox.feature.decks.ui.detail.BoxDetailViewModel
 import com.jb.leitnerbox.feature.dashboard.ui.DashboardScreen
+import com.jb.leitnerbox.feature.dashboard.ui.DashboardViewModel
 import com.jb.leitnerbox.feature.settings.ui.SettingsScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardEditScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardEditViewModel
@@ -39,7 +40,13 @@ fun LeitnerNavHost(
         modifier = modifier
     ) {
         composable(Screen.Dashboard.route) {
-            DashboardScreen()
+            val viewModel: DashboardViewModel = hiltViewModel()
+            DashboardScreen(
+                viewModel = viewModel,
+                onStartSession = {
+                    navController.navigate(Screen.SessionSelection.route)
+                }
+            )
         }
         composable(Screen.Decks.route) {
             val viewModel: DeckListViewModel = hiltViewModel()

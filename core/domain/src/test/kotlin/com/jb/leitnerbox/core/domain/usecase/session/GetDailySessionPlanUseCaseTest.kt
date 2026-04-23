@@ -62,6 +62,29 @@ class GetDailySessionPlanUseCaseTest {
     }
 
     @Test
+    fun `invoke excludes learned cards`() = runTest {
+        // Given
+        val now = Instant.now()
+        val deck1 = Deck(id = 1, name = "Deck 1")
+        val yesterday = now.minus(1, ChronoUnit.DAYS)
+
+        val cards = listOf(
+            Card(id = 1, deckId = 1, box = 1, nextReviewDate = yesterday, recto = "R1", verso = "V1", isLearned = true),
+            Card(id = 2, deckId = 1, box = 1, nextReviewDate = now, recto = "R2", verso = "V2", isLearned = false)
+        )
+
+        every { deckRepository.getDecks() } returns flowOf(listOf(deck1))
+        every { cardRepository.getCardsByDeckId(1) } returns flowOf(cards)
+
+        // When
+        val plan = useCase(now).first()
+
+        // Then
+        assertEquals(1, plan.items.size)
+        assertEquals(1, plan.items.first().cardCount)
+    }
+
+    @Test
     fun `invoke returns empty plan when no decks exist`() = runTest {
         // Given
         every { deckRepository.getDecks() } returns flowOf(emptyList())
