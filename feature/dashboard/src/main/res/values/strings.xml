@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_empty_title">Aucune révision prévue pour aujourd\'hui.</string>
+    <string name="dashboard_empty_subtitle">Revenez plus tard ou ajoutez de nouvelles cartes !</string>
+    <string name="dashboard_cards_to_review">cartes à réviser</string>
+    <string name="dashboard_deck_distribution">Réparties dans %1$d deck(s)</string>
+    <string name="dashboard_start_session">Commencer la session</string>
+</resources>
