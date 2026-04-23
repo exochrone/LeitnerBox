@@ -36,7 +36,7 @@ class SessionSelectionViewModelTest {
     }
 
     @Test
-    fun `initial state is loading`() {
+    fun `after plan loads, isLoading is false`() {
         every { getDailySessionPlan(match { true }) } returns flowOf(SessionPlan(Instant.MIN, emptyList()))
         viewModel = SessionSelectionViewModel(getDailySessionPlan)
         

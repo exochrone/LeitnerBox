@@ -82,7 +82,10 @@ fun SessionSelectionContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val groupedByDeck = uiState.items.groupBy { it.planItem.deck }
+                val groupedByDeck = uiState.items
+                    .groupBy { it.planItem.deck }
+                    .entries
+                    .sortedBy { it.key.name }
                 
                 groupedByDeck.forEach { (deck, boxes) ->
                     item {
@@ -105,7 +108,7 @@ fun SessionSelectionContent(
 }
 
 @Composable
-fun SelectableBoxRow(
+private fun SelectableBoxRow(
     item: SelectableBoxItem,
     onToggle: () -> Unit
 ) {
