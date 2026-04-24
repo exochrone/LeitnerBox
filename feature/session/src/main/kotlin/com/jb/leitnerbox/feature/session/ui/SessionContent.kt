@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.FlipCard
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.feature.session.R
 
 @OptIn(ExperimentalMaterial3Api::class)
