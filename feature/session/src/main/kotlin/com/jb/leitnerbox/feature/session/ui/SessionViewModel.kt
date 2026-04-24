@@ -39,7 +39,6 @@ class SessionViewModel @Inject constructor(
                 it.copy(
                     cards = cards,
                     currentCard = cards.first(),
-                    totalCards = cards.size,
                     currentIndex = 0,
                     isFlipped = false,
                     userInput = "",

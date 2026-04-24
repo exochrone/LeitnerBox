@@ -10,6 +10,8 @@
     <string name="postpone_success">Report de %1$s boîte %2$d</string>
     <string name="undo">Annuler</string>
     <string name="session_title">Session</string>
+    <string name="session_progress_label">Carte %1$d / %2$d</string>
+    <string name="session_mastered_label">Maîtrisées %1$d / %2$d</string>
     <string name="session_flip_card">Retourner</string>
     <string name="session_card_label">Question %1$d/%2$d</string>
     <string name="session_answer_label">Réponse</string>

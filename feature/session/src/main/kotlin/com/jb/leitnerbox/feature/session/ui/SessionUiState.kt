@@ -8,7 +8,6 @@ data class SessionUiState(
     val currentCard: Card? = null,
     val isFlipped: Boolean = false,
     val currentIndex: Int = 0,
-    val totalCards: Int = 0,
     val successCount: Int = 0,
     val evaluatedCount: Int = 0,
     val isChallenge: Boolean = false,

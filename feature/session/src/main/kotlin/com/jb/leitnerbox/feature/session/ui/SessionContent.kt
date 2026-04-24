@@ -59,10 +59,15 @@ fun SessionContent(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val progressLabel = if (uiState.isChallenge) {
+                stringResource(R.string.session_mastered_label, uiState.progressCurrent, uiState.progressTotal)
+            } else {
+                stringResource(R.string.session_progress_label, uiState.progressCurrent, uiState.progressTotal)
+            }
             SessionProgressIndicator(
                 current = uiState.progressCurrent,
                 total = uiState.progressTotal,
-                isChallenge = uiState.isChallenge,
+                label = progressLabel,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
@@ -87,7 +92,7 @@ fun SessionContent(
                             rectoLabel = stringResource(
                                 R.string.session_card_label,
                                 uiState.currentIndex + 1,
-                                uiState.totalCards
+                                uiState.progressTotal
                             ),
                             versoLabel = stringResource(R.string.session_answer_label)
                         )

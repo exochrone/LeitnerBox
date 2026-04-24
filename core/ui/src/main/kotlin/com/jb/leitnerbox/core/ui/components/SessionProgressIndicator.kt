@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 fun SessionProgressIndicator(
     current: Int,
     total: Int,
-    isChallenge: Boolean,
+    label: String,
     modifier: Modifier = Modifier
 ) {
     val fraction by remember(current, total) {
@@ -30,8 +30,7 @@ fun SessionProgressIndicator(
 
     Column(modifier = modifier) {
         Text(
-            text = if (isChallenge) "Maîtrisées $current / $total"
-            else "Carte $current / $total",
+            text = label,
             style = MaterialTheme.typography.labelMedium
         )
         LinearProgressIndicator(
