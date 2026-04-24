@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.FlipCard
-import com.jb.leitnerbox.core.domain.model.Card
+import com.jb.leitnerbox.core.ui.components.SwipeableCard
 import com.jb.leitnerbox.feature.session.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,16 +54,24 @@ fun SessionContent(
 
             uiState.currentCard?.let { card ->
                 key(card.id) {
-                    FlipCard(
-                        recto = card.recto,
-                        verso = card.verso,
-                        isFlipped = uiState.isFlipped,
-                        onFlip = onFlip,
+                    SwipeableCard(
+                        isFlipped = uiState.isFlipped && !card.needsInput,
+                        onEvaluate = onEvaluate,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
                             .padding(vertical = 32.dp)
-                    )
+                    ) {
+                        FlipCard(
+                            recto = card.recto,
+                            verso = card.verso,
+                            isFlipped = uiState.isFlipped,
+                            onFlip = onFlip,
+                            modifier = Modifier.fillMaxSize(),
+                            currentIndex = uiState.currentIndex,
+                            totalCards = uiState.totalCards
+                        )
+                    }
                 }
 
                 if (uiState.isFlipped && !card.needsInput) {
@@ -76,7 +84,6 @@ fun SessionContent(
                         Text(stringResource(R.string.session_flip_card))
                     }
                 }
-                // Si card.needsInput, la logique sera implémentée dans une autre US
             }
         }
     }
@@ -104,7 +111,7 @@ private fun EvaluationButtons(
             onClick = { onEvaluate(true) },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4CAF50) // Vert spécifié
+                containerColor = Color(0xFF4CAF50)
             )
         ) {
             Text(stringResource(R.string.eval_correct))

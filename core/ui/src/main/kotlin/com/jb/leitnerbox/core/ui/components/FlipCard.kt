@@ -3,9 +3,12 @@ package com.jb.leitnerbox.core.ui.components
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -15,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -25,7 +30,9 @@ fun FlipCard(
     verso: String,
     isFlipped: Boolean,
     onFlip: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentIndex: Int = 0,
+    totalCards: Int = 0
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
@@ -36,6 +43,8 @@ fun FlipCard(
         label = "cardFlip"
     )
 
+    val isAtRecto = rotation <= 90f
+
     Card(
         modifier = modifier
             .graphicsLayer {
@@ -45,32 +54,54 @@ fun FlipCard(
             .clickable { onFlip() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+            containerColor = if (isAtRecto) Color(0xFF51545D) else MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = if (isAtRecto) Color(0xFFE1E2EC) else MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        border = BorderStroke(2.dp, Color.Black)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (rotation <= 90f) {
-                // Recto
-                Text(
-                    text = recto,
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                // Verso (avec effet miroir corrigé par rotationY de 180f dans graphicsLayer)
-                Text(
-                    text = verso,
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.graphicsLayer {
-                        rotationY = 180f
-                    }
-                )
+            // Label en haut
+            Text(
+                text = if (rotation <= 90f) "Question ${currentIndex + 1}/$totalCards" else "Réponse",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        if (rotation > 90f) rotationY = 180f
+                    },
+                textAlign = TextAlign.Center
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                if (rotation <= 90f) {
+                    // Recto
+                    Text(
+                        text = recto,
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    // Verso
+                    Text(
+                        text = verso,
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.graphicsLayer {
+                            rotationY = 180f
+                        }
+                    )
+                }
             }
         }
     }
