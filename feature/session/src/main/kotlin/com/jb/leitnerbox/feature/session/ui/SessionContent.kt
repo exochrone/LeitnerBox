@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.FlipCard
@@ -64,9 +65,9 @@ fun SessionContent(
                     )
                 }
 
-                if (uiState.isFlipped) {
+                if (uiState.isFlipped && !card.needsInput) {
                     EvaluationButtons(onEvaluate = onEvaluate)
-                } else {
+                } else if (!uiState.isFlipped) {
                     Button(
                         onClick = onFlip,
                         modifier = Modifier.fillMaxWidth()
@@ -74,6 +75,7 @@ fun SessionContent(
                         Text(stringResource(R.string.session_flip_card))
                     }
                 }
+                // Si card.needsInput, la logique sera implémentée dans une autre US
             }
         }
     }
@@ -85,19 +87,24 @@ private fun EvaluationButtons(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Button(
             onClick = { onEvaluate(false) },
             modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
         ) {
             Text(stringResource(R.string.eval_wrong))
         }
+
         Button(
             onClick = { onEvaluate(true) },
             modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4CAF50) // Vert spécifié
+            )
         ) {
             Text(stringResource(R.string.eval_correct))
         }
