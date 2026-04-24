@@ -6,52 +6,26 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.WatchLater
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import com.jb.leitnerbox.feature.session.R
-import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionSelectionContent(
     uiState: SessionSelectionUiState,
-    events: Flow<SessionSelectionEvent>,
+    snackbarHostState: SnackbarHostState,
     onBoxToggled: (SelectableBoxItem) -> Unit,
     onPostponeBox: (SelectableBoxItem) -> Unit,
-    onUndoPostpone: (Long, Int, Long) -> Unit,
     onStartSession: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val context = androidx.compose.ui.platform.LocalContext.current
-
-    LaunchedEffect(Unit) {
-        events.collect { event ->
-            if (event is SessionSelectionEvent.ShowUndoPostpone) {
-                val result = snackbarHostState.showSnackbar(
-                    message = context.getString(
-                        R.string.postpone_success,
-                        event.deckName,
-                        event.boxNumber
-                    ),
-                    actionLabel = context.getString(R.string.undo),
-                    duration = SnackbarDuration.Short
-                )
-                if (result == SnackbarResult.ActionPerformed) {
-                    onUndoPostpone(event.deckId, event.boxNumber, event.sessionId)
-                }
-            }
-        }
-    }
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -168,7 +142,7 @@ private fun SelectableBoxRow(
         }
         IconButton(onClick = onPostpone) {
             Icon(
-                imageVector = Icons.Default.Refresh,
+                imageVector = Icons.Outlined.WatchLater,
                 contentDescription = stringResource(R.string.postpone),
                 tint = MaterialTheme.colorScheme.secondary
             )

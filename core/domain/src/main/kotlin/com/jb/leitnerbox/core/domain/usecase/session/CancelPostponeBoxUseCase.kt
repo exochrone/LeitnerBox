@@ -12,7 +12,7 @@ class CancelPostponeBoxUseCase(
     suspend operator fun invoke(deckId: Long, boxNumber: Int, sessionId: Long) {
         // 1. Remettre les cartes à aujourd'hui (ou Instant.MIN pour être sûr qu'elles apparaissent)
         val cards = cardRepository.getCardsByDeckId(deckId).first()
-        val cardsToReset = cards.filter { it.box == boxNumber }
+        val cardsToReset = cards.filter { it.box == boxNumber && !it.isLearned }
         
         cardsToReset.forEach { card ->
             cardRepository.updateCard(card.copy(nextReviewDate = Instant.now()))
