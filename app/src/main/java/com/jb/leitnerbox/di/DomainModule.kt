@@ -122,6 +122,17 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideSaveSessionUseCase(repository: SessionRepository): SaveSessionUseCase = SaveSessionUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideCancelPostponeBoxUseCase(
+        cardRepository: CardRepository,
+        sessionRepository: SessionRepository
+    ): CancelPostponeBoxUseCase = CancelPostponeBoxUseCase(cardRepository, sessionRepository)
+
+    @Provides
+    @Singleton
     fun provideSessionStateHolder(): SessionStateHolder = SessionStateHolder()
 
     @Provides

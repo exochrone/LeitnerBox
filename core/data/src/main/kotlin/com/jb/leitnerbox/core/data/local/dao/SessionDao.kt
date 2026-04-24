@@ -19,4 +19,7 @@ interface SessionDao {
 
     @Query("SELECT * FROM sessions WHERE date >= :startOfDay AND date <= :endOfDay LIMIT 1")
     suspend fun getSessionForDate(startOfDay: Long, endOfDay: Long): SessionEntity?
+
+    @androidx.room.Delete
+    suspend fun delete(session: SessionEntity)
 }

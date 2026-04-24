@@ -15,7 +15,10 @@ fun SessionSelectionScreen(
 
     SessionSelectionContent(
         uiState = uiState,
+        events = viewModel.events,
         onBoxToggled = viewModel::onBoxToggled,
+        onPostponeBox = viewModel::onPostponeBox,
+        onUndoPostpone = viewModel::onUndoPostpone,
         onStartSession = onStartSession,
         onBackClick = onBackClick
     )

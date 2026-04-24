@@ -25,7 +25,7 @@ class SessionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteSession(session: Session) {
-        // Implementation for deleteSession if needed, for now not used
+        sessionDao.delete(session.toEntity())
     }
 
     override suspend fun getLastSession(): Session? {

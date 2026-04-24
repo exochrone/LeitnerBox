@@ -2,19 +2,27 @@ package com.jb.leitnerbox.feature.session.selection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.session.BuildSessionUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.CancelPostponeBoxUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.PostponeBoxSessionUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.SaveSessionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
 class SessionSelectionViewModel @Inject constructor(
     private val getDailySessionPlan: GetDailySessionPlanUseCase,
     private val buildSession: BuildSessionUseCase,
+    private val postponeBoxSession: PostponeBoxSessionUseCase,
+    private val cancelPostponeBox: CancelPostponeBoxUseCase,
+    private val saveSession: SaveSessionUseCase,
     private val sessionStateHolder: SessionStateHolder
 ) : ViewModel() {
 
@@ -57,6 +65,39 @@ class SessionSelectionViewModel @Inject constructor(
                 sessionStateHolder.selectedItems = selected
                 _events.send(SessionSelectionEvent.NavigateToSession)
             }
+        }
+    }
+
+    fun onPostponeBox(item: SelectableBoxItem) {
+        viewModelScope.launch {
+            postponeBoxSession(
+                deckId = item.planItem.deck.id,
+                boxNumber = item.planItem.boxNumber
+            )
+            val sessionId = saveSession(
+                Session(
+                    date = Instant.now(),
+                    deckIds = listOf(item.planItem.deck.id),
+                    cardCount = 0,
+                    successCount = 0,
+                    masteredCount = 0,
+                    isReported = true
+                )
+            )
+            _events.send(
+                SessionSelectionEvent.ShowUndoPostpone(
+                    deckId = item.planItem.deck.id,
+                    deckName = item.planItem.deck.name,
+                    boxNumber = item.planItem.boxNumber,
+                    sessionId = sessionId
+                )
+            )
+        }
+    }
+
+    fun onUndoPostpone(deckId: Long, boxNumber: Int, sessionId: Long) {
+        viewModelScope.launch {
+            cancelPostponeBox(deckId, boxNumber, sessionId)
         }
     }
 

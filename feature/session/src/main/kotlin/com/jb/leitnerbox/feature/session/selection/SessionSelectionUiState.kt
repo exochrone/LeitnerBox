@@ -4,6 +4,12 @@ import com.jb.leitnerbox.core.domain.model.SessionPlanItem
 
 sealed class SessionSelectionEvent {
     object NavigateToSession : SessionSelectionEvent()
+    data class ShowUndoPostpone(
+        val deckId: Long,
+        val deckName: String,
+        val boxNumber: Int,
+        val sessionId: Long
+    ) : SessionSelectionEvent()
 }
 
 data class SessionSelectionUiState(
