@@ -4,7 +4,7 @@ import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.SessionPlan
 import com.jb.leitnerbox.core.domain.model.SessionPlanItem
-import com.jb.leitnerbox.core.domain.model.SessionStateHolder
+import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.session.BuildSessionUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
 import io.mockk.coEvery

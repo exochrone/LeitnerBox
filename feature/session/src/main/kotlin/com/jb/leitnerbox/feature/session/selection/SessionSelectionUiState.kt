@@ -2,6 +2,10 @@ package com.jb.leitnerbox.feature.session.selection
 
 import com.jb.leitnerbox.core.domain.model.SessionPlanItem
 
+sealed class SessionSelectionEvent {
+    object NavigateToSession : SessionSelectionEvent()
+}
+
 data class SessionSelectionUiState(
     val items: List<SelectableBoxItem> = emptyList(),
     val isLoading: Boolean = true

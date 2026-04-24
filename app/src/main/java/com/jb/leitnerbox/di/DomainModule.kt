@@ -2,7 +2,7 @@ package com.jb.leitnerbox.di
 
 import com.jb.leitnerbox.core.data.local.dao.CardDao
 import com.jb.leitnerbox.core.data.migration.CardMigrationHelper
-import com.jb.leitnerbox.core.domain.model.SessionStateHolder
+import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
 import com.jb.leitnerbox.core.domain.repository.SessionRepository

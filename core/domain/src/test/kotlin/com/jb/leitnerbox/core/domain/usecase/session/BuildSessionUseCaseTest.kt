@@ -7,7 +7,7 @@ import com.jb.leitnerbox.core.domain.repository.CardRepository
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -18,7 +18,7 @@ class BuildSessionUseCaseTest {
     private val useCase = BuildSessionUseCase(cardRepository)
 
     @Test
-    fun `should return shuffled cards from selected items`() = runBlocking {
+    fun `should return shuffled cards from selected items`() = runTest {
         val deck1 = Deck(id = 1, name = "Deck 1")
         val deck2 = Deck(id = 2, name = "Deck 2")
         

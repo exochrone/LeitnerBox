@@ -2,17 +2,14 @@ package com.jb.leitnerbox.feature.session.selection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jb.leitnerbox.core.domain.model.SessionStateHolder
+import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.session.BuildSessionUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-sealed class SessionSelectionEvent {
-    object NavigateToSession : SessionSelectionEvent()
-}
 
 @HiltViewModel
 class SessionSelectionViewModel @Inject constructor(
@@ -24,8 +21,8 @@ class SessionSelectionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SessionSelectionUiState())
     val uiState: StateFlow<SessionSelectionUiState> = _uiState.asStateFlow()
 
-    private val _events = MutableSharedFlow<SessionSelectionEvent>()
-    val events = _events.asSharedFlow()
+    private val _events = Channel<SessionSelectionEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -58,7 +55,7 @@ class SessionSelectionViewModel @Inject constructor(
                 val cards = buildSession(selected)
                 sessionStateHolder.pendingCards = cards
                 sessionStateHolder.selectedItems = selected
-                _events.emit(SessionSelectionEvent.NavigateToSession)
+                _events.send(SessionSelectionEvent.NavigateToSession)
             }
         }
     }
