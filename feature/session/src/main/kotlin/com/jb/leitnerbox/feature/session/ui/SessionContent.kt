@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.ui.components.FlipCard
+import com.jb.leitnerbox.core.ui.components.SessionProgressIndicator
 import com.jb.leitnerbox.core.ui.components.SwipeableCard
 import com.jb.leitnerbox.core.ui.theme.SuccessGreen
 import com.jb.leitnerbox.feature.session.R
@@ -58,8 +59,10 @@ fun SessionContent(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LinearProgressIndicator(
-                progress = { uiState.progress },
+            SessionProgressIndicator(
+                current = uiState.progressCurrent,
+                total = uiState.progressTotal,
+                isChallenge = uiState.isChallenge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)

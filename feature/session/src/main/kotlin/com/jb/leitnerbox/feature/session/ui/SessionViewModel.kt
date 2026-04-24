@@ -37,6 +37,7 @@ class SessionViewModel @Inject constructor(
         if (cards.isNotEmpty()) {
             _uiState.update { 
                 it.copy(
+                    cards = cards,
                     currentCard = cards.first(),
                     totalCards = cards.size,
                     currentIndex = 0,
