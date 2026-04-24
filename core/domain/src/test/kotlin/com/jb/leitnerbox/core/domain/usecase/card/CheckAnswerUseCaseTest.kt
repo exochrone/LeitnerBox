@@ -55,4 +55,10 @@ class CheckAnswerUseCaseTest {
         val card = createCard("Éléphant")
         assertEquals(AnswerCheckResult.Correct, useCase(card, "elephant"))
     }
+
+    @Test
+    fun `retourne AutoCheckDisabled si needsInput est false`() {
+        val card = createCard("réponse").copy(needsInput = false)
+        assertEquals(AnswerCheckResult.AutoCheckDisabled, useCase(card, "réponse"))
+    }
 }

@@ -1,19 +1,18 @@
 package com.jb.leitnerbox.feature.session.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.ui.components.FlipCard
 import com.jb.leitnerbox.core.ui.components.SwipeableCard
+import com.jb.leitnerbox.core.ui.theme.SuccessGreen
 import com.jb.leitnerbox.feature.session.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +34,7 @@ fun SessionContent(
     onContinue: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,14 +54,15 @@ fun SessionContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LinearProgressIndicator(
                 progress = { uiState.progress },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 32.dp)
+                    .padding(bottom = 16.dp)
             )
 
             uiState.currentCard?.let { card ->
@@ -70,8 +72,8 @@ fun SessionContent(
                         onEvaluate = onEvaluate,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f)
-                            .padding(vertical = 32.dp)
+                            .heightIn(min = 250.dp, max = 400.dp)
+                            .padding(vertical = 16.dp)
                     ) {
                         FlipCard(
                             recto = card.recto,
@@ -138,7 +140,7 @@ private fun InputSection(
             )
             Spacer(Modifier.width(8.dp))
             Button(onClick = onInputValidated) {
-                Text(stringResource(R.string.ok))
+                Text(stringResource(R.string.session_ok))
             }
         }
     } else {
@@ -148,13 +150,13 @@ private fun InputSection(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = if (isCorrect) stringResource(R.string.correct) else stringResource(R.string.incorrect),
-                color = if (isCorrect) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error,
+                text = if (isCorrect) stringResource(R.string.session_correct) else stringResource(R.string.session_incorrect),
+                color = if (isCorrect) SuccessGreen else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleMedium
             )
             if (!isCorrect) {
                 Text(
-                    text = stringResource(R.string.your_input, uiState.userInput),
+                    text = stringResource(R.string.session_your_input, uiState.userInput),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -192,7 +194,7 @@ private fun EvaluationButtons(
             onClick = { onEvaluate(true) },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4CAF50)
+                containerColor = SuccessGreen
             )
         ) {
             Text(stringResource(R.string.eval_correct))

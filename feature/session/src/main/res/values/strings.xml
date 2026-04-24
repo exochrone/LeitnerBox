@@ -14,10 +14,10 @@
     <string name="session_card_label">Question %1$d/%2$d</string>
     <string name="session_answer_label">Réponse</string>
     <string name="session_input_placeholder">Votre réponse...</string>
-    <string name="ok">OK</string>
-    <string name="correct">Correct ✓</string>
-    <string name="incorrect">Incorrect ✗</string>
-    <string name="your_input">Votre saisie : %s</string>
+    <string name="session_ok">OK</string>
+    <string name="session_correct">Correct ✓</string>
+    <string name="session_incorrect">Incorrect ✗</string>
+    <string name="session_your_input">Votre saisie : %s</string>
     <string name="session_continue">Continuer</string>
     <string name="eval_wrong">Mauvaise réponse</string>
     <string name="eval_correct">Bonne réponse</string>
