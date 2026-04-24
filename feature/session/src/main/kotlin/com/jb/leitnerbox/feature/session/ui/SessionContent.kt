@@ -1,6 +1,8 @@
 package com.jb.leitnerbox.feature.session.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -16,7 +18,7 @@ import com.jb.leitnerbox.feature.session.R
 fun SessionContent(
     uiState: SessionUiState,
     onFlip: () -> Unit,
-    onEvaluate: (Int) -> Unit,
+    onEvaluate: (Boolean) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -25,7 +27,10 @@ fun SessionContent(
                 title = { Text(stringResource(R.string.session_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        // TODO: Add back icon
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 }
             )
@@ -75,33 +80,26 @@ fun SessionContent(
 }
 
 @Composable
-fun EvaluationButtons(
-    onEvaluate: (Int) -> Unit
+private fun EvaluationButtons(
+    onEvaluate: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Button(
-            onClick = { onEvaluate(1) },
+            onClick = { onEvaluate(false) },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
         ) {
-            Text(stringResource(R.string.eval_hard))
+            Text(stringResource(R.string.eval_wrong))
         }
         Button(
-            onClick = { onEvaluate(3) },
+            onClick = { onEvaluate(true) },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(stringResource(R.string.eval_correct))
-        }
-        Button(
-            onClick = { onEvaluate(5) },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
-        ) {
-            Text(stringResource(R.string.eval_easy))
         }
     }
 }

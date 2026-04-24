@@ -14,9 +14,11 @@ fun SessionScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.isSessionFinished) {
-        if (uiState.isSessionFinished) {
-            onSessionFinished()
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is SessionUiEvent.SessionFinished -> onSessionFinished()
+            }
         }
     }
 

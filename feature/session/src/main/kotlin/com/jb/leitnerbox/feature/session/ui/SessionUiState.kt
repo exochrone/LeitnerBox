@@ -6,8 +6,7 @@ data class SessionUiState(
     val currentCard: Card? = null,
     val isFlipped: Boolean = false,
     val currentIndex: Int = 0,
-    val totalCards: Int = 0,
-    val isSessionFinished: Boolean = false
+    val totalCards: Int = 0
 ) {
     val progress: Float
         get() = if (totalCards > 0) (currentIndex + 1).toFloat() / totalCards else 0f

@@ -4,10 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class SessionUiEvent {
+    object SessionFinished : SessionUiEvent()
+}
 
 @HiltViewModel
 class SessionViewModel @Inject constructor(
@@ -16,6 +23,9 @@ class SessionViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(SessionUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _events = Channel<SessionUiEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     init {
         loadSession()
@@ -28,21 +38,23 @@ class SessionViewModel @Inject constructor(
                 it.copy(
                     currentCard = cards.first(),
                     totalCards = cards.size,
-                    currentIndex = 0
+                    currentIndex = 0,
+                    isFlipped = false
                 )
             }
         } else {
-            _uiState.update { it.copy(isSessionFinished = true) }
+            viewModelScope.launch {
+                _events.send(SessionUiEvent.SessionFinished)
+            }
         }
     }
 
     fun onFlipCard() {
-        _uiState.update { it.copy(isFlipped = !it.isFlipped) }
+        _uiState.update { it.copy(isFlipped = true) }
     }
 
-    fun onEvaluate(score: Int) {
+    fun onEvaluate(isCorrect: Boolean) {
         // Logique pour US-06 (Auto-évaluation)
-        // Pour l'instant on passe juste à la suivante pour valider le flux
         nextCard()
     }
 
@@ -59,7 +71,14 @@ class SessionViewModel @Inject constructor(
                 )
             }
         } else {
-            _uiState.update { it.copy(isSessionFinished = true) }
+            viewModelScope.launch {
+                _events.send(SessionUiEvent.SessionFinished)
+            }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _events.close()
     }
 }
