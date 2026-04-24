@@ -59,4 +59,9 @@ class SessionSelectionViewModel @Inject constructor(
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        _events.close()
+    }
 }
