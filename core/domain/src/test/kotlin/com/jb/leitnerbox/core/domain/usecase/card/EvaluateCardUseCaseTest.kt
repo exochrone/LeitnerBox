@@ -96,6 +96,20 @@ class EvaluateCardUseCaseTest {
     }
 
     @Test
+    fun `P1-UT-55 Mauvaise reponse, regle PREVIOUS_BOX deja en boite 1`() = runTest {
+        val card = Card(id = 1, deckId = 1, recto = "Q", verso = "A", box = 1)
+        val customDeck = defaultDeck.copy(wrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX)
+        
+        useCase(card, customDeck, false)
+
+        coVerify {
+            cardRepository.updateCard(withArg {
+                assertEquals(1, it.box)
+            })
+        }
+    }
+
+    @Test
     fun `P1-UT-56 Bonne reponse avec jours exclus respectes`() = runTest {
         // Vendredi 6 oct 2023
         val referenceInstant = LocalDate.of(2023, 10, 6)

@@ -10,6 +10,8 @@ data class SessionUiState(
     val currentIndex: Int = 0,
     val successCount: Int = 0,
     val evaluatedCount: Int = 0,
+    val advancedCount: Int = 0,
+    val retreatedCount: Int = 0,
     val isChallenge: Boolean = false,
     val masteredThisSession: Int = 0,
     val userInput: String = "",

@@ -3,6 +3,8 @@ package com.jb.leitnerbox.feature.session.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
+import com.jb.leitnerbox.core.domain.model.Card
+import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
@@ -43,7 +45,12 @@ class SessionViewModel @Inject constructor(
                     isFlipped = false,
                     userInput = "",
                     inputValidated = false,
-                    checkResult = null
+                    checkResult = null,
+                    evaluatedCount = 0,
+                    successCount = 0,
+                    advancedCount = 0,
+                    retreatedCount = 0,
+                    masteredThisSession = 0
                 )
             }
         } else {
@@ -79,40 +86,47 @@ class SessionViewModel @Inject constructor(
         onEvaluate(isCorrect)
     }
 
+    private fun getDeckForCard(card: Card): Deck {
+        return sessionStateHolder.selectedItems
+            .first { it.deck.id == card.deckId }
+            .deck
+    }
+
     fun onEvaluate(isCorrect: Boolean) {
         val currentState = _uiState.value
         val currentCard = currentState.currentCard ?: return
-        
-        val deck = sessionStateHolder.selectedItems
-            .firstOrNull { it.deck.id == currentCard.deckId }
-            ?.deck ?: return
+        val deck = getDeckForCard(currentCard)
+        val isMastered = isCorrect && currentCard.box == deck.intervals.size
 
         viewModelScope.launch {
             evaluateCard(currentCard, deck, isCorrect)
+            
+            _uiState.update {
+                it.copy(
+                    evaluatedCount = it.evaluatedCount + 1,
+                    successCount = if (isCorrect) it.successCount + 1 else it.successCount,
+                    advancedCount = if (isCorrect && !isMastered) it.advancedCount + 1 else it.advancedCount,
+                    retreatedCount = if (!isCorrect) it.retreatedCount + 1 else it.retreatedCount,
+                    masteredThisSession = if (isMastered) it.masteredThisSession + 1 else it.masteredThisSession
+                )
+            }
+
             if (!currentCard.needsInput) {
-                moveToNextCard(isCorrect)
+                moveToNextCard()
             }
         }
     }
 
     fun onContinue() {
-        val state = _uiState.value
-        val isCorrect = state.checkResult is AnswerCheckResult.Correct
-        moveToNextCard(isCorrect)
+        moveToNextCard()
     }
 
-    private fun moveToNextCard(isCorrect: Boolean) {
+    private fun moveToNextCard() {
         val state = _uiState.value
         val nextIndex = state.currentIndex + 1
-        val cards = sessionStateHolder.pendingCards
+        val cards = state.cards
 
         if (nextIndex >= cards.size) {
-            _uiState.update {
-                it.copy(
-                    evaluatedCount = it.evaluatedCount + 1,
-                    successCount = if (isCorrect) it.successCount + 1 else it.successCount
-                )
-            }
             viewModelScope.launch {
                 _events.send(SessionUiEvent.SessionFinished)
             }
@@ -122,8 +136,6 @@ class SessionViewModel @Inject constructor(
                     currentCard = cards[nextIndex],
                     currentIndex = nextIndex,
                     isFlipped = false,
-                    evaluatedCount = it.evaluatedCount + 1,
-                    successCount = if (isCorrect) it.successCount + 1 else it.successCount,
                     userInput = "",
                     inputValidated = false,
                     checkResult = null
