@@ -93,7 +93,7 @@ fun SwipeableCard(
                                 // 1. Animer la sortie complète de la carte
                                 offsetX.animateTo(
                                     targetValue = target,
-                                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                                    animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy)
                                 )
                                 
                                 // 2. Seulement après la sortie, on déclenche le changement de carte

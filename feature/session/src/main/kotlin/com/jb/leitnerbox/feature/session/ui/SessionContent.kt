@@ -68,8 +68,12 @@ fun SessionContent(
                             isFlipped = uiState.isFlipped,
                             onFlip = onFlip,
                             modifier = Modifier.fillMaxSize(),
-                            currentIndex = uiState.currentIndex,
-                            totalCards = uiState.totalCards
+                            rectoLabel = stringResource(
+                                R.string.session_card_label,
+                                uiState.currentIndex + 1,
+                                uiState.totalCards
+                            ),
+                            versoLabel = stringResource(R.string.session_answer_label)
                         )
                     }
                 }

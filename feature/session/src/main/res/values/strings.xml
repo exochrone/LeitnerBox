@@ -11,6 +11,8 @@
     <string name="undo">Annuler</string>
     <string name="session_title">Session</string>
     <string name="session_flip_card">Retourner</string>
+    <string name="session_card_label">Question %1$d/%2$d</string>
+    <string name="session_answer_label">Réponse</string>
     <string name="eval_wrong">Mauvaise réponse</string>
     <string name="eval_correct">Bonne réponse</string>
 </resources>

@@ -24,6 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+import com.jb.leitnerbox.core.ui.theme.CardRectoBackground
+import com.jb.leitnerbox.core.ui.theme.CardRectoContent
+
 @Composable
 fun FlipCard(
     recto: String,
@@ -31,8 +34,8 @@ fun FlipCard(
     isFlipped: Boolean,
     onFlip: () -> Unit,
     modifier: Modifier = Modifier,
-    currentIndex: Int = 0,
-    totalCards: Int = 0
+    rectoLabel: String = "",
+    versoLabel: String = ""
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
@@ -54,8 +57,8 @@ fun FlipCard(
             .clickable { onFlip() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isAtRecto) Color(0xFF51545D) else MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = if (isAtRecto) Color(0xFFE1E2EC) else MaterialTheme.colorScheme.onSurfaceVariant
+            containerColor = if (isAtRecto) CardRectoBackground else MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = if (isAtRecto) CardRectoContent else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         border = BorderStroke(2.dp, Color.Black)
     ) {
@@ -67,7 +70,7 @@ fun FlipCard(
         ) {
             // Label en haut
             Text(
-                text = if (rotation <= 90f) "Question ${currentIndex + 1}/$totalCards" else "Réponse",
+                text = if (rotation <= 90f) rectoLabel else versoLabel,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
