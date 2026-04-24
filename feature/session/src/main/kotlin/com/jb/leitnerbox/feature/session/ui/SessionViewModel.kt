@@ -2,7 +2,9 @@ package com.jb.leitnerbox.feature.session.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
+import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -16,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val sessionStateHolder: SessionStateHolder,
-    private val evaluateCard: EvaluateCardUseCase
+    private val evaluateCard: EvaluateCardUseCase,
+    private val checkAnswer: CheckAnswerUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SessionUiState())
@@ -37,7 +40,10 @@ class SessionViewModel @Inject constructor(
                     currentCard = cards.first(),
                     totalCards = cards.size,
                     currentIndex = 0,
-                    isFlipped = false
+                    isFlipped = false,
+                    userInput = "",
+                    inputValidated = false,
+                    checkResult = null
                 )
             }
         } else {
@@ -51,6 +57,28 @@ class SessionViewModel @Inject constructor(
         _uiState.update { it.copy(isFlipped = true) }
     }
 
+    fun onInputChanged(text: String) {
+        _uiState.update { it.copy(userInput = text) }
+    }
+
+    fun onInputValidated() {
+        val state = _uiState.value
+        val card = state.currentCard ?: return
+        val result = checkAnswer(card, state.userInput)
+        val isCorrect = result is AnswerCheckResult.Correct
+        
+        _uiState.update {
+            it.copy(
+                inputValidated = true,
+                checkResult = result,
+                isFlipped = true
+            )
+        }
+        
+        // On déclenche l'évaluation métier
+        onEvaluate(isCorrect)
+    }
+
     fun onEvaluate(isCorrect: Boolean) {
         val currentState = _uiState.value
         val currentCard = currentState.currentCard ?: return
@@ -61,8 +89,16 @@ class SessionViewModel @Inject constructor(
 
         viewModelScope.launch {
             evaluateCard(currentCard, deck, isCorrect)
-            moveToNextCard(isCorrect)
+            if (!currentCard.needsInput) {
+                moveToNextCard(isCorrect)
+            }
         }
+    }
+
+    fun onContinue() {
+        val state = _uiState.value
+        val isCorrect = state.checkResult is AnswerCheckResult.Correct
+        moveToNextCard(isCorrect)
     }
 
     private fun moveToNextCard(isCorrect: Boolean) {
@@ -87,7 +123,10 @@ class SessionViewModel @Inject constructor(
                     currentIndex = nextIndex,
                     isFlipped = false,
                     evaluatedCount = it.evaluatedCount + 1,
-                    successCount = if (isCorrect) it.successCount + 1 else it.successCount
+                    successCount = if (isCorrect) it.successCount + 1 else it.successCount,
+                    userInput = "",
+                    inputValidated = false,
+                    checkResult = null
                 )
             }
         }

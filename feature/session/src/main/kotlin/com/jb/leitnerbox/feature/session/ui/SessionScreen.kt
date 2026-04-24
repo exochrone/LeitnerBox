@@ -26,6 +26,9 @@ fun SessionScreen(
         uiState = uiState,
         onFlip = viewModel::onFlipCard,
         onEvaluate = viewModel::onEvaluate,
+        onInputChanged = viewModel::onInputChanged,
+        onInputValidated = viewModel::onInputValidated,
+        onContinue = viewModel::onContinue,
         onBackClick = onBackClick
     )
 }

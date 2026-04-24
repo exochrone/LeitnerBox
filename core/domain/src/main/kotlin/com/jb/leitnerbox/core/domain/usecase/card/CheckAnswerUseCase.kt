@@ -1,5 +1,6 @@
 package com.jb.leitnerbox.core.domain.usecase.card
 
+import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import kotlin.math.floor
@@ -8,21 +9,22 @@ class CheckAnswerUseCase(
     private val answerNormalizer: AnswerNormalizer
 ) {
 
-    operator fun invoke(card: Card, userInput: String): Boolean {
-        if (card.verso.isEmpty()) return true
-        if (userInput.isEmpty()) return false
+    operator fun invoke(card: Card, userInput: String): AnswerCheckResult {
+        if (!card.needsInput || card.verso.isEmpty()) return AnswerCheckResult.AutoCheckDisabled
+        if (userInput.isEmpty()) return AnswerCheckResult.Incorrect
 
         val normalizedExpected = card.answerNormalized
         val normalizedActual = answerNormalizer.normalize(userInput)
 
-        if (normalizedExpected.length <= 4) {
-            return normalizedExpected == normalizedActual
+        val isCorrect = if (normalizedExpected.length <= 4) {
+            normalizedExpected == normalizedActual
+        } else {
+            val threshold = floor(normalizedExpected.length / 5.0).toInt()
+            val distance = levenshtein(normalizedExpected, normalizedActual)
+            distance <= threshold
         }
 
-        val threshold = floor(normalizedExpected.length / 5.0).toInt()
-        val distance = levenshtein(normalizedExpected, normalizedActual)
-
-        return distance <= threshold
+        return if (isCorrect) AnswerCheckResult.Correct else AnswerCheckResult.Incorrect
     }
 
     private fun levenshtein(s1: String, s2: String): Int {

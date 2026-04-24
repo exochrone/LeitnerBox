@@ -1,5 +1,6 @@
 package com.jb.leitnerbox.feature.session.ui
 
+import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.model.Card
 
 data class SessionUiState(
@@ -8,7 +9,10 @@ data class SessionUiState(
     val currentIndex: Int = 0,
     val totalCards: Int = 0,
     val successCount: Int = 0,
-    val evaluatedCount: Int = 0
+    val evaluatedCount: Int = 0,
+    val userInput: String = "",
+    val inputValidated: Boolean = false,
+    val checkResult: AnswerCheckResult? = null
 ) {
     val progress: Float
         get() = if (totalCards > 0) (currentIndex + 1).toFloat() / totalCards else 0f

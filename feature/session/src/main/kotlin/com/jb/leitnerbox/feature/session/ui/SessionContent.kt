@@ -1,16 +1,24 @@
 package com.jb.leitnerbox.feature.session.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.ui.components.FlipCard
 import com.jb.leitnerbox.core.ui.components.SwipeableCard
 import com.jb.leitnerbox.feature.session.R
@@ -21,6 +29,9 @@ fun SessionContent(
     uiState: SessionUiState,
     onFlip: () -> Unit,
     onEvaluate: (Boolean) -> Unit,
+    onInputChanged: (String) -> Unit,
+    onInputValidated: () -> Unit,
+    onContinue: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -66,7 +77,7 @@ fun SessionContent(
                             recto = card.recto,
                             verso = card.verso,
                             isFlipped = uiState.isFlipped,
-                            onFlip = onFlip,
+                            onFlip = { if (!card.needsInput) onFlip() },
                             modifier = Modifier.fillMaxSize(),
                             rectoLabel = stringResource(
                                 R.string.session_card_label,
@@ -78,16 +89,82 @@ fun SessionContent(
                     }
                 }
 
-                if (uiState.isFlipped && !card.needsInput) {
-                    EvaluationButtons(onEvaluate = onEvaluate)
-                } else if (!uiState.isFlipped) {
-                    Button(
-                        onClick = onFlip,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(R.string.session_flip_card))
+                if (card.needsInput) {
+                    InputSection(
+                        uiState = uiState,
+                        onInputChanged = onInputChanged,
+                        onInputValidated = onInputValidated,
+                        onContinue = onContinue
+                    )
+                } else {
+                    if (uiState.isFlipped) {
+                        EvaluationButtons(onEvaluate = onEvaluate)
+                    } else {
+                        Button(
+                            onClick = onFlip,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(R.string.session_flip_card))
+                        }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InputSection(
+    uiState: SessionUiState,
+    onInputChanged: (String) -> Unit,
+    onInputValidated: () -> Unit,
+    onContinue: () -> Unit
+) {
+    if (!uiState.inputValidated) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = uiState.userInput,
+                onValueChange = onInputChanged,
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onInputValidated() }),
+                singleLine = true,
+                placeholder = { Text(stringResource(R.string.session_input_placeholder)) }
+            )
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = onInputValidated) {
+                Text(stringResource(R.string.ok))
+            }
+        }
+    } else {
+        val isCorrect = uiState.checkResult is AnswerCheckResult.Correct
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = if (isCorrect) stringResource(R.string.correct) else stringResource(R.string.incorrect),
+                color = if (isCorrect) Color(0xFF4CAF50) else MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.titleMedium
+            )
+            if (!isCorrect) {
+                Text(
+                    text = stringResource(R.string.your_input, uiState.userInput),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.session_continue))
             }
         }
     }
