@@ -86,16 +86,16 @@ class SessionViewModel @Inject constructor(
         onEvaluate(isCorrect)
     }
 
-    private fun getDeckForCard(card: Card): Deck {
+    private fun getDeckForCard(card: Card): Deck? {
         return sessionStateHolder.selectedItems
-            .first { it.deck.id == card.deckId }
-            .deck
+            .firstOrNull { it.deck.id == card.deckId }
+            ?.deck
     }
 
     fun onEvaluate(isCorrect: Boolean) {
         val currentState = _uiState.value
         val currentCard = currentState.currentCard ?: return
-        val deck = getDeckForCard(currentCard)
+        val deck = getDeckForCard(currentCard) ?: return
         val isMastered = isCorrect && currentCard.box == deck.intervals.size
 
         viewModelScope.launch {
@@ -106,9 +106,13 @@ class SessionViewModel @Inject constructor(
                     evaluatedCount = it.evaluatedCount + 1,
                     successCount = if (isCorrect) it.successCount + 1 else it.successCount,
                     advancedCount = if (isCorrect && !isMastered) it.advancedCount + 1 else it.advancedCount,
-                    retreatedCount = if (!isCorrect) it.retreatedCount + 1 else it.retreatedCount,
+                    retreatedCount = if (!isCorrect && currentCard.box > 1) it.retreatedCount + 1 else it.retreatedCount,
                     masteredThisSession = if (isMastered) it.masteredThisSession + 1 else it.masteredThisSession
                 )
+            }
+
+            if (isMastered) {
+                _events.send(SessionUiEvent.CardMastered)
             }
 
             if (!currentCard.needsInput) {
