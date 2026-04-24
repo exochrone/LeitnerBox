@@ -18,4 +18,5 @@ sealed class Screen(val route: String) {
         fun createRoute(cardId: Long) = "card_update/$cardId"
     }
     object SessionSelection : Screen("session/selection")
+    object Session : Screen("session/active")
 }
