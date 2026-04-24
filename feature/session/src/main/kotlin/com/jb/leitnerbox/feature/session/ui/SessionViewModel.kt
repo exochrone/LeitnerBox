@@ -13,10 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class SessionUiEvent {
-    object SessionFinished : SessionUiEvent()
-}
-
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val sessionStateHolder: SessionStateHolder,
