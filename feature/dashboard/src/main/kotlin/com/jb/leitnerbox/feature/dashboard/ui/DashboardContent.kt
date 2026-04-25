@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.feature.dashboard.R
 
@@ -25,13 +24,14 @@ internal fun DashboardContent(
             DashboardUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            DashboardUiState.Empty -> {
-                EmptyDashboard()
+            is DashboardUiState.Empty -> {
+                EmptyDashboard(streak = uiState.streak)
             }
             is DashboardUiState.Success -> {
                 SessionSummary(
                     totalCards = uiState.totalCardsToReview,
                     deckCount = uiState.decksWithReviews,
+                    streak = uiState.streak,
                     onStartSession = onStartSession
                 )
             }
@@ -40,24 +40,51 @@ internal fun DashboardContent(
 }
 
 @Composable
-private fun EmptyDashboard() {
+private fun EmptyDashboard(streak: Int) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        StreakBadge(streak = streak)
+        
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.dashboard_empty_title),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(R.string.dashboard_empty_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StreakBadge(streak: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
         Text(
-            text = stringResource(R.string.dashboard_empty_title),
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
+            text = "🔥",
+            style = MaterialTheme.typography.headlineSmall
         )
+        Spacer(Modifier.width(8.dp))
         Text(
-            text = stringResource(R.string.dashboard_empty_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
+            text = if (streak == 0)
+                stringResource(R.string.dashboard_streak_zero)
+            else
+                stringResource(R.string.dashboard_streak, streak),
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }
@@ -66,6 +93,7 @@ private fun EmptyDashboard() {
 private fun SessionSummary(
     totalCards: Int,
     deckCount: Int,
+    streak: Int,
     onStartSession: () -> Unit
 ) {
     Column(
@@ -75,6 +103,8 @@ private fun SessionSummary(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        StreakBadge(streak = streak)
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(

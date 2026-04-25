@@ -6,4 +6,6 @@
     <string name="dashboard_cards_to_review">%1$d cartes à réviser</string>
     <string name="dashboard_deck_distribution">Réparties dans %1$d deck(s)</string>
     <string name="dashboard_start_session">Commencer la session</string>
+    <string name="dashboard_streak">%1$d jour(s) de suite</string>
+    <string name="dashboard_streak_zero">Révisez aujourd\'hui pour démarrer un streak !</string>
 </resources>

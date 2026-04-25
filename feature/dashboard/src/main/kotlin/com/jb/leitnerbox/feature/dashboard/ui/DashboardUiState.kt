@@ -1,10 +1,13 @@
 package com.jb.leitnerbox.feature.dashboard.ui
 
 sealed interface DashboardUiState {
-    object Loading : DashboardUiState
+    data object Loading : DashboardUiState
     data class Success(
         val totalCardsToReview: Int,
-        val decksWithReviews: Int
+        val decksWithReviews: Int,
+        val streak: Int
     ) : DashboardUiState
-    object Empty : DashboardUiState
+    data class Empty(
+        val streak: Int
+    ) : DashboardUiState
 }
