@@ -1,4 +1,8 @@
 <resources>
     <string name="settings_title">Paramètres</string>
     <string name="settings_excluded_days_title">Jours exclus</string>
+    <string name="settings_theme_title">Thème</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_theme_system">Suivre le système</string>
 </resources>

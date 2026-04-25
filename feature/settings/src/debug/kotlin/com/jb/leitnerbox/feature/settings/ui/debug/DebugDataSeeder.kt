@@ -67,6 +67,8 @@ class DebugDataSeeder(
         val now = Instant.now()
 
         // Boîte 4 — intervalle 8 jours
+        // Après une bonne réponse → boîte 5, prochaine session dans 16 jours
+        // Après une mauvaise réponse → boîte 3, prochaine session dans 4 jours
         repeat(3) { i ->
             insertCard(
                 deckId = deckId, box = 4,
@@ -77,6 +79,8 @@ class DebugDataSeeder(
         }
 
         // Boîte 3 — intervalle 4 jours
+        // Après une bonne réponse → boîte 4, prochaine session dans 8 jours
+        // Après une mauvaise réponse → boîte 2, prochaine session dans 2 jours
         repeat(3) { i ->
             insertCard(
                 deckId = deckId, box = 3,
@@ -87,6 +91,8 @@ class DebugDataSeeder(
         }
 
         // Boîte 2 — intervalle 2 jours
+        // Après une bonne réponse → boîte 3, prochaine session dans 4 jours
+        // Après une mauvaise réponse → boîte 1, prochaine session dans 1 jour
         repeat(3) { i ->
             insertCard(
                 deckId = deckId, box = 2,
@@ -97,6 +103,8 @@ class DebugDataSeeder(
         }
 
         // Boîte 1 — intervalle 1 jour
+        // Après une bonne réponse → boîte 2, prochaine session dans 2 jours
+        // Après une mauvaise réponse → reste en boîte 1, prochaine session dans 1 jour
         repeat(3) { i ->
             insertCard(
                 deckId = deckId, box = 1,

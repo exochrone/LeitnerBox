@@ -28,6 +28,7 @@ fun SettingsScreen(
             SettingsContent(
                 uiState = uiState,
                 onDayToggled = viewModel::onDayToggled,
+                onThemeSelected = viewModel::onThemeSelected,
                 debugSection = {
                     if (BuildConfig.DEBUG) {
                         DebugSection()
