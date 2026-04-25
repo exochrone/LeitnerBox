@@ -112,6 +112,7 @@ class SessionViewModelTest {
         
         // Simuler la fin de la célébration
         viewModel.onMasteryCelebrationFinished()
+        testDispatcher.scheduler.advanceTimeBy(300)
         testDispatcher.scheduler.runCurrent()
         
         assertFalse(viewModel.uiState.value.isMasteredTransition)
@@ -162,6 +163,7 @@ class SessionViewModelTest {
         // Si la carte est maîtrisée, on doit appeler onMasteryCelebrationFinished pour finir
         if (viewModel.uiState.value.isMasteredTransition) {
             viewModel.onMasteryCelebrationFinished()
+            testDispatcher.scheduler.advanceTimeBy(300)
             testDispatcher.scheduler.runCurrent()
         }
 

@@ -11,6 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.feature.session.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SessionSelectionScreen(
@@ -27,6 +29,10 @@ fun SessionSelectionScreen(
             when (event) {
                 is SessionSelectionEvent.NavigateToSession -> onStartSession()
                 is SessionSelectionEvent.ShowUndoPostpone -> {
+                    val timerJob = launch {
+                        delay(7000)
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                    }
                     val result = snackbarHostState.showSnackbar(
                         message = context.getString(
                             R.string.postpone_success,
@@ -34,8 +40,9 @@ fun SessionSelectionScreen(
                             event.boxNumber
                         ),
                         actionLabel = context.getString(R.string.undo),
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Indefinite
                     )
+                    timerJob.cancel()
                     if (result == SnackbarResult.ActionPerformed) {
                         viewModel.onUndoPostpone(event.deckId, event.boxNumber, event.sessionId)
                     }

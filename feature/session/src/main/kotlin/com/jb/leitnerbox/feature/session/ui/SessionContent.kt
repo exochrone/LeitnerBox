@@ -77,7 +77,14 @@ fun SessionContent(
             )
 
             if (uiState.isMasteredTransition) {
-                MasteryMessage(uiState.currentDeckName)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    MasteryMessage(uiState.currentDeckName)
+                }
             } else {
                 uiState.currentCard?.let { card ->
                     key(card.id) {
@@ -93,7 +100,13 @@ fun SessionContent(
                                 recto = card.recto,
                                 verso = card.verso,
                                 isFlipped = uiState.isFlipped,
-                                onFlip = { if (!card.needsInput) onFlip() },
+                                onFlip = {
+                                    if (!card.needsInput) {
+                                        onFlip()
+                                    } else if (uiState.inputValidated) {
+                                        onContinue()
+                                    }
+                                },
                                 modifier = Modifier.fillMaxSize(),
                                 rectoLabel = uiState.currentDeckName,
                                 versoLabel = stringResource(R.string.session_answer_label)
@@ -129,9 +142,7 @@ fun SessionContent(
 @Composable
 private fun MasteryMessage(deckName: String) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 64.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -150,7 +161,7 @@ private fun MasteryMessage(deckName: String) {
             textAlign = TextAlign.Center
         )
         Text(
-            text = stringResource(R.string.session_result_congrats),
+            text = stringResource(R.string.session_mastered_congrats),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,

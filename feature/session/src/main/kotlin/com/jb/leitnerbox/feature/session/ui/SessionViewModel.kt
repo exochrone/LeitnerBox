@@ -127,8 +127,11 @@ class SessionViewModel @Inject constructor(
     }
 
     fun onMasteryCelebrationFinished() {
-        _uiState.update { it.copy(isMasteredTransition = false) }
-        moveToNextCard()
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(250)
+            _uiState.update { it.copy(isMasteredTransition = false) }
+            moveToNextCard()
+        }
     }
 
     fun onContinue() {

@@ -23,6 +23,7 @@
     <string name="eval_wrong">Mauvaise réponse</string>
     <string name="eval_correct">Bonne réponse</string>
     <string name="session_card_mastered">Carte maîtrisée</string>
+    <string name="session_mastered_congrats">Félicitations !</string>
 
     <string name="session_result_title">Session terminée</string>
     <string name="session_result_congrats">Bravo !</string>

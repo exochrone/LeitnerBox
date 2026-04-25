@@ -64,6 +64,9 @@ fun LeitnerNavHost(
                 onUndoDelete = { deck ->
                     viewModel.undoDelete(deck)
                     lastDeletedDeck = null
+                },
+                onSnackbarDismissed = {
+                    lastDeletedDeck = null
                 }
             )
         }

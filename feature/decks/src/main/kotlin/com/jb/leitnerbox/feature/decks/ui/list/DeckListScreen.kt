@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.components.EmptyState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,24 +22,40 @@ fun DeckListScreen(
     onDeckClick: (Long) -> Unit,
     onAddDeckClick: () -> Unit,
     deletedDeck: Deck? = null,
-    onUndoDelete: (Deck) -> Unit = {}
+    onUndoDelete: (Deck) -> Unit = {},
+    onSnackbarDismissed: () -> Unit = {}
 ) {
     val decks by viewModel.decks.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+
+    // Pour éviter que la snackbar ne réapparaisse au retour sur l'écran
+    DisposableEffect(Unit) {
+        onDispose {
+            onSnackbarDismissed()
+        }
+    }
 
     LaunchedEffect(deletedDeck) {
         deletedDeck?.let { deck ->
-            scope.launch {
-                val result = snackbarHostState.showSnackbar(
-                    message = "Deck supprimé",
-                    actionLabel = "Annuler",
-                    duration = SnackbarDuration.Long // 7s approximate or Long is closest to what user wants if they want it long
-                )
-                if (result == SnackbarResult.ActionPerformed) {
-                    onUndoDelete(deck)
-                }
+            // Timer pour auto-dismiss après 7 secondes
+            val timerJob = launch {
+                delay(7000)
+                snackbarHostState.currentSnackbarData?.dismiss()
             }
+
+            val result = snackbarHostState.showSnackbar(
+                message = "Deck supprimé",
+                actionLabel = "Annuler",
+                duration = SnackbarDuration.Indefinite
+            )
+
+            timerJob.cancel()
+
+            if (result == SnackbarResult.ActionPerformed) {
+                onUndoDelete(deck)
+            }
+            
+            onSnackbarDismissed()
         }
     }
 

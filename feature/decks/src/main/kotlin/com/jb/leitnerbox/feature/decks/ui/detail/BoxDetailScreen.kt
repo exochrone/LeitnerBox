@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,11 +69,16 @@ fun BoxDetailScreen(
                             IconButton(onClick = {
                                 viewModel.deleteCard(card)
                                 scope.launch {
+                                    val timerJob = launch {
+                                        delay(7000)
+                                        snackbarHostState.currentSnackbarData?.dismiss()
+                                    }
                                     val result = snackbarHostState.showSnackbar(
                                         message = "Carte supprimée",
                                         actionLabel = "Annuler",
-                                        duration = SnackbarDuration.Short
+                                        duration = SnackbarDuration.Indefinite
                                     )
+                                    timerJob.cancel()
                                     if (result == SnackbarResult.ActionPerformed) {
                                         viewModel.undoDelete(card)
                                     }
