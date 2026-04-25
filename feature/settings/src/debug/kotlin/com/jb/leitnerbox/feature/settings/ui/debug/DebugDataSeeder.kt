@@ -25,7 +25,7 @@ class DebugDataSeeder(
             Deck(
                 name = "$TEST_PREFIX Deck avec un nom extrêmement long pour tester les affichages et vérifier que l'UI ne déborde pas",
                 description = "Description également très longue pour tester le rendu dans l'écran de détail du deck et s'assurer que le texte est correctement tronqué ou mis en forme sur plusieurs lignes sans casser la mise en page",
-                intervals = listOf(1, 2, 4, 8, 16),
+                intervals = listOf(1, 3, 5, 7, 14),
                 wrongAnswerRule = WrongAnswerRule.BACK_TO_BOX_ONE,
                 presentationOrder = PresentationOrder.BY_BOX
             )
@@ -60,7 +60,7 @@ class DebugDataSeeder(
                 description = "3 cartes par boîte (1 à 4), toutes dues aujourd'hui. " +
                     "Réviser boîte par boîte pour observer le décalage de chaque intervalle. " +
                     "Règle : retour à la boîte précédente en cas d'erreur.",
-                intervals = listOf(1, 2, 4, 8, 16),
+                intervals = listOf(1, 3, 5, 7, 14),
                 wrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX,
                 presentationOrder = PresentationOrder.BY_BOX
             )
@@ -68,9 +68,9 @@ class DebugDataSeeder(
 
         val now = Instant.now()
 
-        // Boîte 4 — intervalle 8 jours
-        // Après une bonne réponse → boîte 5, prochaine session dans 16 jours
-        // Après une mauvaise réponse → boîte 3, prochaine session dans 4 jours
+        // Boîte 4 — intervalle 7 jours (index 3)
+        // Après une bonne réponse → boîte 5, prochaine session dans 14 jours
+        // Après une mauvaise réponse → boîte 3, prochaine session dans 5 jours
         repeat(3) { i ->
             insertCard(
                 deckId = deckId, box = 4,
@@ -80,9 +80,9 @@ class DebugDataSeeder(
             )
         }
 
-        // Boîte 3 — intervalle 4 jours
-        // Après une bonne réponse → boîte 4, prochaine session dans 8 jours
-        // Après une mauvaise réponse → boîte 2, prochaine session dans 2 jours
+        // Boîte 3 — intervalle 5 jours (index 2)
+        // Après une bonne réponse → boîte 4, prochaine session dans 7 jours
+        // Après une mauvaise réponse → boîte 2, prochaine session dans 3 jours
         repeat(3) { i ->
             insertCard(
                 deckId = deckId, box = 3,
@@ -92,8 +92,8 @@ class DebugDataSeeder(
             )
         }
 
-        // Boîte 2 — intervalle 2 jours
-        // Après une bonne réponse → boîte 3, prochaine session dans 4 jours
+        // Boîte 2 — intervalle 3 jours (index 1)
+        // Après une bonne réponse → boîte 3, prochaine session dans 5 jours
         // Après une mauvaise réponse → boîte 1, prochaine session dans 1 jour
         repeat(3) { i ->
             insertCard(
@@ -104,8 +104,8 @@ class DebugDataSeeder(
             )
         }
 
-        // Boîte 1 — intervalle 1 jour
-        // Après une bonne réponse → boîte 2, prochaine session dans 2 jours
+        // Boîte 1 — intervalle 1 jour (index 0)
+        // Après une bonne réponse → boîte 2, prochaine session dans 3 jours
         // Après une mauvaise réponse → reste en boîte 1, prochaine session dans 1 jour
         repeat(3) { i ->
             insertCard(
@@ -122,7 +122,7 @@ class DebugDataSeeder(
             Deck(
                 name = "$TEST_PREFIX Circulation des boîtes",
                 description = "3 cartes simples pour tester manuellement le passage entre les boîtes",
-                intervals = listOf(1, 2, 4, 8, 16),
+                intervals = listOf(1, 3, 5, 7, 14),
                 wrongAnswerRule = WrongAnswerRule.BACK_TO_BOX_ONE,
                 presentationOrder = PresentationOrder.BY_BOX
             )
@@ -139,7 +139,7 @@ class DebugDataSeeder(
             Deck(
                 name = "$TEST_PREFIX Test de maîtrise",
                 description = "30 cartes réparties sur 5 boîtes — 5 cartes en boîte 5 dues aujourd'hui pour tester la maîtrise",
-                intervals = listOf(1, 2, 4, 8, 16),
+                intervals = listOf(1, 3, 5, 7, 14),
                 wrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX,
                 presentationOrder = PresentationOrder.RANDOM
             )
