@@ -32,7 +32,7 @@ fun MainScreen(startDestination: String? = null) {
     val navController = rememberNavController()
 
     LaunchedEffect(startDestination) {
-        if (startDestination == "session_selection") {
+        if (startDestination == Screen.SessionSelection.route) {
             navController.navigate(Screen.SessionSelection.route)
         }
     }

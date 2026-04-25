@@ -1,4 +1,4 @@
-package com.jb.leitnerbox.core.ui.notification
+package com.jb.leitnerbox.notification
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.jb.leitnerbox.core.ui.R
+import com.jb.leitnerbox.MainActivity
+import com.jb.leitnerbox.R
+import com.jb.leitnerbox.navigation.Screen
 
 object NotificationHelper {
     const val CHANNEL_ID = "session_reminder"
@@ -29,20 +31,9 @@ object NotificationHelper {
     }
 
     fun buildNotification(context: Context, cardCount: Int): Notification {
-        // Use Class.forName to avoid circular dependency with :app
-        val mainActivityClass = try {
-            Class.forName("com.jb.leitnerbox.MainActivity")
-        } catch (e: ClassNotFoundException) {
-            null
-        }
-
-        val intent = if (mainActivityClass != null) {
-            Intent(context, mainActivityClass).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                putExtra("navigate_to", "session_selection")
-            }
-        } else {
-            Intent()
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("navigate_to", Screen.SessionSelection.route)
         }
 
         val pendingIntent = PendingIntent.getActivity(

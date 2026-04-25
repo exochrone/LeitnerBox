@@ -6,7 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
-import com.jb.leitnerbox.core.ui.notification.NotificationHelper
+import com.jb.leitnerbox.notification.NotificationHelper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first

@@ -4,4 +4,9 @@
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_decks">Decks</string>
     <string name="nav_settings">Settings</string>
+
+    <string name="notification_channel_name">Rappel de révision</string>
+    <string name="notification_channel_description">Notification quotidienne pour rappeler de réviser les cartes</string>
+    <string name="notification_title">LeitnerBox 📚</string>
+    <string name="notification_body">Vous avez %1$d carte(s) à réviser aujourd\'hui !</string>
 </resources>
