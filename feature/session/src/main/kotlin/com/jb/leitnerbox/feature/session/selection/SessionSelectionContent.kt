@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import com.jb.leitnerbox.feature.session.R
@@ -96,6 +97,8 @@ fun SessionSelectionContent(
                         Text(
                             text = deck.name,
                             style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
