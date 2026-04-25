@@ -8,7 +8,11 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AppSettingsSerializer : Serializer<AppSettingsProto> {
-    override val defaultValue: AppSettingsProto = AppSettingsProto.getDefaultInstance()
+    override val defaultValue: AppSettingsProto = AppSettingsProto.newBuilder()
+        .setNotificationHour(20)
+        .setNotificationMinute(0)
+        .setTheme(0) // SYSTEM
+        .build()
 
     override suspend fun readFrom(input: InputStream): AppSettingsProto {
         try {

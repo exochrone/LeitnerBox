@@ -12,7 +12,7 @@ class GetCurrentStreakUseCase(
     private val sessionRepository: SessionRepository,
     private val settingsRepository: SettingsRepository
 ) {
-    operator fun invoke(): Flow<Int> = combine(
+    operator fun invoke(referenceDate: LocalDate = LocalDate.now(ZoneId.systemDefault())): Flow<Int> = combine(
         sessionRepository.getSessions(),
         settingsRepository.getExcludedDays()
     ) { sessions, excludedDays ->
@@ -33,22 +33,21 @@ class GetCurrentStreakUseCase(
 
         if (validDates.isEmpty()) return@combine 0
 
-        // Vérifier si aujourd'hui ou hier est dans les jours valides
-        // (si la dernière session valide est trop ancienne, le streak est forcément 0)
-        val today = LocalDate.now(ZoneId.systemDefault())
+        val today = referenceDate
         val mostRecent = validDates.first()
         val daysSinceMostRecent = ChronoUnit.DAYS.between(mostRecent, today)
 
-        // Vérifier que le gap entre today et la dernière session valide
-        // est entièrement composé de jours exclus
+        // 1. Vérifier si le streak est toujours actif (gap vers aujourd'hui)
         if (daysSinceMostRecent > 0) {
-            val gapDays = (0 until daysSinceMostRecent).map {
-                mostRecent.plusDays(it + 1).dayOfWeek
+            val gapToToday = (0 until daysSinceMostRecent).map {
+                mostRecent.plusDays(it.toLong() + 1)
             }
-            if (!gapDays.all { it in excludedDays }) return@combine 0
+            // Si le gap contient un jour non exclu (y compris aujourd'hui), le streak est brisé.
+            // Sauf si on a fait une session aujourd'hui (mais ici daysSinceMostRecent > 0 donc non)
+            if (!gapToToday.all { it.dayOfWeek in excludedDays }) return@combine 0
         }
 
-        // Compter les jours valides consécutifs en remontant l'historique
+        // 2. Compter les jours valides consécutifs en remontant l'historique
         var streak = 1
         for (i in 0 until validDates.size - 1) {
             val current  = validDates[i]

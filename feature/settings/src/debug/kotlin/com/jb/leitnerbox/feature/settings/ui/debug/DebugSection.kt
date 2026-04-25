@@ -37,6 +37,7 @@ fun DebugSection(
     DebugButton("➕ Noms très longs") { viewModel.seedLongNames() }
     DebugButton("➕ Circulation des boîtes (3 cartes)") { viewModel.seedBoxCirculation() }
     DebugButton("➕ Test de maîtrise (30 cartes)") { viewModel.seedMasteryTest() }
+    DebugButton("➕ Test intervalles (3 cartes × 4 boîtes)") { viewModel.seedIntervalTest() }
     DebugButton("🗑 Supprimer tous les [TEST]", isDestructive = true) {
         viewModel.cleanTestData()
     }

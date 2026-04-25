@@ -25,7 +25,12 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ApplicationScope
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -75,11 +80,19 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<AppSettingsProto> {
+    @ApplicationScope
+    fun provideApplicationScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    @Provides
+    @Singleton
+    fun provideDataStore(
+        @ApplicationContext context: Context,
+        @ApplicationScope scope: CoroutineScope
+    ): DataStore<AppSettingsProto> {
         return DataStoreFactory.create(
             serializer = AppSettingsSerializer,
             produceFile = { context.dataStoreFile("app_settings.pb") },
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+            scope = scope
         )
     }
 

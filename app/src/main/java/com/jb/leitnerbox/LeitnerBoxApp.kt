@@ -1,9 +1,9 @@
 package com.jb.leitnerbox
 
 import android.app.Application
+import com.jb.leitnerbox.core.data.di.ApplicationScope
 import com.jb.leitnerbox.core.data.migration.CardMigrationHelper
 import com.jb.leitnerbox.core.domain.usecase.session.HandleMissedDaysUseCase
-import com.jb.leitnerbox.di.ApplicationScope
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

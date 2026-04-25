@@ -51,6 +51,62 @@ class DebugDataSeeder(
         )
     }
 
+    suspend fun seedIntervalTest() {
+        val deckId = deckRepository.insertDeck(
+            Deck(
+                name = "$TEST_PREFIX Test intervalles par boîte",
+                description = "3 cartes par boîte (1 à 4), toutes dues aujourd'hui. " +
+                    "Réviser boîte par boîte pour observer le décalage de chaque intervalle. " +
+                    "Règle : retour à la boîte précédente en cas d'erreur.",
+                intervals = listOf(1, 2, 4, 8, 16),
+                wrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX,
+                presentationOrder = PresentationOrder.BY_BOX
+            )
+        )
+
+        val now = Instant.now()
+
+        // Boîte 4 — intervalle 8 jours
+        repeat(3) { i ->
+            insertCard(
+                deckId = deckId, box = 4,
+                recto = "Boîte 4 — Q${i + 1} : Quel est le résultat de ${(i + 1) * 8} × 2 ?",
+                verso = "${(i + 1) * 8 * 2}",
+                nextReviewDate = now
+            )
+        }
+
+        // Boîte 3 — intervalle 4 jours
+        repeat(3) { i ->
+            insertCard(
+                deckId = deckId, box = 3,
+                recto = "Boîte 3 — Q${i + 1} : Quel est le résultat de ${(i + 1) * 4} × 2 ?",
+                verso = "${(i + 1) * 4 * 2}",
+                nextReviewDate = now
+            )
+        }
+
+        // Boîte 2 — intervalle 2 jours
+        repeat(3) { i ->
+            insertCard(
+                deckId = deckId, box = 2,
+                recto = "Boîte 2 — Q${i + 1} : Quel est le résultat de ${(i + 1) * 2} × 2 ?",
+                verso = "${(i + 1) * 2 * 2}",
+                nextReviewDate = now
+            )
+        }
+
+        // Boîte 1 — intervalle 1 jour
+        repeat(3) { i ->
+            insertCard(
+                deckId = deckId, box = 1,
+                recto = "Boîte 1 — Q${i + 1} : Quel est le résultat de ${i + 1} × 2 ?",
+                verso = "${(i + 1) * 2}",
+                nextReviewDate = now
+            )
+        }
+    }
+
     suspend fun seedBoxCirculation() {
         val deckId = deckRepository.insertDeck(
             Deck(

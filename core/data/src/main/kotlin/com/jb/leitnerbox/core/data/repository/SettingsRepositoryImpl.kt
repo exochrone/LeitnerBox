@@ -30,8 +30,7 @@ class SettingsRepositoryImpl(
 
     override fun getNotificationTime(): Flow<LocalTime> {
         return dataStore.data.map { proto ->
-            val hour = if (proto.notificationHour == 0 && proto.notificationMinute == 0) 20 else proto.notificationHour
-            LocalTime.of(hour, proto.notificationMinute)
+            LocalTime.of(proto.notificationHour, proto.notificationMinute)
         }
     }
 
