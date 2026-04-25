@@ -61,7 +61,7 @@ class SessionViewModel @Inject constructor(
     }
 
     fun onFlipCard() {
-        _uiState.update { it.copy(isFlipped = true) }
+        _uiState.update { it.copy(isFlipped = !it.isFlipped) }
     }
 
     fun onInputChanged(text: String) {

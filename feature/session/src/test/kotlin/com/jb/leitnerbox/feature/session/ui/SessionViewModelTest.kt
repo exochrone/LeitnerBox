@@ -61,6 +61,16 @@ class SessionViewModelTest {
     }
 
     @Test
+    fun `P4-UT-03 onFlipCard twice returns to false`() {
+        initViewModel(listOf(Card(id = 1, deckId = 1, recto = "Q1", verso = "A1")))
+        
+        viewModel.onFlipCard()
+        assertTrue(viewModel.uiState.value.isFlipped)
+        viewModel.onFlipCard()
+        assertFalse(viewModel.uiState.value.isFlipped)
+    }
+
+    @Test
     fun `P4-UT-04 onEvaluate good answer increments index and calls use case`() = runTest {
         val deck = Deck(id = 1, name = "Deck", intervals = listOf(1, 2, 3))
         val cards = listOf(
