@@ -1,9 +1,10 @@
 package com.jb.leitnerbox.core.ui.components
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import com.airbnb.lottie.compose.LottieAnimation
@@ -26,12 +27,19 @@ fun CelebrationOverlay(
         )
     )
 
-    LottieAnimation(
-        composition = composition,
-        iterations = 1,
+    Box(
         modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.FillBounds
-    )
+        contentAlignment = Alignment.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            iterations = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            contentScale = ContentScale.Fit
+        )
+    }
 
     LaunchedEffect(Unit) {
         delay(if (type == CelebrationType.CARD_MASTERED) 1500L else 2000L)

@@ -16,20 +16,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.ui.components.CelebrationOverlay
 import com.jb.leitnerbox.core.ui.components.CelebrationType
 import com.jb.leitnerbox.feature.session.R
+import java.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionResultScreen(
     viewModel: SessionResultViewModel = hiltViewModel(),
     onFinish: () -> Unit
 ) {
-    val session = viewModel.session
-    val successRate = viewModel.successRate
+    SessionResultContent(
+        session = viewModel.session,
+        successRate = viewModel.successRate,
+        onFinish = onFinish
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SessionResultContent(
+    session: Session,
+    successRate: Int,
+    onFinish: () -> Unit
+) {
     var showCelebration by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -55,11 +69,23 @@ fun SessionResultScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                val headlineText = if (successRate >= 60) {
+                    stringResource(R.string.session_result_congrats)
+                } else {
+                    stringResource(R.string.session_result_title)
+                }
+
+                val headlineColor = if (successRate >= 60) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
+
                 Text(
-                    text = stringResource(R.string.session_result_congrats),
+                    text = headlineText,
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = headlineColor
                 )
 
                 Card(
@@ -116,7 +142,7 @@ fun SessionResultScreen(
                     value = "${session.retreatedCount}"
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
                     onClick = onFinish,
@@ -161,6 +187,28 @@ private fun ResultItem(
             text = value,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SessionResultContentPreview() {
+    val mockSession = Session(
+        id = 1,
+        date = Instant.now(),
+        deckIds = listOf(1L),
+        cardCount = 10,
+        successCount = 8,
+        masteredCount = 2,
+        advancedCount = 6,
+        retreatedCount = 1
+    )
+    MaterialTheme {
+        SessionResultContent(
+            session = mockSession,
+            successRate = 80,
+            onFinish = {}
         )
     }
 }
