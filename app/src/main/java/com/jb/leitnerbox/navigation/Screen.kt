@@ -19,4 +19,5 @@ sealed class Screen(val route: String) {
     }
     object SessionSelection : Screen("session/selection")
     object Session : Screen("session/active")
+    object SessionResult : Screen("session/result")
 }

@@ -25,6 +25,7 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
 import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import com.jb.leitnerbox.feature.session.ui.SessionScreen
+import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -146,9 +147,18 @@ fun LeitnerNavHost(
         composable(Screen.Session.route) {
             SessionScreen(
                 onSessionFinished = {
-                    navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                    navController.navigate(Screen.SessionResult.route) {
+                        popUpTo(Screen.SessionSelection.route) { inclusive = true }
+                    }
                 },
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.SessionResult.route) {
+            SessionResultScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                }
             )
         }
     }

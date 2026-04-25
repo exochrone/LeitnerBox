@@ -23,4 +23,14 @@
     <string name="session_continue">Continuer</string>
     <string name="eval_wrong">Mauvaise réponse</string>
     <string name="eval_correct">Bonne réponse</string>
+
+    <string name="session_result_title">Session terminée</string>
+    <string name="session_result_congrats">Bravo !</string>
+    <string name="session_result_success_rate">Taux de réussite</string>
+    <string name="session_result_reviewed_cards">Cartes révisées</string>
+    <string name="session_result_correct_answers">Bonnes réponses</string>
+    <string name="session_result_newly_mastered">Nouvellement maîtrisées</string>
+    <string name="session_result_advanced">Ont avancé d\'une boîte</string>
+    <string name="session_result_retreated">Ont reculé d\'une boîte</string>
+    <string name="session_result_finish">Terminer</string>
 </resources>

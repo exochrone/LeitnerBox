@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.SaveSessionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +17,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val sessionStateHolder: SessionStateHolder,
     private val evaluateCard: EvaluateCardUseCase,
-    private val checkAnswer: CheckAnswerUseCase
+    private val checkAnswer: CheckAnswerUseCase,
+    private val saveSession: SaveSessionUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SessionUiState())
@@ -132,7 +136,7 @@ class SessionViewModel @Inject constructor(
 
         if (nextIndex >= cards.size) {
             viewModelScope.launch {
-                _events.send(SessionUiEvent.SessionFinished)
+                onSessionComplete()
             }
         } else {
             _uiState.update {
@@ -146,6 +150,25 @@ class SessionViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun onSessionComplete() {
+        val state = _uiState.value
+        val session = Session(
+            date = Instant.now(),
+            deckIds = sessionStateHolder.selectedItems.map { it.deck.id }.distinct(),
+            cardCount = state.cards.size,
+            successCount = state.successCount,
+            masteredCount = state.masteredThisSession,
+            advancedCount = state.advancedCount,
+            retreatedCount = state.retreatedCount,
+            isReported = false
+        )
+        saveSession(session)
+
+        // Stocker le résultat pour l'écran suivant
+        sessionStateHolder.lastSessionResult = session
+        _events.send(SessionUiEvent.SessionFinished)
     }
 
     override fun onCleared() {

@@ -4,6 +4,7 @@ import com.jb.leitnerbox.core.domain.model.*
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
+import com.jb.leitnerbox.core.domain.usecase.session.SaveSessionUseCase
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +22,7 @@ class SessionViewModelTest {
     private val sessionStateHolder = SessionStateHolder()
     private val evaluateCard = mockk<EvaluateCardUseCase>(relaxed = true)
     private val checkAnswer = mockk<CheckAnswerUseCase>()
+    private val saveSession = mockk<SaveSessionUseCase>(relaxed = true)
     private lateinit var viewModel: SessionViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -37,7 +39,7 @@ class SessionViewModelTest {
     private fun initViewModel(cards: List<Card> = emptyList(), selectedItems: List<SessionPlanItem> = emptyList()) {
         sessionStateHolder.pendingCards = cards
         sessionStateHolder.selectedItems = selectedItems
-        viewModel = SessionViewModel(sessionStateHolder, evaluateCard, checkAnswer)
+        viewModel = SessionViewModel(sessionStateHolder, evaluateCard, checkAnswer, saveSession)
         testDispatcher.scheduler.runCurrent()
     }
 
@@ -132,5 +134,24 @@ class SessionViewModelTest {
         testDispatcher.scheduler.runCurrent()
 
         assertEquals(1, viewModel.uiState.value.retreatedCount)
+    }
+
+    @Test
+    fun `session end saves session and sends event`() = runTest {
+        val deck = Deck(id = 1, name = "Deck", intervals = listOf(1))
+        val card = Card(id = 1, deckId = 1, recto = "Q1", verso = "A1", box = 1, needsInput = false)
+        initViewModel(listOf(card), listOf(SessionPlanItem(deck, 1, 1)))
+
+        val events = mutableListOf<SessionUiEvent>()
+        val job = launch { viewModel.events.collect { events.add(it) } }
+
+        viewModel.onEvaluate(true)
+        testDispatcher.scheduler.runCurrent()
+
+        coVerify { saveSession(any()) }
+        assertTrue(events.contains(SessionUiEvent.SessionFinished))
+        assertNotNull(sessionStateHolder.lastSessionResult)
+
+        job.cancel()
     }
 }
