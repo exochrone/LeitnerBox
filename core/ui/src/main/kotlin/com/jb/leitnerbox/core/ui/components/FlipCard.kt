@@ -5,11 +5,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -87,7 +85,8 @@ fun FlipCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center
             ) {
                 if (rotation <= 90f) {
@@ -95,7 +94,8 @@ fun FlipCard(
                     Text(
                         text = recto,
                         style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
                 } else {
                     // Verso
@@ -103,9 +103,11 @@ fun FlipCard(
                         text = verso,
                         style = MaterialTheme.typography.headlineSmall,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.graphicsLayer {
-                            rotationY = 180f
-                        }
+                        modifier = Modifier
+                            .graphicsLayer {
+                                rotationY = 180f
+                            }
+                            .padding(vertical = 8.dp)
                     )
                 }
             }

@@ -13,7 +13,6 @@
     <string name="session_progress_label">Carte %1$d / %2$d</string>
     <string name="session_mastered_label">Maîtrisées %1$d / %2$d</string>
     <string name="session_flip_card">Retourner</string>
-    <string name="session_card_label">Question %1$d/%2$d</string>
     <string name="session_answer_label">Réponse</string>
     <string name="session_input_placeholder">Votre réponse...</string>
     <string name="session_ok">OK</string>
