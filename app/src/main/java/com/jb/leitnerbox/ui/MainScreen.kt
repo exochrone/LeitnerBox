@@ -12,6 +12,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -27,8 +28,14 @@ import com.jb.leitnerbox.navigation.LeitnerNavHost
 import com.jb.leitnerbox.navigation.Screen
 
 @Composable
-fun MainScreen() {
+fun MainScreen(startDestination: String? = null) {
     val navController = rememberNavController()
+
+    LaunchedEffect(startDestination) {
+        if (startDestination == "session_selection") {
+            navController.navigate(Screen.SessionSelection.route)
+        }
+    }
     val items = listOf(
         Screen.Dashboard to Icons.Default.Home,
         Screen.Decks to Icons.Default.List,
