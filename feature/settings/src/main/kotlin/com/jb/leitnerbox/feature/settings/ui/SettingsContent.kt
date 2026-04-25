@@ -14,6 +14,9 @@ import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.AppTheme
 import com.jb.leitnerbox.feature.settings.R
 import java.time.DayOfWeek
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.time.format.TextStyle
 import java.util.*
 
@@ -22,6 +25,7 @@ internal fun SettingsContent(
     uiState: SettingsUiState,
     onDayToggled: (DayOfWeek) -> Unit,
     onThemeSelected: (AppTheme) -> Unit,
+    onNotificationTimeClick: () -> Unit,
     debugSection: @Composable () -> Unit = {}
 ) {
     Column(
@@ -43,8 +47,55 @@ internal fun SettingsContent(
             currentTheme = uiState.theme,
             onThemeSelected = onThemeSelected
         )
+
+        HorizontalDivider()
+
+        NotificationTimeSection(
+            notificationTime = uiState.notificationTime,
+            onTimeClick = onNotificationTimeClick
+        )
         
         debugSection()
+    }
+}
+
+@Composable
+private fun NotificationTimeSection(
+    notificationTime: LocalTime,
+    onTimeClick: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.settings_notification_time),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Surface(
+            onClick = onTimeClick,
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Notifier à",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = notificationTime.format(
+                        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     }
 }
 

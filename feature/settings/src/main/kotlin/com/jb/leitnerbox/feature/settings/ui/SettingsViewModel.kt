@@ -21,6 +21,7 @@ class SettingsViewModel @Inject constructor(
     private val setTheme: SetThemeUseCase,
     private val getNotificationTime: GetNotificationTimeUseCase,
     private val setNotificationTime: SetNotificationTimeUseCase,
+    private val rescheduleNotification: RescheduleNotificationUseCase,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -56,7 +57,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val newTime = LocalTime.of(hour, minute)
             setNotificationTime(newTime)
-            // Logic for scheduling notification will be implemented in US-P5-05
+            rescheduleNotification(newTime)
         }
     }
 }

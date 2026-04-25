@@ -5,4 +5,5 @@
     <string name="settings_theme_light">Clair</string>
     <string name="settings_theme_dark">Sombre</string>
     <string name="settings_theme_system">Suivre le système</string>
+    <string name="settings_notification_time">Heure de rappel</string>
 </resources>

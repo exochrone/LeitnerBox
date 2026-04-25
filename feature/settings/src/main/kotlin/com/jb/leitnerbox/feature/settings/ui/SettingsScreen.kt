@@ -1,10 +1,12 @@
 package com.jb.leitnerbox.feature.settings.ui
 
+import android.app.TimePickerDialog
+import android.text.format.DateFormat
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -18,6 +20,25 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    if (showTimePicker) {
+        val time = uiState.notificationTime
+        TimePickerDialog(
+            context,
+            { _, hour, minute -> 
+                viewModel.onNotificationTimeSelected(hour, minute)
+                showTimePicker = false
+            },
+            time.hour,
+            time.minute,
+            DateFormat.is24HourFormat(context)
+        ).apply {
+            setOnDismissListener { showTimePicker = false }
+            show()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -29,6 +50,7 @@ fun SettingsScreen(
                 uiState = uiState,
                 onDayToggled = viewModel::onDayToggled,
                 onThemeSelected = viewModel::onThemeSelected,
+                onNotificationTimeClick = { showTimePicker = true },
                 debugSection = {
                     if (BuildConfig.DEBUG) {
                         DebugSection()
