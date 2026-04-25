@@ -1,6 +1,5 @@
 package com.jb.leitnerbox.feature.settings.ui
 
-import android.content.Context
 import com.jb.leitnerbox.core.domain.model.AppTheme
 import com.jb.leitnerbox.core.domain.usecase.settings.*
 import io.mockk.*
@@ -27,7 +26,6 @@ class SettingsViewModelTest {
     private val getNotificationTime = mockk<GetNotificationTimeUseCase>()
     private val setNotificationTime = mockk<SetNotificationTimeUseCase>(relaxed = true)
     private val rescheduleNotification = mockk<RescheduleNotificationUseCase>(relaxed = true)
-    private val context = mockk<Context>()
 
     private val excludedDaysFlow = MutableStateFlow<Set<DayOfWeek>>(emptySet())
     private val themeFlow = MutableStateFlow(AppTheme.SYSTEM)
@@ -54,8 +52,7 @@ class SettingsViewModelTest {
             getExcludedDays, setExcludedDays,
             getTheme, setTheme,
             getNotificationTime, setNotificationTime,
-            rescheduleNotification,
-            context
+            rescheduleNotification
         )
     }
 

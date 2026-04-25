@@ -1,12 +1,10 @@
 package com.jb.leitnerbox.feature.settings.ui
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.AppTheme
 import com.jb.leitnerbox.core.domain.usecase.settings.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -21,8 +19,7 @@ class SettingsViewModel @Inject constructor(
     private val setTheme: SetThemeUseCase,
     private val getNotificationTime: GetNotificationTimeUseCase,
     private val setNotificationTime: SetNotificationTimeUseCase,
-    private val rescheduleNotification: RescheduleNotificationUseCase,
-    @ApplicationContext private val context: Context
+    private val rescheduleNotification: RescheduleNotificationUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<SettingsUiState> = combine(

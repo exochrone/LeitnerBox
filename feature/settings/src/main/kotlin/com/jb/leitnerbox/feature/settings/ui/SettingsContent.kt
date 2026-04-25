@@ -84,7 +84,7 @@ private fun NotificationTimeSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Notifier à",
+                    text = stringResource(R.string.settings_notification_label),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
