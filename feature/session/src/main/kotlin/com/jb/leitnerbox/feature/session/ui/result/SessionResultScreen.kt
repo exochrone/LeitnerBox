@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.ui.components.CelebrationOverlay
 import com.jb.leitnerbox.core.ui.components.CelebrationType
@@ -30,9 +31,13 @@ fun SessionResultScreen(
     viewModel: SessionResultViewModel = hiltViewModel(),
     onFinish: () -> Unit
 ) {
+    val showCelebration by viewModel.showCelebration.collectAsStateWithLifecycle()
+
     SessionResultContent(
         session = viewModel.session,
         successRate = viewModel.successRate,
+        showCelebration = showCelebration,
+        onCelebrationFinished = viewModel::onCelebrationFinished,
         onFinish = onFinish
     )
 }
@@ -42,16 +47,10 @@ fun SessionResultScreen(
 internal fun SessionResultContent(
     session: Session,
     successRate: Int,
+    showCelebration: Boolean,
+    onCelebrationFinished: () -> Unit,
     onFinish: () -> Unit
 ) {
-    var showCelebration by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (successRate >= 60) {
-            showCelebration = true
-        }
-    }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
@@ -156,7 +155,7 @@ internal fun SessionResultContent(
         if (showCelebration) {
             CelebrationOverlay(
                 type = CelebrationType.SESSION_SUCCESS,
-                onFinished = { showCelebration = false }
+                onFinished = onCelebrationFinished
             )
         }
     }
@@ -208,6 +207,8 @@ fun SessionResultContentPreview() {
         SessionResultContent(
             session = mockSession,
             successRate = 80,
+            showCelebration = false,
+            onCelebrationFinished = {},
             onFinish = {}
         )
     }
