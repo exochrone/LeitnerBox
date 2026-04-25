@@ -39,7 +39,7 @@ fun SessionResultScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SessionResultContent(
+internal fun SessionResultContent(
     session: Session,
     successRate: Int,
     onFinish: () -> Unit

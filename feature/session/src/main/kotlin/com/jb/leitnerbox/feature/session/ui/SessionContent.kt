@@ -62,7 +62,7 @@ fun SessionContent(
             val progressLabel = if (uiState.isChallenge) {
                 stringResource(R.string.session_mastered_label, uiState.progressCurrent, uiState.progressTotal)
             } else {
-                stringResource(R.string.session_progress_label, uiState.progressCurrent, uiState.progressTotal)
+                stringResource(R.string.session_progress_label, uiState.currentIndex + 1, uiState.progressTotal)
             }
             SessionProgressIndicator(
                 current = uiState.progressCurrent,
@@ -89,11 +89,7 @@ fun SessionContent(
                             isFlipped = uiState.isFlipped,
                             onFlip = { if (!card.needsInput) onFlip() },
                             modifier = Modifier.fillMaxSize(),
-                            rectoLabel = stringResource(
-                                R.string.session_card_label,
-                                uiState.currentIndex + 1,
-                                uiState.progressTotal
-                            ),
+                            rectoLabel = uiState.currentDeckName,
                             versoLabel = stringResource(R.string.session_answer_label)
                         )
                     }

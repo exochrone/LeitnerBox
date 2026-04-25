@@ -14,6 +14,7 @@ data class SessionUiState(
     val retreatedCount: Int = 0,
     val isChallenge: Boolean = false,
     val masteredThisSession: Int = 0,
+    val currentDeckName: String = "",
     val userInput: String = "",
     val inputValidated: Boolean = false,
     val checkResult: AnswerCheckResult? = null

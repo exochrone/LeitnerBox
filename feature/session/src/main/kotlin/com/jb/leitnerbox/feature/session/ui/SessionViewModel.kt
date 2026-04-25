@@ -41,10 +41,12 @@ class SessionViewModel @Inject constructor(
     private fun loadSession() {
         val cards = sessionStateHolder.pendingCards
         if (cards.isNotEmpty()) {
+            val firstCard = cards.first()
             _uiState.update { 
                 it.copy(
                     cards = cards,
-                    currentCard = cards.first(),
+                    currentCard = firstCard,
+                    currentDeckName = getDeckForCard(firstCard)?.name ?: "",
                     currentIndex = 0,
                     isFlipped = false,
                     userInput = "",
@@ -139,9 +141,11 @@ class SessionViewModel @Inject constructor(
                 onSessionComplete()
             }
         } else {
+            val nextCard = cards[nextIndex]
             _uiState.update {
                 it.copy(
-                    currentCard = cards[nextIndex],
+                    currentCard = nextCard,
+                    currentDeckName = getDeckForCard(nextCard)?.name ?: "",
                     currentIndex = nextIndex,
                     isFlipped = false,
                     userInput = "",
