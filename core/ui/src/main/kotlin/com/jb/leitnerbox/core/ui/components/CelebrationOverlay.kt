@@ -9,16 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.jb.leitnerbox.core.ui.R
-import kotlinx.coroutines.delay
 
 enum class CelebrationType { CARD_MASTERED, SESSION_SUCCESS }
 
 @Composable
 fun CelebrationOverlay(
     type: CelebrationType,
-    onFinished: () -> Unit
+    onFinished: () -> Unit,
 ) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(
@@ -27,22 +27,28 @@ fun CelebrationOverlay(
         )
     )
 
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1
+    )
+
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            onFinished()
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         LottieAnimation(
             composition = composition,
-            iterations = 1,
+            progress = { progress },
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
             contentScale = ContentScale.Fit
         )
-    }
-
-    LaunchedEffect(Unit) {
-        delay(if (type == CelebrationType.CARD_MASTERED) 1500L else 2000L)
-        onFinished()
     }
 }

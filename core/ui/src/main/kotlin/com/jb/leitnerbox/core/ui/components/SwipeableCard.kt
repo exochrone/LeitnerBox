@@ -36,8 +36,8 @@ fun SwipeableCard(
     val screenWidth = configuration.screenWidthDp.dp
     val screenWidthPx = with(density) { screenWidth.toPx() }
     
-    // Seuil de validation (32%)
-    val thresholdPx = screenWidthPx * 0.32f
+    // Seuil de validation (30%)
+    val thresholdPx = screenWidthPx * 0.30f
     val colorStartOffsetPx = screenWidthPx * 0.15f 
 
     // Utilisation de Animatable pour contrôler finement la séquence d'animation
