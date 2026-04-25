@@ -33,7 +33,7 @@ fun CelebrationOverlay(
     )
 
     LaunchedEffect(progress) {
-        if (progress == 1f) {
+        if (progress >= 0.99f) {
             onFinished()
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import kotlinx.coroutines.delay
@@ -25,7 +26,7 @@ fun DeckListScreen(
     onUndoDelete: (Deck) -> Unit = {},
     onSnackbarDismissed: () -> Unit = {}
 ) {
-    val decks by viewModel.decks.collectAsState()
+    val decks by viewModel.decks.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Pour éviter que la snackbar ne réapparaisse au retour sur l'écran
