@@ -46,7 +46,12 @@ fun SessionScreen(
         showCelebration?.let { type ->
             CelebrationOverlay(
                 type = type,
-                onFinished = { showCelebration = null }
+                onFinished = {
+                    showCelebration = null
+                    if (type == CelebrationType.CARD_MASTERED) {
+                        viewModel.onMasteryCelebrationFinished()
+                    }
+                }
             )
         }
     }

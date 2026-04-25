@@ -113,18 +113,22 @@ class SessionViewModel @Inject constructor(
                     successCount = if (isCorrect) it.successCount + 1 else it.successCount,
                     advancedCount = if (isCorrect && !isMastered) it.advancedCount + 1 else it.advancedCount,
                     retreatedCount = if (!isCorrect && currentCard.box > 1) it.retreatedCount + 1 else it.retreatedCount,
-                    masteredThisSession = if (isMastered) it.masteredThisSession + 1 else it.masteredThisSession
+                    masteredThisSession = if (isMastered) it.masteredThisSession + 1 else it.masteredThisSession,
+                    isMasteredTransition = isMastered
                 )
             }
 
             if (isMastered) {
                 _events.send(SessionUiEvent.CardMastered)
-            }
-
-            if (!currentCard.needsInput) {
+            } else if (!currentCard.needsInput) {
                 moveToNextCard()
             }
         }
+    }
+
+    fun onMasteryCelebrationFinished() {
+        _uiState.update { it.copy(isMasteredTransition = false) }
+        moveToNextCard()
     }
 
     fun onContinue() {

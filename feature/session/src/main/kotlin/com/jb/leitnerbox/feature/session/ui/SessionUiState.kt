@@ -15,6 +15,7 @@ data class SessionUiState(
     val isChallenge: Boolean = false,
     val masteredThisSession: Int = 0,
     val currentDeckName: String = "",
+    val isMasteredTransition: Boolean = false,
     val userInput: String = "",
     val inputValidated: Boolean = false,
     val checkResult: AnswerCheckResult? = null

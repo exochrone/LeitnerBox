@@ -15,7 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.ui.components.FlipCard
@@ -73,49 +76,86 @@ fun SessionContent(
                     .padding(bottom = 16.dp)
             )
 
-            uiState.currentCard?.let { card ->
-                key(card.id) {
-                    SwipeableCard(
-                        isFlipped = uiState.isFlipped && !card.needsInput,
-                        onEvaluate = onEvaluate,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 250.dp, max = 400.dp)
-                            .padding(vertical = 16.dp)
-                    ) {
-                        FlipCard(
-                            recto = card.recto,
-                            verso = card.verso,
-                            isFlipped = uiState.isFlipped,
-                            onFlip = { if (!card.needsInput) onFlip() },
-                            modifier = Modifier.fillMaxSize(),
-                            rectoLabel = uiState.currentDeckName,
-                            versoLabel = stringResource(R.string.session_answer_label)
-                        )
-                    }
-                }
-
-                if (card.needsInput) {
-                    InputSection(
-                        uiState = uiState,
-                        onInputChanged = onInputChanged,
-                        onInputValidated = onInputValidated,
-                        onContinue = onContinue
-                    )
-                } else {
-                    if (uiState.isFlipped) {
-                        EvaluationButtons(onEvaluate = onEvaluate)
-                    } else {
-                        Button(
-                            onClick = onFlip,
-                            modifier = Modifier.fillMaxWidth()
+            if (uiState.isMasteredTransition) {
+                MasteryMessage(uiState.currentDeckName)
+            } else {
+                uiState.currentCard?.let { card ->
+                    key(card.id) {
+                        SwipeableCard(
+                            isFlipped = uiState.isFlipped && !card.needsInput,
+                            onEvaluate = onEvaluate,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 250.dp, max = 400.dp)
+                                .padding(vertical = 16.dp)
                         ) {
-                            Text(stringResource(R.string.session_flip_card))
+                            FlipCard(
+                                recto = card.recto,
+                                verso = card.verso,
+                                isFlipped = uiState.isFlipped,
+                                onFlip = { if (!card.needsInput) onFlip() },
+                                modifier = Modifier.fillMaxSize(),
+                                rectoLabel = uiState.currentDeckName,
+                                versoLabel = stringResource(R.string.session_answer_label)
+                            )
+                        }
+                    }
+
+                    if (card.needsInput) {
+                        InputSection(
+                            uiState = uiState,
+                            onInputChanged = onInputChanged,
+                            onInputValidated = onInputValidated,
+                            onContinue = onContinue
+                        )
+                    } else {
+                        if (uiState.isFlipped) {
+                            EvaluationButtons(onEvaluate = onEvaluate)
+                        } else {
+                            Button(
+                                onClick = onFlip,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(stringResource(R.string.session_flip_card))
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MasteryMessage(deckName: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 64.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = deckName,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.session_card_mastered),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = stringResource(R.string.session_result_congrats),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

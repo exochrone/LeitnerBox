@@ -92,7 +92,7 @@ class SessionViewModelTest {
     }
 
     @Test
-    fun `P4-UT-09 good answer on last box sends CardMastered event`() = runTest {
+    fun `P4-UT-09 good answer on last box sends CardMastered event and sets transition`() = runTest {
         val deck = Deck(id = 1, name = "Deck", intervals = listOf(1))
         val card = Card(id = 1, deckId = 1, recto = "Q1", verso = "A1", box = 1)
         val selectedItems = listOf(SessionPlanItem(deck, 1, 1))
@@ -106,7 +106,18 @@ class SessionViewModelTest {
 
         assertTrue(events.contains(SessionUiEvent.CardMastered))
         assertEquals(1, viewModel.uiState.value.masteredThisSession)
+        assertTrue(viewModel.uiState.value.isMasteredTransition)
+        // Ne doit pas encore avoir bougé à l'index suivant (ici c'était la seule carte donc l'index reste 0)
+        assertEquals(0, viewModel.uiState.value.currentIndex)
         
+        // Simuler la fin de la célébration
+        viewModel.onMasteryCelebrationFinished()
+        testDispatcher.scheduler.runCurrent()
+        
+        assertFalse(viewModel.uiState.value.isMasteredTransition)
+        // Ici comme c'était la seule carte, on finit la session
+        assertTrue(events.contains(SessionUiEvent.SessionFinished))
+
         job.cancel()
     }
     
@@ -147,6 +158,12 @@ class SessionViewModelTest {
 
         viewModel.onEvaluate(true)
         testDispatcher.scheduler.runCurrent()
+
+        // Si la carte est maîtrisée, on doit appeler onMasteryCelebrationFinished pour finir
+        if (viewModel.uiState.value.isMasteredTransition) {
+            viewModel.onMasteryCelebrationFinished()
+            testDispatcher.scheduler.runCurrent()
+        }
 
         coVerify { saveSession(any()) }
         assertTrue(events.contains(SessionUiEvent.SessionFinished))
