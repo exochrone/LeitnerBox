@@ -11,6 +11,7 @@ import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import com.jb.leitnerbox.core.domain.usecase.card.*
 import com.jb.leitnerbox.core.domain.usecase.deck.*
 import com.jb.leitnerbox.core.domain.usecase.session.*
+import com.jb.leitnerbox.core.domain.usecase.settings.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -113,8 +114,16 @@ object DomainModule {
     @Provides
     @Singleton
     fun provideHandleMissedDaysUseCase(
-        sessionRepository: SessionRepository
-    ): HandleMissedDaysUseCase = HandleMissedDaysUseCase(sessionRepository)
+        sessionRepository: SessionRepository,
+        settingsRepository: SettingsRepository
+    ): HandleMissedDaysUseCase = HandleMissedDaysUseCase(sessionRepository, settingsRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetCurrentStreakUseCase(
+        sessionRepository: SessionRepository,
+        settingsRepository: SettingsRepository
+    ): GetCurrentStreakUseCase = GetCurrentStreakUseCase(sessionRepository, settingsRepository)
 
     @Provides
     @Singleton
@@ -141,4 +150,28 @@ object DomainModule {
         cardDao: CardDao,
         answerNormalizer: AnswerNormalizer
     ): CardMigrationHelper = CardMigrationHelper(cardDao, answerNormalizer)
+
+    @Provides
+    @Singleton
+    fun provideGetExcludedDaysUseCase(repository: SettingsRepository) = GetExcludedDaysUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSetExcludedDaysUseCase(repository: SettingsRepository) = SetExcludedDaysUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetThemeUseCase(repository: SettingsRepository) = GetThemeUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSetThemeUseCase(repository: SettingsRepository) = SetThemeUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetNotificationTimeUseCase(repository: SettingsRepository) = GetNotificationTimeUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSetNotificationTimeUseCase(repository: SettingsRepository) = SetNotificationTimeUseCase(repository)
 }

@@ -2,9 +2,11 @@ package com.jb.leitnerbox.core.data.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.dataStoreFile
 import androidx.room.Room
+import com.jb.leitnerbox.core.data.AppSettingsProto
+import com.jb.leitnerbox.core.data.datastore.AppSettingsSerializer
 import com.jb.leitnerbox.core.data.local.LeitnerDatabase
 import com.jb.leitnerbox.core.data.local.dao.SessionDao
 import com.jb.leitnerbox.core.data.repository.CardRepositoryImpl
@@ -20,9 +22,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
-
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -72,7 +75,17 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepository {
-        return SettingsRepositoryImpl(context.dataStore)
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<AppSettingsProto> {
+        return DataStoreFactory.create(
+            serializer = AppSettingsSerializer,
+            produceFile = { context.dataStoreFile("app_settings.pb") },
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsRepository(dataStore: DataStore<AppSettingsProto>): SettingsRepository {
+        return SettingsRepositoryImpl(dataStore)
     }
 }

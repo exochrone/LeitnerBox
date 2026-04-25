@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "com.jb.leitnerbox.core.data";
+option java_multiple_files = true;
+
+message AppSettingsProto {
+    repeated int32 excluded_days = 1;  // values DayOfWeek (1=MONDAY...7=SUNDAY)
+    int32 notification_hour = 2;
+    int32 notification_minute = 3;
+    int32 theme = 4;                   // 0=System, 1=Light, 2=Dark
+}

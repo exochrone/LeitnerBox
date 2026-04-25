@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -26,9 +27,45 @@ android {
         jvmTarget = "17"
     }
 
+    sourceSets {
+        getByName("main") {
+            java.srcDir("build/generated/source/proto/debug/java")
+            java.srcDir("build/generated/source/proto/debug/kotlin")
+            java.srcDir("build/generated/source/proto/release/java")
+            java.srcDir("build/generated/source/proto/release/kotlin")
+        }
+    }
+
     testOptions {
         unitTests.all {
             it.useJUnitPlatform()
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.named("kspDebugKotlin").configure {
+        dependsOn("generateDebugProto")
+    }
+    tasks.named("kspReleaseKotlin").configure {
+        dependsOn("generateReleaseProto")
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+                create("kotlin") {
+                    option("lite")
+                }
+            }
         }
     }
 }
@@ -40,7 +77,8 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore)
+    implementation(libs.protobuf.kotlin.lite)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
