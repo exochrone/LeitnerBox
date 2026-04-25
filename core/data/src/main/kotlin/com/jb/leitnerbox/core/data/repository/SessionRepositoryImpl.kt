@@ -37,4 +37,8 @@ class SessionRepositoryImpl @Inject constructor(
         val endOfDay = date.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         return sessionDao.getSessionForDate(startOfDay, endOfDay)?.toDomain()
     }
+
+    override suspend fun deleteAllSessions() {
+        sessionDao.deleteAllSessions()
+    }
 }

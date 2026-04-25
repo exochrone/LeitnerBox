@@ -10,4 +10,5 @@ interface SessionRepository {
     suspend fun deleteSession(session: Session)
     suspend fun getLastSession(): Session?
     suspend fun getSessionForDate(date: LocalDate): Session?
+    suspend fun deleteAllSessions()
 }

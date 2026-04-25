@@ -164,6 +164,7 @@ class SessionViewModel @Inject constructor(
     }
 
     private suspend fun onSessionComplete() {
+        android.util.Log.d("SessionVM", "onSessionComplete called — saving session")
         val state = _uiState.value
         val session = Session(
             date = Instant.now(),
@@ -176,6 +177,7 @@ class SessionViewModel @Inject constructor(
             isReported = false
         )
         saveSession(session)
+        android.util.Log.d("SessionVM", "Session saved")
 
         // Stocker le résultat pour l'écran suivant
         sessionStateHolder.lastSessionResult = session

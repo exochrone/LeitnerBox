@@ -2,6 +2,7 @@ package com.jb.leitnerbox.feature.settings.ui.debug
 
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.repository.SessionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +17,7 @@ object DebugModule {
     @Singleton
     fun provideDebugDataSeeder(
         deckRepository: DeckRepository,
-        cardRepository: CardRepository
-    ): DebugDataSeeder = DebugDataSeeder(deckRepository, cardRepository)
+        cardRepository: CardRepository,
+        sessionRepository: SessionRepository
+    ): DebugDataSeeder = DebugDataSeeder(deckRepository, cardRepository, sessionRepository)
 }

@@ -22,4 +22,7 @@ interface SessionDao {
 
     @androidx.room.Delete
     suspend fun delete(session: SessionEntity)
+
+    @Query("DELETE FROM sessions")
+    suspend fun deleteAllSessions()
 }

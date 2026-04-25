@@ -27,6 +27,8 @@ class DebugViewModel @Inject constructor(
 
     fun cleanTestData() = launch("🗑 Données [TEST] supprimées") { seeder.cleanAllTestData() }
 
+    fun clearSessions() = launch("🗑 Table sessions vidée") { seeder.clearAllSessions() }
+
     private fun launch(successMessage: String, block: suspend () -> Unit) {
         viewModelScope.launch {
             try {

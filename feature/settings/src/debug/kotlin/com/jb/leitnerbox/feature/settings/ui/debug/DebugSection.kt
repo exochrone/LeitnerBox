@@ -42,6 +42,13 @@ fun DebugSection(
         viewModel.cleanTestData()
     }
 
+    DebugSectionTitle("Données de session")
+
+    DebugButton(
+        label = "🗑 Vider la table sessions",
+        isDestructive = true
+    ) { viewModel.clearSessions() }
+
     DebugSectionTitle("Simulation du temps")
 
     Text(

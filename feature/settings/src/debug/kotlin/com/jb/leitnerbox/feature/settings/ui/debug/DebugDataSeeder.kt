@@ -3,6 +3,7 @@ package com.jb.leitnerbox.feature.settings.ui.debug
 import com.jb.leitnerbox.core.domain.model.*
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.DeckRepository
+import com.jb.leitnerbox.core.domain.repository.SessionRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import kotlinx.coroutines.flow.first
 import java.time.Instant
@@ -10,7 +11,8 @@ import java.time.temporal.ChronoUnit
 
 class DebugDataSeeder(
     private val deckRepository: DeckRepository,
-    private val cardRepository: CardRepository
+    private val cardRepository: CardRepository,
+    private val sessionRepository: SessionRepository
 ) {
     private val normalizer = AnswerNormalizer()
 
@@ -214,6 +216,10 @@ class DebugDataSeeder(
             .first()
             .filter { it.name.startsWith(TEST_PREFIX) }
             .forEach { deck -> deckRepository.deleteDeck(deck) }
+    }
+
+    suspend fun clearAllSessions() {
+        sessionRepository.deleteAllSessions()
     }
 
     private suspend fun insertCard(
