@@ -2,4 +2,5 @@
     <string name="back">Retour</string>
     <string name="deck_next_session">Prochaine session : %1$s</string>
     <string name="deck_launch_button">LANCER</string>
+    <string name="deck_list_title">%1$d decks</string>
 </resources>

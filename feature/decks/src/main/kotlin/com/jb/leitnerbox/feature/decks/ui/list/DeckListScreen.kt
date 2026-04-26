@@ -8,10 +8,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.components.EmptyState
+import com.jb.leitnerbox.feature.decks.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -60,7 +62,7 @@ fun DeckListScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text("${decks.size} decks") })
+            TopAppBar(title = { Text(stringResource(R.string.deck_list_title, decks.size)) })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddDeckClick) {

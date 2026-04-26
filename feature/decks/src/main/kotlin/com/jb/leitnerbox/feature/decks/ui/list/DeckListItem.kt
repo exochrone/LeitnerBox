@@ -48,8 +48,8 @@ internal fun DeckListItem(
             // ── Ligne 1 : Titre (uniquement, gras) ───────────────────────────
             Text(
                 text     = item.deck.name,
-                style    = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                style    = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Black,
                 color    = LeitnerBoxDark,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -117,7 +117,7 @@ private fun LeitnerBoxesRow(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .aspectRatio(1.2f)
+                        .height(24.dp)
                         .background(color),
                     contentAlignment = Alignment.Center
                 ) {
