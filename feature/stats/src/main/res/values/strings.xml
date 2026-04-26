@@ -1,0 +1,17 @@
+<resources>
+    <string name="stats_title">Statistiques</string>
+    <string name="stats_total_cards">Total</string>
+    <string name="stats_mastered">Maîtrisées</string>
+    <string name="stats_success_rate">Réussite</string>
+    <string name="stats_no_data">--</string>
+    <string name="stats_total_sessions">%1$d session(s) réalisée(s)</string>
+    <string name="stats_deck_summary">%1$d / %2$d cartes maîtrisées</string>
+    <string name="stats_box_label">Boîte %1$d</string>
+    <string name="stats_card_count">%1$d carte(s)</string>
+    <string name="stats_unknown_deck">Deck inconnu</string>
+    <string name="stats_multiple_decks">%1$s et %2$d autre(s)</string>
+    <string name="stats_cards_reviewed">%1$d carte(s)</string>
+    <string name="stats_empty_global">Créez votre premier deck pour commencer à réviser !</string>
+    <string name="stats_empty_history">Commencez une révision pour voir votre historique ici !</string>
+    <string name="stats_no_decks">Aucun deck disponible.</string>
+</resources>

@@ -1,0 +1,20 @@
+<resources>
+    <string name="import_export_title">Import / Export</string>
+    <string name="import_section_title">Importer des cartes</string>
+    <string name="import_deck_target">Les cartes seront importées dans : %1$s</string>
+    <string name="import_select_file">Sélectionner un fichier CSV</string>
+    <string name="import_success">%1$d carte(s) importée(s) avec succès</string>
+    <string name="import_duplicates_title">Import bloqué — %1$d doublon(s)</string>
+    <string name="import_duplicate_in_file">doublon dans le fichier</string>
+    <string name="import_duplicate_in_deck">doublon avec le deck</string>
+    <string name="import_duplicate_entry">Ligne %1$d : « %2$s » (%3$s)</string>
+    <string name="import_error_empty">Le fichier est vide.</string>
+    <string name="import_error_encoding">L\'encodage du fichier n\'est pas reconnu. Exportez-le en UTF-8.</string>
+    <string name="import_error_format">Le format du fichier est invalide. Vérifiez qu\'il respecte le format CSV standard.</string>
+    <string name="import_error_missing_columns">Colonnes obligatoires manquantes : « question » et « reponse » sont requis.</string>
+    <string name="export_section_title">Exporter ce deck</string>
+    <string name="export_card_count">%1$d carte(s) à exporter</string>
+    <string name="export_button">Exporter en CSV</string>
+    <string name="export_empty_deck">Aucune carte à exporter</string>
+    <string name="close">Fermer</string>
+</resources>

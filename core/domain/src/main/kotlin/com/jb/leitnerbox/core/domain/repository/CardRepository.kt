@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardRepository {
     fun getCardsByDeckId(deckId: Long): Flow<List<Card>>
+    fun getAllCards(): Flow<List<Card>>
+    fun getMasteredCards(): Flow<List<Card>>
     fun getCardById(id: Long): Flow<Card?>
     fun getCardsToReview(deckId: Long): Flow<List<Card>>
     suspend fun insertCard(card: Card): Long

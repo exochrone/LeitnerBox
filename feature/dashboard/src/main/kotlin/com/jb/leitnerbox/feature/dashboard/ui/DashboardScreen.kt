@@ -13,7 +13,9 @@ import com.jb.leitnerbox.feature.dashboard.R
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    onStartSession: () -> Unit
+    onStartSession: () -> Unit,
+    onStatsClick: () -> Unit,
+    onChallengeClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -25,6 +27,8 @@ fun DashboardScreen(
         DashboardContent(
             uiState = uiState,
             onStartSession = onStartSession,
+            onStatsClick = onStatsClick,
+            onChallengeClick = onChallengeClick,
             modifier = Modifier.padding(padding)
         )
     }

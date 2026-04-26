@@ -17,6 +17,18 @@ class CardRepositoryImpl(
         }
     }
 
+    override fun getAllCards(): Flow<List<Card>> {
+        return dao.getAllCards().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getMasteredCards(): Flow<List<Card>> {
+        return dao.getMasteredCards().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     override fun getCardById(id: Long): Flow<Card?> {
         return dao.getCardById(id).map { it?.toDomain() }
     }

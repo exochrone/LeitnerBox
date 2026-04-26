@@ -20,4 +20,9 @@ sealed class Screen(val route: String) {
     object SessionSelection : Screen("session/selection")
     object Session : Screen("session/active")
     object SessionResult : Screen("session/result")
+    object ImportExport : Screen("import-export/{deckId}") {
+        fun createRoute(deckId: Long) = "import-export/$deckId"
+    }
+    object Stats : Screen("stats")
+    object Challenge : Screen("challenge")
 }

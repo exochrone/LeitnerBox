@@ -16,6 +16,8 @@ import com.jb.leitnerbox.feature.dashboard.R
 internal fun DashboardContent(
     uiState: DashboardUiState,
     onStartSession: () -> Unit,
+    onStatsClick: () -> Unit,
+    onChallengeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -26,14 +28,20 @@ internal fun DashboardContent(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             is DashboardUiState.Empty -> {
-                EmptyDashboard(streak = uiState.streak)
+                EmptyDashboard(
+                    streak = uiState.streak,
+                    onStatsClick = onStatsClick,
+                    onChallengeClick = onChallengeClick
+                )
             }
             is DashboardUiState.Success -> {
                 SessionSummary(
                     totalCards = uiState.totalCardsToReview,
                     deckCount = uiState.decksWithReviews,
                     streak = uiState.streak,
-                    onStartSession = onStartSession
+                    onStartSession = onStartSession,
+                    onStatsClick = onStatsClick,
+                    onChallengeClick = onChallengeClick
                 )
             }
         }
@@ -41,7 +49,11 @@ internal fun DashboardContent(
 }
 
 @Composable
-private fun EmptyDashboard(streak: Int) {
+private fun EmptyDashboard(
+    streak: Int,
+    onStatsClick: () -> Unit,
+    onChallengeClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,6 +62,15 @@ private fun EmptyDashboard(streak: Int) {
     ) {
         StreakBadge(streak = streak)
         
+        Row {
+            TextButton(onClick = onStatsClick) {
+                Text("Voir mes statistiques")
+            }
+            TextButton(onClick = onChallengeClick) {
+                Text("Challenge")
+            }
+        }
+
         Box(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
@@ -97,7 +118,9 @@ private fun SessionSummary(
     totalCards: Int,
     deckCount: Int,
     streak: Int,
-    onStartSession: () -> Unit
+    onStartSession: () -> Unit,
+    onStatsClick: () -> Unit,
+    onChallengeClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -107,6 +130,15 @@ private fun SessionSummary(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         StreakBadge(streak = streak)
+
+        Row {
+            TextButton(onClick = onStatsClick) {
+                Text("Voir mes statistiques")
+            }
+            TextButton(onClick = onChallengeClick) {
+                Text("Challenge")
+            }
+        }
 
         Card(
             modifier = Modifier.fillMaxWidth(),

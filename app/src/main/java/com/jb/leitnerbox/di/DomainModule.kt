@@ -8,10 +8,14 @@ import com.jb.leitnerbox.core.domain.repository.DeckRepository
 import com.jb.leitnerbox.core.domain.repository.SessionRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
+import com.jb.leitnerbox.core.domain.csv.CsvExporter
+import com.jb.leitnerbox.core.domain.csv.CsvParser
 import com.jb.leitnerbox.core.domain.usecase.card.*
 import com.jb.leitnerbox.core.domain.usecase.deck.*
+import com.jb.leitnerbox.core.domain.usecase.importexport.*
 import com.jb.leitnerbox.core.domain.usecase.session.*
 import com.jb.leitnerbox.core.domain.usecase.settings.*
+import com.jb.leitnerbox.core.domain.usecase.stats.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -182,4 +186,56 @@ object DomainModule {
     @Provides
     @Singleton
     fun provideSetNotificationTimeUseCase(repository: SettingsRepository) = SetNotificationTimeUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideCsvParser(): CsvParser = CsvParser()
+
+    @Provides
+    @Singleton
+    fun provideCsvExporter(): CsvExporter = CsvExporter()
+
+    @Provides
+    @Singleton
+    fun provideImportCardsUseCase(
+        cardRepository: CardRepository,
+        parser: CsvParser,
+        answerNormalizer: AnswerNormalizer
+    ): ImportCardsUseCase = ImportCardsUseCase(cardRepository, parser, answerNormalizer)
+
+    @Provides
+    @Singleton
+    fun provideExportDeckUseCase(
+        cardRepository: CardRepository,
+        exporter: CsvExporter
+    ): ExportDeckUseCase = ExportDeckUseCase(cardRepository, exporter)
+
+    @Provides
+    @Singleton
+    fun provideGetGlobalSummaryUseCase(
+        cardRepository: CardRepository,
+        sessionRepository: SessionRepository,
+        deckRepository: DeckRepository
+    ): GetGlobalSummaryUseCase = GetGlobalSummaryUseCase(cardRepository, sessionRepository, deckRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetDeckStatsUseCase(
+        cardRepository: CardRepository,
+        deckRepository: DeckRepository,
+        sessionRepository: SessionRepository
+    ): GetDeckStatsUseCase = GetDeckStatsUseCase(cardRepository, deckRepository, sessionRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetSessionHistoryUseCase(
+        sessionRepository: SessionRepository,
+        deckRepository: DeckRepository
+    ): GetSessionHistoryUseCase = GetSessionHistoryUseCase(sessionRepository, deckRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetMasteredCardsUseCase(
+        cardRepository: CardRepository
+    ): GetMasteredCardsUseCase = GetMasteredCardsUseCase(cardRepository)
 }

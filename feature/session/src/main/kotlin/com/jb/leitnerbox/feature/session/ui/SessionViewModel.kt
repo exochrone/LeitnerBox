@@ -56,7 +56,8 @@ class SessionViewModel @Inject constructor(
                     successCount = 0,
                     advancedCount = 0,
                     retreatedCount = 0,
-                    masteredThisSession = 0
+                    masteredThisSession = 0,
+                    isChallenge = sessionStateHolder.isChallengeMode
                 )
             }
         } else {
@@ -101,27 +102,43 @@ class SessionViewModel @Inject constructor(
     fun onEvaluate(isCorrect: Boolean) {
         val currentState = _uiState.value
         val currentCard = currentState.currentCard ?: return
-        val deck = getDeckForCard(currentCard) ?: return
-        val isMastered = isCorrect && currentCard.box == deck.intervals.size
+        val isChallenge = currentState.isChallenge
 
         viewModelScope.launch {
-            evaluateCard(currentCard, deck, isCorrect)
-            
-            _uiState.update {
-                it.copy(
-                    evaluatedCount = it.evaluatedCount + 1,
-                    successCount = if (isCorrect) it.successCount + 1 else it.successCount,
-                    advancedCount = if (isCorrect && !isMastered) it.advancedCount + 1 else it.advancedCount,
-                    retreatedCount = if (!isCorrect && currentCard.box > 1) it.retreatedCount + 1 else it.retreatedCount,
-                    masteredThisSession = if (isMastered) it.masteredThisSession + 1 else it.masteredThisSession,
-                    isMasteredTransition = isMastered
-                )
-            }
+            if (isChallenge) {
+                // In challenge mode, cards stay mastered. We just update UI stats.
+                _uiState.update {
+                    it.copy(
+                        evaluatedCount = it.evaluatedCount + 1,
+                        successCount = if (isCorrect) it.successCount + 1 else it.successCount,
+                        masteredThisSession = if (isCorrect) it.masteredThisSession + 1 else it.masteredThisSession
+                    )
+                }
+                if (!currentCard.needsInput) {
+                    moveToNextCard()
+                }
+            } else {
+                val deck = getDeckForCard(currentCard) ?: return@launch
+                val isMastered = isCorrect && currentCard.box == deck.intervals.size
+                
+                evaluateCard(currentCard, deck, isCorrect)
+                
+                _uiState.update {
+                    it.copy(
+                        evaluatedCount = it.evaluatedCount + 1,
+                        successCount = if (isCorrect) it.successCount + 1 else it.successCount,
+                        advancedCount = if (isCorrect && !isMastered) it.advancedCount + 1 else it.advancedCount,
+                        retreatedCount = if (!isCorrect && currentCard.box > 1) it.retreatedCount + 1 else it.retreatedCount,
+                        masteredThisSession = if (isMastered) it.masteredThisSession + 1 else it.masteredThisSession,
+                        isMasteredTransition = isMastered
+                    )
+                }
 
-            if (isMastered) {
-                _events.send(SessionUiEvent.CardMastered)
-            } else if (!currentCard.needsInput) {
-                moveToNextCard()
+                if (isMastered) {
+                    _events.send(SessionUiEvent.CardMastered)
+                } else if (!currentCard.needsInput) {
+                    moveToNextCard()
+                }
             }
         }
     }
@@ -170,12 +187,18 @@ class SessionViewModel @Inject constructor(
             deckIds = sessionStateHolder.selectedItems.map { it.deck.id }.distinct(),
             cardCount = state.cards.size,
             successCount = state.successCount,
-            masteredCount = state.masteredThisSession,
+            masteredCount = if (state.isChallenge) 0 else state.masteredThisSession, // No new mastery in challenge
             advancedCount = state.advancedCount,
             retreatedCount = state.retreatedCount,
             isReported = false
         )
+        // We might choose NOT to save challenge sessions to the history
+        // to avoid skewing stats. Roadmap doesn't explicitly say.
+        // I'll save it for now, as it's activity.
         saveSession(session)
+
+        // Reset challenge mode flag
+        sessionStateHolder.isChallengeMode = false
 
         // Stocker le résultat pour l'écran suivant
         sessionStateHolder.lastSessionResult = session

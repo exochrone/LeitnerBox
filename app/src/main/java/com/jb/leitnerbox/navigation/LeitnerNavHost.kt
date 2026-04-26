@@ -26,6 +26,9 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
 import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import com.jb.leitnerbox.feature.session.ui.SessionScreen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
+import com.jb.leitnerbox.feature.importexport.ui.ImportExportScreen
+import com.jb.leitnerbox.feature.stats.ui.StatsScreen
+import com.jb.leitnerbox.feature.challenge.ui.ChallengeScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -47,6 +50,12 @@ fun LeitnerNavHost(
                 viewModel = viewModel,
                 onStartSession = {
                     navController.navigate(Screen.SessionSelection.route)
+                },
+                onStatsClick = {
+                    navController.navigate(Screen.Stats.route)
+                },
+                onChallengeClick = {
+                    navController.navigate(Screen.Challenge.route)
                 }
             )
         }
@@ -91,6 +100,9 @@ fun LeitnerNavHost(
                 },
                 onBoxClick = { deckId, boxIndex ->
                     navController.navigate(Screen.BoxDetail.createRoute(deckId, boxIndex))
+                },
+                onImportExportClick = { deckId ->
+                    navController.navigate(Screen.ImportExport.createRoute(deckId))
                 },
                 onDeckDeleted = { deck ->
                     lastDeletedDeck = deck
@@ -161,6 +173,26 @@ fun LeitnerNavHost(
             SessionResultScreen(
                 onFinish = {
                     navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                }
+            )
+        }
+        composable(
+            route = Screen.ImportExport.route,
+            arguments = listOf(navArgument("deckId") { type = NavType.LongType })
+        ) {
+            ImportExportScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.Stats.route) {
+            StatsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.Challenge.route) {
+            ChallengeScreen(
+                onStartChallenge = {
+                    navController.navigate(Screen.Session.route)
                 }
             )
         }

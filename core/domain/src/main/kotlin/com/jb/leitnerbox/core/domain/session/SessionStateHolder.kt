@@ -8,4 +8,5 @@ class SessionStateHolder {
     var pendingCards: List<Card> = emptyList()
     var selectedItems: List<SessionPlanItem> = emptyList()
     var lastSessionResult: Session? = null
+    var isChallengeMode: Boolean = false
 }

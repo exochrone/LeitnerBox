@@ -17,6 +17,9 @@ interface CardDao {
     @Query("SELECT * FROM cards")
     fun getAllCards(): Flow<List<CardEntity>>
 
+    @Query("SELECT * FROM cards WHERE isLearned = 1")
+    fun getMasteredCards(): Flow<List<CardEntity>>
+
     @Query("SELECT * FROM cards WHERE id = :id")
     fun getCardById(id: Long): Flow<CardEntity?>
 
