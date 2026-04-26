@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>KaTeX Render</title>
 <link rel="stylesheet" href="katex.min.css">
 <script src="katex.min.js"></script>
+<script src="auto-render.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -15,6 +17,7 @@
     padding: 8px;
     word-wrap: break-word;
     line-height: 1.6;
+    overflow: hidden;
   }
   .katex { font-size: 1.1em; }
   .katex-display { margin: 0.5em 0; overflow-x: auto; }
@@ -23,17 +26,32 @@
 <body>
   <div id="content"></div>
   <script>
-    const raw = `{{LATEX_CONTENT}}`;
-    const el = document.getElementById('content');
-    try {
-      katex.render(raw, el, {
-        throwOnError: false,
-        displayMode: {{DISPLAY_MODE}},
-        output: 'html'
-      });
-    } catch(e) {
-      el.textContent = raw;
+    // Injecter le texte brut (avec délimiteurs $)
+    const content = document.getElementById('content');
+    content.textContent = `{{LATEX_CONTENT}}`;
+
+    // auto-render détecte et rend les formules $...$ et $$...$$
+    renderMathInElement(content, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true  },
+        { left: "$",  right: "$",  display: false }
+      ],
+      throwOnError: false
+    });
+
+    // Signaler la hauteur au composant Android
+    function reportHeight() {
+        if (window.Android && window.Android.reportHeight) {
+            const height = document.body.getBoundingClientRect().height;
+            // On envoie la hauteur en pixels, elle sera convertie en DP côté Kotlin si nécessaire
+            // Mais ici on va considérer que le ratio px/dp est géré ou qu'on passe des pixels réels
+            window.Android.reportHeight(Math.ceil(height));
+        }
     }
+
+    // Exécuter après un court délai pour laisser le temps au rendu de se stabiliser
+    setTimeout(reportHeight, 50);
+    // Optionnel : observer les changements de taille si contenu dynamique (pas le cas ici)
   </script>
 </body>
 </html>
