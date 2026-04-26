@@ -6,8 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -85,25 +83,25 @@ fun FlipCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState()),
+                    .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
                 if (rotation <= 90f) {
                     // Recto
-                    Text(
+                    MathText(
                         text = recto,
                         style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     )
                 } else {
                     // Verso
-                    Text(
+                    MathText(
                         text = verso,
                         style = MaterialTheme.typography.headlineSmall,
-                        textAlign = TextAlign.Center,
                         modifier = Modifier
+                            .fillMaxWidth()
                             .graphicsLayer {
                                 rotationY = 180f
                             }

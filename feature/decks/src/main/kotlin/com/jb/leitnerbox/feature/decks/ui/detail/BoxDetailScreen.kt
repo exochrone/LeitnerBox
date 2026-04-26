@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.ui.components.MathText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -53,10 +54,10 @@ fun BoxDetailScreen(
                 items(cards) { card ->
                     ListItem(
                         headlineContent = {
-                            Text(
+                            MathText(
                                 text = card.recto,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         },
                         supportingContent = {

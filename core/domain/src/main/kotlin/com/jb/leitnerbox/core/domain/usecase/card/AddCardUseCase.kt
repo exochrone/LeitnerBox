@@ -3,6 +3,7 @@ package com.jb.leitnerbox.core.domain.usecase.card
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
+import com.jb.leitnerbox.core.domain.utils.LatexDetector
 import kotlinx.coroutines.flow.first
 import java.time.Instant
 
@@ -36,7 +37,8 @@ class AddCardUseCase(
         val cardToInsert = card.copy(
             rectoNormalized = rectoNormalized,
             nextReviewDate = card.nextReviewDate ?: futureDate ?: now,
-            answerNormalized = answerNormalizer.normalize(card.verso)
+            answerNormalized = answerNormalizer.normalize(card.verso),
+            needsInput = if (LatexDetector.containsLatex(card.verso)) false else card.needsInput
         )
 
         return Result.success(repository.insertCard(cardToInsert))

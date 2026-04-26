@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="katex.min.css">
+<script src="katex.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, sans-serif;
+    font-size: {{FONT_SIZE}}px;
+    color: {{TEXT_COLOR}};
+    background: transparent;
+    padding: 8px;
+    word-wrap: break-word;
+    line-height: 1.6;
+  }
+  .katex { font-size: 1.1em; }
+  .katex-display { margin: 0.5em 0; overflow-x: auto; }
+</style>
+</head>
+<body>
+  <div id="content"></div>
+  <script>
+    const raw = `{{LATEX_CONTENT}}`;
+    const el = document.getElementById('content');
+    try {
+      katex.render(raw, el, {
+        throwOnError: false,
+        displayMode: {{DISPLAY_MODE}},
+        output: 'html'
+      });
+    } catch(e) {
+      el.textContent = raw;
+    }
+  </script>
+</body>
+</html>

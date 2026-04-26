@@ -12,6 +12,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.domain.utils.LatexDetector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,11 +95,21 @@ fun CardUpdateScreen(
             ) {
                 Checkbox(
                     checked = uiState.needsInput,
-                    onCheckedChange = viewModel::onNeedsInputChange
+                    onCheckedChange = viewModel::onNeedsInputChange,
+                    enabled = !LatexDetector.containsLatex(uiState.verso)
                 )
                 Text(
                     text = "Saisie requise",
                     style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (LatexDetector.containsLatex(uiState.verso)) {
+                Text(
+                    text = "Le verso contient une formule LaTeX — la saisie clavier est désactivée automatiquement.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 12.dp)
                 )
             }
 

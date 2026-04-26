@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.usecase.card.AddCardUseCase
+import com.jb.leitnerbox.core.domain.utils.LatexDetector
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +50,14 @@ class CardEditViewModel @Inject constructor(
     }
 
     fun onVersoChange(text: String) {
-        _uiState.update { it.copy(verso = text, versoError = false) }
+        val containsLatex = LatexDetector.containsLatex(text)
+        _uiState.update { 
+            it.copy(
+                verso = text, 
+                versoError = false,
+                needsInput = if (containsLatex) false else it.needsInput
+            ) 
+        }
     }
 
     fun onNeedsInputChange(needsInput: Boolean) {

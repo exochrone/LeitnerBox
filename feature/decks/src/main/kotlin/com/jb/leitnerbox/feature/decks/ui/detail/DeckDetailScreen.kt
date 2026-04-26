@@ -49,6 +49,7 @@ fun DeckDetailScreen(
     
     val deckColor = uiState.deck?.resolveColor() ?: MaterialTheme.colorScheme.onSurface
     val boxCount = uiState.deck?.intervals?.size ?: 5
+    val summaryTextColor = MaterialTheme.colorScheme.surface
     
     val boxDarkColor = if (uiState.deck?.color == DEFAULT_DECK_COLOR)
         DefaultDeckColorDark
@@ -150,7 +151,7 @@ fun DeckDetailScreen(
                 FloatingActionButton(
                     onClick = { onAddCardClick(it.id) },
                     containerColor = deckColor,
-                    contentColor = Color.White
+                    contentColor = summaryTextColor
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Ajouter une carte")
                 }
@@ -195,13 +196,13 @@ fun DeckDetailScreen(
                                     Text(
                                         text = "${uiState.cards.size} cartes",
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = Color.White
+                                        color = summaryTextColor
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     DeckProgressBar(
                                         progress = uiState.progress,
                                         color = couleur2,
-                                        labelColor = Color.White
+                                        labelColor = summaryTextColor
                                     )
                                 }
                             }
