@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -48,7 +47,6 @@ fun MathText(
     }
 
     val context = LocalContext.current
-    val density = LocalDensity.current
     val textColorHex = "#%06X".format(color.toArgb() and 0xFFFFFF)
     val fontSizeSp = style.fontSize.value.takeIf { !it.isNaN() && it > 0 } ?: 16f
 
@@ -101,10 +99,10 @@ fun MathText(
         modifier = modifier
             .fillMaxWidth()
             .height(
-                if (contentHeightPx > 0) {
-                    with(density) { contentHeightPx.toDp() }
+                if (contentHeightPx > 20) {
+                    contentHeightPx.dp
                 } else {
-                    40.dp // Hauteur minimale par défaut pendant le chargement
+                    80.dp // Hauteur par défaut pendant le chargement
                 }
             )
     )
