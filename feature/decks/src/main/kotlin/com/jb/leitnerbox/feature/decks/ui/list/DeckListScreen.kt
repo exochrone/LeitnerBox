@@ -1,7 +1,7 @@
 package com.jb.leitnerbox.feature.decks.ui.list
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.ui.components.DeckProgressBar
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -91,7 +92,14 @@ fun DeckListScreen(
                             ) 
                         },
                         supportingContent = { 
-                            Text("${item.deck.intervals.size} boîtes • ${item.cardCount} cartes") 
+                            Column {
+                                Text("${item.deck.intervals.size} boîtes • ${item.cardCount} cartes")
+                                Spacer(Modifier.height(4.dp))
+                                DeckProgressBar(
+                                    progress = item.progress,
+                                    showLabel = false
+                                )
+                            }
                         },
                         modifier = Modifier
                             .clickable { onDeckClick(item.deck.id) }

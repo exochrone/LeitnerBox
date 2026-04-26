@@ -23,25 +23,40 @@ class DeckDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val deckId: Long = checkNotNull(savedStateHandle["deckId"])
+    private val deckId: Long = checkNotNull(savedStateHandle["deckId"])
 
-    val deck: StateFlow<Deck?> = getDeckByIdUseCase(deckId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = null
-        )
+    val uiState: StateFlow<DeckDetailUiState> = combine(
+        getDeckByIdUseCase(deckId),
+        getCardsUseCase(deckId)
+    ) { deck, cards ->
+        if (deck == null) {
+            DeckDetailUiState(isLoading = false)
+        } else {
+            val progress = computeProgress(cards, deck.intervals.size)
+            DeckDetailUiState(
+                deck = deck,
+                cards = cards,
+                progress = progress,
+                isLoading = false
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = DeckDetailUiState(isLoading = true)
+    )
 
-    val cards: StateFlow<List<Card>> = getCardsUseCase(deckId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
+    private fun computeProgress(cards: List<Card>, boxCount: Int): Float {
+        if (cards.isEmpty()) return 0f
+        val totalScore = cards.sumOf { card ->
+            if (card.isLearned) boxCount.toDouble() else (card.box - 1).toDouble()
+        }
+        return (totalScore / (cards.size * boxCount)).toFloat()
+    }
 
     fun deleteDeck(onDeleted: (Deck) -> Unit) {
         viewModelScope.launch {
-            deck.value?.let {
+            uiState.value.deck?.let {
                 val deckToDelete = it
                 deleteDeckUseCase(deckToDelete)
                 onDeleted(deckToDelete)
