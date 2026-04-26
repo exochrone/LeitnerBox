@@ -26,32 +26,33 @@
 <body>
   <div id="content"></div>
   <script>
-    // Injecter le texte brut (avec délimiteurs $)
     const content = document.getElementById('content');
     content.textContent = `{{LATEX_CONTENT}}`;
 
-    // auto-render détecte et rend les formules $...$ et $$...$$
     renderMathInElement(content, {
-      delimiters: [
-        { left: "$$", right: "$$", display: true  },
-        { left: "$",  right: "$",  display: false }
-      ],
-      throwOnError: false
+        delimiters: [
+            { left: "$$", right: "$$", display: true  },
+            { left: "$",  right: "$",  display: false }
+        ],
+        throwOnError: false
     });
 
-    // Signaler la hauteur au composant Android
     function reportHeight() {
-        if (window.Android && window.Android.reportHeight) {
-            const height = document.body.getBoundingClientRect().height;
-            // On envoie la hauteur en pixels, elle sera convertie en DP côté Kotlin si nécessaire
-            // Mais ici on va considérer que le ratio px/dp est géré ou qu'on passe des pixels réels
-            window.Android.reportHeight(Math.ceil(height));
+        const height = document.body.scrollHeight;
+        if (height > 0 && window.Android) {
+            window.Android.reportHeight(height);
         }
     }
 
-    // Exécuter après un court délai pour laisser le temps au rendu de se stabiliser
-    setTimeout(reportHeight, 50);
-    // Optionnel : observer les changements de taille si contenu dynamique (pas le cas ici)
+    // Attendre que les fonts soient chargées avant de mesurer
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function() {
+            setTimeout(reportHeight, 50);
+        });
+    } else {
+        // Fallback pour navigateurs sans document.fonts
+        setTimeout(reportHeight, 300);
+    }
   </script>
 </body>
 </html>
