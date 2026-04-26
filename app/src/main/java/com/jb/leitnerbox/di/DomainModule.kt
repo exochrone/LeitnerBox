@@ -67,7 +67,7 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideGetDeckProgressUseCase(repository: CardRepository): GetDeckProgressUseCase = GetDeckProgressUseCase(repository)
+    fun provideGetDeckSummaryUseCase(repository: CardRepository): GetDeckSummaryUseCase = GetDeckSummaryUseCase(repository)
 
     @Provides
     @Singleton

@@ -12,6 +12,11 @@ val Pink40 = Color(0xFF7D5260)
 
 // Evaluation Colors
 val SuccessGreen = Color(0xFF4CAF50)
+
+// Couleurs de référence pour le dégradé Leitner (rouge clair → rouge foncé)
+val LeitnerBoxLight = Color(0xFFFF9999)   // rouge très clair (boîte 1)
+val LeitnerBoxDark  = Color(0xFF8B0000)   // rouge sombre (dernière boîte)
+val LeitnerTrophyGold = Color(0xFFFFD700) // or pour le trophée
 val ErrorRed = Color(0xFFF44336)
 
 // Card Colors

@@ -1,6 +1,5 @@
 package com.jb.leitnerbox.feature.decks.ui.list
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,11 +8,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.ui.components.DeckProgressBar
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,7 +28,6 @@ fun DeckListScreen(
     val decks by viewModel.decks.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Pour éviter que la snackbar ne réapparaisse au retour sur l'écran
     DisposableEffect(Unit) {
         onDispose {
             onSnackbarDismissed()
@@ -40,7 +36,6 @@ fun DeckListScreen(
 
     LaunchedEffect(deletedDeck) {
         deletedDeck?.let { deck ->
-            // Timer pour auto-dismiss après 7 secondes
             val timerJob = launch {
                 delay(7000)
                 snackbarHostState.currentSnackbarData?.dismiss()
@@ -81,29 +76,18 @@ fun DeckListScreen(
                 modifier = Modifier.padding(padding)
             )
         } else {
-            LazyColumn(modifier = Modifier.padding(padding)) {
-                items(decks) { item ->
-                    ListItem(
-                        headlineContent = { 
-                            Text(
-                                text = item.deck.name,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            ) 
-                        },
-                        supportingContent = { 
-                            Column {
-                                Text("${item.deck.intervals.size} boîtes • ${item.cardCount} cartes")
-                                Spacer(Modifier.height(4.dp))
-                                DeckProgressBar(
-                                    progress = item.progress,
-                                    showLabel = false
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .clickable { onDeckClick(item.deck.id) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+            LazyColumn(
+                modifier = Modifier.padding(padding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(
+                    items = decks,
+                    key = { it.deck.id }
+                ) { item ->
+                    DeckListItem(
+                        item = item,
+                        onClick = { onDeckClick(item.deck.id) }
                     )
                 }
             }
