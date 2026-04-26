@@ -7,8 +7,12 @@ import com.jb.leitnerbox.core.ui.theme.LeitnerBoxDark
 object LeitnerColorUtils {
     /**
      * Calcule la couleur de la boîte [boxIndex] (0-indexé) parmi [totalBoxes] boîtes.
-     * Interpole linéairement entre une version claire et une version foncée [darkColor].
-     * Cette formule s'adapte automatiquement à tout nombre de boîtes.
+     *
+     * Le dégradé va de la teinte pastel (boîte 1) à la couleur pleine (dernière boîte) :
+     * - lightColor = lerp(blanc, darkColor, 0.15f) → pastel de la même teinte
+     * - Résultat   = lerp(lightColor, darkColor, fraction)
+     *
+     * Pour la couleur par défaut ("default"), passer defaultGrayDark comme darkColor.
      */
     fun boxColor(
         boxIndex: Int,
@@ -17,15 +21,7 @@ object LeitnerColorUtils {
     ): Color {
         if (totalBoxes <= 1) return darkColor
         val fraction = boxIndex.toFloat() / (totalBoxes - 1).toFloat()
-        
-        // Dériver une couleur claire depuis la foncée
-        val lightColor = darkColor.copy(
-            red = darkColor.red.coerceAtLeast(0.7f),
-            green = darkColor.green.coerceAtLeast(0.5f),
-            blue = darkColor.blue.coerceAtLeast(0.5f),
-            alpha = 1f
-        )
-        
+        val lightColor = lerp(Color.White, darkColor, 0.15f)
         return lerp(lightColor, darkColor, fraction)
     }
 }

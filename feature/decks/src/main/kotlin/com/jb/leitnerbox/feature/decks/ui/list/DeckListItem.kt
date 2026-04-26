@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.ui.theme.DefaultDeckColorDark
 import com.jb.leitnerbox.core.ui.theme.LeitnerTrophyGold
+import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
 import com.jb.leitnerbox.core.ui.utils.LeitnerColorUtils
 import com.jb.leitnerbox.core.ui.utils.resolveColor
 import com.jb.leitnerbox.feature.decks.R
@@ -60,11 +62,12 @@ internal fun DeckListItem(
 
             // ── Ligne 2 : Stats + Boîtes Leitner + badge maîtrise ────────────
             LeitnerBoxesRow(
+                item           = item,
                 totalCardCount = item.totalCardCount,
-                cardsPerBox   = item.cardsPerBox,
-                masteredCount = item.masteredCount,
-                boxCount      = item.deck.intervals.size,
-                deckColor     = deckColor
+                cardsPerBox    = item.cardsPerBox,
+                masteredCount  = item.masteredCount,
+                boxCount       = item.deck.intervals.size,
+                deckColor      = deckColor
             )
 
             // ── Ligne 3 : Barre de progression (couleur du deck) ─────────────
@@ -78,6 +81,7 @@ internal fun DeckListItem(
 
 @Composable
 private fun LeitnerBoxesRow(
+    item: DeckDisplayItem,
     totalCardCount: Int,
     cardsPerBox: Map<Int, Int>,
     masteredCount: Int,
@@ -110,14 +114,19 @@ private fun LeitnerBoxesRow(
 
         Spacer(Modifier.width(12.dp))
 
-        // Boîtes : weight(0.7f), couleur finale = deckColor
+        val boxDarkColor = if (item.deck.color == DEFAULT_DECK_COLOR)
+            DefaultDeckColorDark
+        else
+            deckColor
+
+        // Boîtes : weight(0.7f), couleur finale = boxDarkColor
         Row(modifier = Modifier.weight(0.7f)) {
             (1..boxCount).forEach { boxNumber ->
                 val count = cardsPerBox[boxNumber] ?: 0
                 val color = LeitnerColorUtils.boxColor(
                     boxIndex   = boxNumber - 1,
                     totalBoxes = boxCount,
-                    darkColor = deckColor
+                    darkColor = boxDarkColor
                 )
                 Box(
                     modifier = Modifier
