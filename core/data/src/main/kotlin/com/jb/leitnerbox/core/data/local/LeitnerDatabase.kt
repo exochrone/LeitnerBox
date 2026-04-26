@@ -15,7 +15,7 @@ import com.jb.leitnerbox.core.data.local.entity.SessionEntity
 
 @Database(
     entities = [DeckEntity::class, CardEntity::class, SessionEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(RoomConverters::class)
@@ -26,6 +26,15 @@ abstract class LeitnerDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "leitner_db"
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // US-COLOR-01 : Ajout de la colonne color à la table decks
+                database.execSQL(
+                    "ALTER TABLE decks ADD COLUMN color TEXT NOT NULL DEFAULT 'default'"
+                )
+            }
+        }
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {

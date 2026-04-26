@@ -23,9 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jb.leitnerbox.core.ui.theme.LeitnerBoxDark
 import com.jb.leitnerbox.core.ui.theme.LeitnerTrophyGold
 import com.jb.leitnerbox.core.ui.utils.LeitnerColorUtils
+import com.jb.leitnerbox.core.ui.utils.resolveColor
 import com.jb.leitnerbox.feature.decks.R
 import com.jb.leitnerbox.feature.decks.ui.list.model.DeckDisplayItem
 import com.jb.leitnerbox.feature.decks.utils.DeckDateFormatter
@@ -37,6 +37,8 @@ internal fun DeckListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val deckColor = item.deck.resolveColor()
+
     ElevatedCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth()
@@ -45,12 +47,12 @@ internal fun DeckListItem(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // ── Ligne 1 : Titre (uniquement, gras) ───────────────────────────
+            // ── Ligne 1 : Titre (uniquement, gras, couleur du deck) ──────────
             Text(
                 text     = item.deck.name,
                 style    = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black,
-                color    = LeitnerBoxDark,
+                color    = deckColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()
@@ -61,11 +63,12 @@ internal fun DeckListItem(
                 totalCardCount = item.totalCardCount,
                 cardsPerBox   = item.cardsPerBox,
                 masteredCount = item.masteredCount,
-                boxCount      = item.deck.intervals.size
+                boxCount      = item.deck.intervals.size,
+                deckColor     = deckColor
             )
 
-            // ── Ligne 3 : Barre de progression ───────────────────────────────
-            ProgressRow(progress = item.progress)
+            // ── Ligne 3 : Barre de progression (couleur du deck) ─────────────
+            ProgressRow(progress = item.progress, color = deckColor)
 
             // ── Ligne 4 : Footer date + bouton Lancer ────────────────────────
             FooterRow(nextReviewDate = item.nextReviewDate)
@@ -78,7 +81,8 @@ private fun LeitnerBoxesRow(
     totalCardCount: Int,
     cardsPerBox: Map<Int, Int>,
     masteredCount: Int,
-    boxCount: Int
+    boxCount: Int,
+    deckColor: Color
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -106,13 +110,14 @@ private fun LeitnerBoxesRow(
 
         Spacer(Modifier.width(12.dp))
 
-        // Boîtes : weight(0.7f)
+        // Boîtes : weight(0.7f), couleur finale = deckColor
         Row(modifier = Modifier.weight(0.7f)) {
             (1..boxCount).forEach { boxNumber ->
                 val count = cardsPerBox[boxNumber] ?: 0
                 val color = LeitnerColorUtils.boxColor(
                     boxIndex   = boxNumber - 1,
-                    totalBoxes = boxCount
+                    totalBoxes = boxCount,
+                    darkColor = deckColor
                 )
                 Box(
                     modifier = Modifier
@@ -153,7 +158,7 @@ private fun LeitnerBoxesRow(
 }
 
 @Composable
-private fun ProgressRow(progress: Float) {
+private fun ProgressRow(progress: Float, color: Color) {
     val animatedProgress by animateFloatAsState(
         targetValue  = progress,
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
@@ -170,13 +175,13 @@ private fun ProgressRow(progress: Float) {
                 .weight(1f)
                 .height(10.dp)
                 .clip(RoundedCornerShape(5.dp)),
-            color     = LeitnerBoxDark,
-            trackColor = LeitnerBoxDark.copy(alpha = 0.15f)
+            color     = color,
+            trackColor = color.copy(alpha = 0.15f)
         )
         Text(
             text  = "${(animatedProgress * 100).toInt()} %",
             style = MaterialTheme.typography.labelSmall,
-            color = LeitnerBoxDark,
+            color = color,
             modifier = Modifier.widthIn(min = 36.dp),
             textAlign = TextAlign.End
         )

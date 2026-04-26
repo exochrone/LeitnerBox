@@ -48,6 +48,10 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideUpdateDeckColorUseCase(repository: DeckRepository): UpdateDeckColorUseCase = UpdateDeckColorUseCase(repository)
+
+    @Provides
+    @Singleton
     fun provideDeleteDeckUseCase(repository: DeckRepository): DeleteDeckUseCase = DeleteDeckUseCase(repository)
 
     @Provides

@@ -8,15 +8,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.ui.components.ColorPickerDialog
 import com.jb.leitnerbox.core.ui.components.DeckProgressBar
 import com.jb.leitnerbox.core.ui.components.EmptyState
+import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
+import com.jb.leitnerbox.core.ui.utils.resolveColor
+import com.jb.leitnerbox.feature.decks.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +35,18 @@ fun DeckDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showColorPicker by remember { mutableStateOf(false) }
+
+    if (showColorPicker) {
+        ColorPickerDialog(
+            currentColorHex = uiState.deck?.color ?: DEFAULT_DECK_COLOR,
+            onColorSelected = { hex ->
+                viewModel.onColorSelected(hex)
+                showColorPicker = false
+            },
+            onDismiss = { showColorPicker = false }
+        )
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -41,6 +59,13 @@ fun DeckDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { showColorPicker = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = stringResource(R.string.deck_color_picker_cd),
+                            tint = uiState.deck?.resolveColor() ?: MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     IconButton(onClick = {
                         viewModel.deleteDeck { deletedDeck ->
                             onDeckDeleted(deletedDeck)
@@ -98,7 +123,10 @@ fun DeckDetailScreen(
                                         style = MaterialTheme.typography.titleMedium
                                     )
                                     Spacer(Modifier.height(8.dp))
-                                    DeckProgressBar(progress = uiState.progress)
+                                    DeckProgressBar(
+                                        progress = uiState.progress,
+                                        // On pourrait aussi colorer cette barre via DeckProgressBar
+                                    )
                                 }
                             }
                         }
@@ -118,7 +146,7 @@ fun DeckDetailScreen(
                                             Text(
                                                 text = " - $cardsInBox cartes",
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.primary,
+                                                color = currentDeck.resolveColor(),
                                                 modifier = Modifier.padding(start = 8.dp)
                                             )
                                         }

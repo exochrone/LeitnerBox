@@ -15,7 +15,8 @@ data class DeckEntity(
     val description: String,
     val intervals: List<Int>,
     val wrongAnswerRule: WrongAnswerRule,
-    val presentationOrder: PresentationOrder
+    val presentationOrder: PresentationOrder,
+    val color: String = "default"
 ) {
     fun toDomain(): Deck = Deck(
         id = id,
@@ -23,7 +24,8 @@ data class DeckEntity(
         description = description,
         intervals = intervals,
         wrongAnswerRule = wrongAnswerRule,
-        presentationOrder = presentationOrder
+        presentationOrder = presentationOrder,
+        color = color
     )
 
     companion object {
@@ -33,7 +35,8 @@ data class DeckEntity(
             description = deck.description,
             intervals = deck.intervals,
             wrongAnswerRule = deck.wrongAnswerRule,
-            presentationOrder = deck.presentationOrder
+            presentationOrder = deck.presentationOrder,
+            color = deck.color
         )
     }
 }

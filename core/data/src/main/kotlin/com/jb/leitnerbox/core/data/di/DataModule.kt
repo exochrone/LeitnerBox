@@ -44,7 +44,11 @@ object DataModule {
             LeitnerDatabase::class.java,
             LeitnerDatabase.DATABASE_NAME
         )
-            .addMigrations(LeitnerDatabase.MIGRATION_1_2, LeitnerDatabase.MIGRATION_2_3)
+            .addMigrations(
+                LeitnerDatabase.MIGRATION_1_2,
+                LeitnerDatabase.MIGRATION_2_3,
+                LeitnerDatabase.MIGRATION_3_4
+            )
             .build()
     }
 
