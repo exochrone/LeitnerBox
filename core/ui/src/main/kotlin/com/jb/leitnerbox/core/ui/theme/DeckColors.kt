@@ -12,8 +12,8 @@ val DeckColorPalette = listOf(
     Color(0xFF2E8B57),  // Vert mer
     Color(0xFF006400),  // Vert forêt
     Color(0xFF008B8B),  // Cyan sombre
-    Color(0xFF00008B),  // Bleu marine
-    Color(0xFF4B0082),  // Indigo
+    Color(0xFF1E4FBA),  // Bleu marine
+    Color(0xFF6A0DAD),  // Indigo
     Color(0xFF800080),  // Violet
     Color(0xFFC71585),  // Rose vif
     Color(0xFF696969),  // Gris ardoise

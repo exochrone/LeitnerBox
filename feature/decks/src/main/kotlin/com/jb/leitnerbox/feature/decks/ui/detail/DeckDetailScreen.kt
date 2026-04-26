@@ -8,13 +8,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
@@ -22,8 +26,11 @@ import com.jb.leitnerbox.core.ui.components.ColorPickerDialog
 import com.jb.leitnerbox.core.ui.components.DeckProgressBar
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
+import com.jb.leitnerbox.core.ui.theme.DefaultDeckColorDark
+import com.jb.leitnerbox.core.ui.utils.LeitnerColorUtils
 import com.jb.leitnerbox.core.ui.utils.resolveColor
 import com.jb.leitnerbox.feature.decks.R
+import com.jb.leitnerbox.feature.decks.utils.DeckDateFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +45,21 @@ fun DeckDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     var showColorPicker by remember { mutableStateOf(false) }
+    var showRenameDialog by remember { mutableStateOf(false) }
+    
+    val deckColor = uiState.deck?.resolveColor() ?: MaterialTheme.colorScheme.onSurface
+    val boxCount = uiState.deck?.intervals?.size ?: 5
+    
+    val boxDarkColor = if (uiState.deck?.color == DEFAULT_DECK_COLOR)
+        DefaultDeckColorDark
+    else
+        deckColor
+        
+    val couleur2 = LeitnerColorUtils.boxColor(
+        boxIndex = 1,
+        totalBoxes = boxCount,
+        darkColor = boxDarkColor
+    )
 
     if (showColorPicker) {
         ColorPickerDialog(
@@ -50,45 +72,86 @@ fun DeckDetailScreen(
         )
     }
 
+    if (showRenameDialog) {
+        RenameDeckDialog(
+            currentName = uiState.deck?.name ?: "",
+            onConfirm = { newName ->
+                viewModel.renameDeck(newName)
+                showRenameDialog = false
+            },
+            onDismiss = { showRenameDialog = false }
+        )
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(uiState.deck?.name ?: "Détails") },
+                title = { 
+                    Text(
+                        text = uiState.deck?.name ?: "Détails",
+                        color = deckColor,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickable { showRenameDialog = true }
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Retour",
+                            tint = deckColor
+                        )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showColorPicker = true }) {
+                    IconButton(
+                        onClick = { showColorPicker = true },
+                        modifier = Modifier.width(36.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Palette,
                             contentDescription = stringResource(R.string.deck_color_picker_cd),
-                            tint = uiState.deck?.resolveColor() ?: MaterialTheme.colorScheme.onSurface
+                            tint = deckColor
                         )
                     }
-                    IconButton(onClick = { 
-                        uiState.deck?.id?.let { onImportExportClick(it) } 
-                    }) {
+                    IconButton(
+                        onClick = { uiState.deck?.id?.let { onImportExportClick(it) } },
+                        modifier = Modifier.width(36.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.ImportExport,
-                            contentDescription = "Import / Export"
+                            contentDescription = "Import / Export",
+                            tint = deckColor
                         )
                     }
-                    IconButton(onClick = {
-                        viewModel.deleteDeck { deletedDeck ->
-                            onDeckDeleted(deletedDeck)
-                        }
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Supprimer le deck")
+                    IconButton(
+                        onClick = {
+                            viewModel.deleteDeck { deletedDeck ->
+                                onDeckDeleted(deletedDeck)
+                            }
+                        },
+                        modifier = Modifier.width(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Supprimer le deck",
+                            tint = deckColor
+                        )
                     }
+                    Spacer(Modifier.width(8.dp))
                 }
             )
         },
         floatingActionButton = {
             uiState.deck?.let {
-                FloatingActionButton(onClick = { onAddCardClick(it.id) }) {
+                FloatingActionButton(
+                    onClick = { onAddCardClick(it.id) },
+                    containerColor = deckColor,
+                    contentColor = Color.White
+                ) {
                     Icon(Icons.Default.Add, contentDescription = "Ajouter une carte")
                 }
             }
@@ -101,7 +164,7 @@ fun DeckDetailScreen(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = deckColor)
             }
         } else {
             uiState.deck?.let { currentDeck ->
@@ -116,7 +179,8 @@ fun DeckDetailScreen(
                     LazyColumn(
                         modifier = Modifier
                             .padding(padding)
-                            .fillMaxSize()
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 80.dp)
                     ) {
                         item {
                             Card(
@@ -124,18 +188,20 @@ fun DeckDetailScreen(
                                     .fillMaxWidth()
                                     .padding(16.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                    containerColor = deckColor
                                 )
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
-                                        "Total : ${uiState.cards.size} cartes",
-                                        style = MaterialTheme.typography.titleMedium
+                                        text = "${uiState.cards.size} cartes",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color.White
                                     )
                                     Spacer(Modifier.height(8.dp))
                                     DeckProgressBar(
                                         progress = uiState.progress,
-                                        // On pourrait aussi colorer cette barre via DeckProgressBar
+                                        color = couleur2,
+                                        labelColor = Color.White
                                     )
                                 }
                             }
@@ -148,62 +214,103 @@ fun DeckDetailScreen(
                                 .mapNotNull { it.nextReviewDate }
                                 .minOrNull()
                             
-                            ListItem(
-                                headlineContent = { 
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text("Boîte $boxNumber")
+                            val locale = LocalConfiguration.current.locales[0]
+                            val dateLabel = remember(firstCardNextReview) {
+                                DeckDateFormatter.format(firstCardNextReview, locale)
+                            }
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                                    .clickable { onBoxClick(currentDeck.id, index) },
+                                colors = CardDefaults.cardColors(
+                                    containerColor = couleur2
+                                ),
+                                shape = MaterialTheme.shapes.medium
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "Boîte $boxNumber",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = deckColor
+                                        )
                                         if (cardsInBox > 0) {
                                             Text(
-                                                text = " - $cardsInBox cartes",
+                                                text = "$cardsInBox cartes",
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = currentDeck.resolveColor(),
-                                                modifier = Modifier.padding(start = 8.dp)
+                                                fontWeight = FontWeight.Bold,
+                                                color = deckColor
                                             )
                                         }
                                     }
-                                },
-                                supportingContent = { 
-                                    Column {
-                                        if (cardsInBox > 0) {
-                                            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                                                .withZone(java.time.ZoneId.systemDefault())
-                                            
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                if (firstCardNextReview != null) {
-                                                    Text(
-                                                        text = "Prochaine session : ${formatter.format(firstCardNextReview)}",
-                                                        style = MaterialTheme.typography.bodySmall,
-                                                        color = MaterialTheme.colorScheme.secondary
-                                                    )
-                                                } else {
-                                                    Text(
-                                                        text = "Prochaine session : N/A",
-                                                        style = MaterialTheme.typography.bodySmall
-                                                    )
-                                                }
-                                                
-                                                Text(
-                                                    text = "Tous les $interval j",
-                                                    style = MaterialTheme.typography.bodySmall
-                                                )
-                                            }
-                                        } else {
-                                            Text(
-                                                text = "Tous les $interval j",
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
+                                    
+                                    Spacer(Modifier.height(4.dp))
+                                    
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = if (cardsInBox > 0) "Prochaine session : $dateLabel" else "Vide",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.Black
+                                        )
+                                        Text(
+                                            text = "Tous les $interval j",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color.Black,
+                                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                        )
                                     }
-                                },
-                                modifier = Modifier.clickable { onBoxClick(currentDeck.id, index) }
-                            )
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun RenameDeckDialog(
+    currentName: String,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var text by remember { mutableStateOf(currentName) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Renommer le deck") },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Nouveau nom") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(text) },
+                enabled = text.isNotBlank()
+            ) {
+                Text("Confirmer")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
 }

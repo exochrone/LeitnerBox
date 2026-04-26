@@ -20,6 +20,7 @@ class DeckDetailViewModel @Inject constructor(
     private val getDeckSummary: GetDeckSummaryUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val addDeckUseCase: AddDeckUseCase,
+    private val updateDeckUseCase: UpdateDeckUseCase,
     private val updateDeckColorUseCase: UpdateDeckColorUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -70,6 +71,16 @@ class DeckDetailViewModel @Inject constructor(
         viewModelScope.launch {
             uiState.value.deck?.let { deck ->
                 updateDeckColorUseCase(deck, colorHex)
+            }
+        }
+    }
+
+    fun renameDeck(newName: String) {
+        viewModelScope.launch {
+            uiState.value.deck?.let { deck ->
+                if (newName.isNotBlank() && newName != deck.name) {
+                    updateDeckUseCase(deck.copy(name = newName.trim()))
+                }
             }
         }
     }

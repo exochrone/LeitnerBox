@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.R
@@ -14,7 +15,9 @@ import com.jb.leitnerbox.core.ui.R
 fun DeckProgressBar(
     progress: Float,
     modifier: Modifier = Modifier,
-    showLabel: Boolean = true
+    showLabel: Boolean = true,
+    color: Color = MaterialTheme.colorScheme.primary,
+    labelColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     Column(modifier = modifier) {
         if (showLabel) {
@@ -25,12 +28,12 @@ fun DeckProgressBar(
                 Text(
                     text = stringResource(R.string.deck_progress_label),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = labelColor
                 )
                 Text(
                     text = "${(progress * 100).toInt()} %",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = color
                 )
             }
             Spacer(Modifier.height(4.dp))
@@ -40,7 +43,9 @@ fun DeckProgressBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp)
-                .clip(RoundedCornerShape(3.dp))
+                .clip(RoundedCornerShape(3.dp)),
+            color = color,
+            trackColor = color.copy(alpha = 0.2f)
         )
     }
 }
