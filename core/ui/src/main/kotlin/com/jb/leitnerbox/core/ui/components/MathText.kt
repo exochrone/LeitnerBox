@@ -1,13 +1,13 @@
 package com.jb.leitnerbox.core.ui.components
 
 import android.webkit.WebView
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -45,6 +45,14 @@ fun MathText(
     val textColorHex  = "#%06X".format(color.toArgb() and 0xFFFFFF)
     val fontSizeSp    = style.fontSize.value.takeIf { !it.isNaN() && it > 0 } ?: 16f
 
+    // Charger le template une seule fois par composition
+    val template = remember {
+        context.assets
+            .open("katex/katex_template.html")
+            .bufferedReader()
+            .use { it.readText() }
+    }
+
     // Détecter si c'est un bloc $$ ou inline $
     val trimmed = text.trim()
     val isDisplayMode = trimmed.startsWith("$$") && trimmed.endsWith("$$")
@@ -70,11 +78,6 @@ fun MathText(
             }
         },
         update = { webView ->
-            val template = context.assets
-                .open("katex/katex_template.html")
-                .bufferedReader()
-                .use { it.readText() }
-
             val html = template
                 .replace("{{FONT_SIZE}}",     fontSizeSp.toString())
                 .replace("{{TEXT_COLOR}}",    textColorHex)

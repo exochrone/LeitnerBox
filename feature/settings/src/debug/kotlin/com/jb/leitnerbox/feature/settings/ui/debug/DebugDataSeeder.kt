@@ -189,6 +189,64 @@ class DebugDataSeeder(
         }
     }
 
+    suspend fun seedLatexCards() {
+        val deckId = deckRepository.insertDeck(
+            Deck(
+                name = "$TEST_PREFIX Formules LaTeX",
+                description = "10 cartes pour tester le rendu LaTeX : formules en question, en réponse et dans les deux.",
+                intervals = listOf(1, 3, 5, 7, 14),
+                wrongAnswerRule = WrongAnswerRule.BACK_TO_BOX_ONE,
+                presentationOrder = PresentationOrder.RANDOM
+            )
+        )
+
+        // ── Formule uniquement dans la RÉPONSE ─────────────────────────────
+        insertCard(deckId, box = 1,
+            recto = "Quelle est la formule quadratique ?",
+            verso = "\$\$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}\$\$"
+        )
+        insertCard(deckId, box = 1,
+            recto = "Quel est le théorème de Pythagore ?",
+            verso = "\$\$a^2 + b^2 = c^2\$\$"
+        )
+        insertCard(deckId, box = 2,
+            recto = "Quelle est l'identité d'Euler ?",
+            verso = "\$\$e^{i\\pi} + 1 = 0\$\$"
+        )
+
+        // ── Formule uniquement dans la QUESTION ────────────────────────────
+        insertCard(deckId, box = 1,
+            recto = "Que représente \$E = mc^2\$ ?",
+            verso = "L'équivalence masse-énergie (Einstein)"
+        )
+        insertCard(deckId, box = 2,
+            recto = "Quelle est la valeur de \$\\int_0^1 x^2 \\, dx\$ ?",
+            verso = "1/3"
+        )
+        insertCard(deckId, box = 3,
+            recto = "Si \$f(x) = x^3\$, quelle est \$f'(x)\$ ?",
+            verso = "3x²"
+        )
+
+        // ── Formule dans la QUESTION ET dans la RÉPONSE ────────────────────
+        insertCard(deckId, box = 1,
+            recto = "Quelle est la dérivée de \$f(x) = \\sin(x)\$ ?",
+            verso = "\$f'(x) = \\cos(x)\$"
+        )
+        insertCard(deckId, box = 2,
+            recto = "Si \$A = \\pi r^2\$, quelle est la formule du périmètre d'un cercle ?",
+            verso = "\$P = 2\\pi r\$"
+        )
+        insertCard(deckId, box = 3,
+            recto = "Développe \$(a + b)^2\$",
+            verso = "\$\$a^2 + 2ab + b^2\$\$"
+        )
+        insertCard(deckId, box = 4,
+            recto = "Quelle est la somme \$\\sum_{k=1}^{n} k\$ ?",
+            verso = "\$\$\\frac{n(n+1)}{2}\$\$"
+        )
+    }
+
     suspend fun advanceTime(days: Int) {
         val testDecks = deckRepository.getDecks()
             .first()

@@ -21,6 +21,7 @@ class DebugViewModel @Inject constructor(
     fun seedBoxCirculation() = launch("Jeu 'Circulation boîtes' créé") { seeder.seedBoxCirculation() }
     fun seedMasteryTest() = launch("Jeu 'Test maîtrise' créé") { seeder.seedMasteryTest() }
     fun seedIntervalTest() = launch("Jeu 'Test intervalles' créé") { seeder.seedIntervalTest() }
+    fun seedLatexCards() = launch("Jeu 'Formules LaTeX' créé") { seeder.seedLatexCards() }
 
     fun advanceOneDay() = launch("⏩ +1 jour simulé") { seeder.advanceTime(1) }
     fun advanceSevenDays() = launch("⏩ +7 jours simulés") { seeder.advanceTime(7) }

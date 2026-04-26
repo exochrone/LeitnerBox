@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
+import com.jb.leitnerbox.feature.cards.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,14 +138,14 @@ fun CardEditScreen(
                     enabled = !LatexDetector.containsLatex(uiState.verso)
                 )
                 Text(
-                    text = "Saisie requise",
+                    text = stringResource(R.string.card_needs_input),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             if (LatexDetector.containsLatex(uiState.verso)) {
                 Text(
-                    text = "Le verso contient une formule LaTeX — la saisie clavier est désactivée automatiquement.",
+                    text = stringResource(R.string.card_latex_info),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 12.dp)

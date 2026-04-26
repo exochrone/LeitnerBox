@@ -1,0 +1,4 @@
+<resources>
+    <string name="card_needs_input">Saisie requise</string>
+    <string name="card_latex_info">Le verso contient une formule LaTeX — la saisie clavier est désactivée automatiquement.</string>
+</resources>
