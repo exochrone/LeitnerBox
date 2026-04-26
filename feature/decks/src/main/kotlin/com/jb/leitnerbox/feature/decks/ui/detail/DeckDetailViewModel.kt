@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
@@ -19,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DeckDetailViewModel @Inject constructor(
     private val getDeckByIdUseCase: GetDeckByIdUseCase,
-    private val getCardsUseCase: GetCardsUseCase,
     private val getDeckSummary: GetDeckSummaryUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val addDeckUseCase: AddDeckUseCase,
@@ -33,13 +31,10 @@ class DeckDetailViewModel @Inject constructor(
             if (deck == null) {
                 flowOf(DeckDetailUiState(isLoading = false))
             } else {
-                combine(
-                    getCardsUseCase(deckId),
-                    getDeckSummary(deckId, deck.intervals.size)
-                ) { cards, summary ->
+                getDeckSummary(deckId, deck.intervals.size).map { summary ->
                     DeckDetailUiState(
                         deck = deck,
-                        cards = cards,
+                        cards = summary.cards,
                         progress = summary.progress,
                         isLoading = false
                     )

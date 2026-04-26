@@ -37,6 +37,7 @@ class GetDeckSummaryUseCase(
                            else (totalScore / (cards.size * boxCount)).toFloat()
 
             DeckSummary(
+                cards          = cards,
                 masteredCount  = masteredCards.size,
                 cardsPerBox    = cardsPerBox,
                 nextReviewDate = nextReviewDate,

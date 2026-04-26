@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +35,7 @@ import java.time.Instant
 internal fun DeckListItem(
     item: DeckDisplayItem,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
         onClick = onClick,
@@ -45,14 +45,20 @@ internal fun DeckListItem(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // ── Ligne 1 : Titre ──────────────────────────────────────────────
-            DeckTitleRow(
-                name           = item.deck.name,
-                totalCardCount = item.totalCardCount
+            // ── Ligne 1 : Titre (uniquement, gras) ───────────────────────────
+            Text(
+                text     = item.deck.name,
+                style    = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color    = LeitnerBoxDark,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            // ── Ligne 2 : Boîtes Leitner + badge maîtrise ────────────────────
+            // ── Ligne 2 : Stats + Boîtes Leitner + badge maîtrise ────────────
             LeitnerBoxesRow(
+                totalCardCount = item.totalCardCount,
                 cardsPerBox   = item.cardsPerBox,
                 masteredCount = item.masteredCount,
                 boxCount      = item.deck.intervals.size
@@ -67,40 +73,9 @@ internal fun DeckListItem(
     }
 }
 
-// ─── Ligne 1 ─────────────────────────────────────────────────────────────────
-
-@Composable
-private fun DeckTitleRow(name: String, totalCardCount: Int) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Icon(
-            imageVector  = Icons.Default.Style,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text     = "$totalCardCount",
-            style    = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text     = name,
-            style    = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color    = LeitnerBoxDark,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-// ─── Ligne 2 ─────────────────────────────────────────────────────────────────
-
 @Composable
 private fun LeitnerBoxesRow(
+    totalCardCount: Int,
     cardsPerBox: Map<Int, Int>,
     masteredCount: Int,
     boxCount: Int
@@ -109,8 +84,30 @@ private fun LeitnerBoxesRow(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Boîtes : un carré par boîte, sans espace entre eux
-        Row(modifier = Modifier.weight(1f)) {
+        // Décalage 8dp + Icône stack + Nombre
+        Spacer(Modifier.width(8.dp))
+        
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                painter = painterResource(com.jb.leitnerbox.core.ui.R.drawable.ic_cards_stack),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text     = totalCardCount.toString(),
+                style    = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(Modifier.width(12.dp))
+
+        // Boîtes : weight(0.7f)
+        Row(modifier = Modifier.weight(0.7f)) {
             (1..boxCount).forEach { boxNumber ->
                 val count = cardsPerBox[boxNumber] ?: 0
                 val color = LeitnerColorUtils.boxColor(
@@ -120,30 +117,30 @@ private fun LeitnerBoxesRow(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .aspectRatio(1f)   // carré
+                        .aspectRatio(1.2f)
                         .background(color),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text  = count.toString(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (boxNumber > boxCount / 2) Color.White
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (boxNumber > (boxCount / 2)) Color.White
                                 else Color.Black
                     )
                 }
             }
         }
 
-        // Séparateur visuel
-        Spacer(Modifier.width(12.dp))
+        // Pousser le trophée vers la droite (30% restants)
+        Spacer(Modifier.weight(0.3f))
 
-        // Badge maîtrise : trophée + nombre à droite
+        // Badge maîtrise : trophée (25.dp) + nombre
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector        = Icons.Default.EmojiEvents,
                 contentDescription = null,
                 tint               = LeitnerTrophyGold,
-                modifier           = Modifier.size(20.dp)
+                modifier           = Modifier.size(25.dp)
             )
             Spacer(Modifier.width(4.dp))
             Text(
@@ -154,8 +151,6 @@ private fun LeitnerBoxesRow(
         }
     }
 }
-
-// ─── Ligne 3 ─────────────────────────────────────────────────────────────────
 
 @Composable
 private fun ProgressRow(progress: Float) {
@@ -173,8 +168,8 @@ private fun ProgressRow(progress: Float) {
             progress  = { animatedProgress },
             modifier  = Modifier
                 .weight(1f)
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp)),
+                .height(10.dp)
+                .clip(RoundedCornerShape(5.dp)),
             color     = LeitnerBoxDark,
             trackColor = LeitnerBoxDark.copy(alpha = 0.15f)
         )
@@ -187,8 +182,6 @@ private fun ProgressRow(progress: Float) {
         )
     }
 }
-
-// ─── Ligne 4 ─────────────────────────────────────────────────────────────────
 
 @Composable
 private fun FooterRow(nextReviewDate: Instant?) {

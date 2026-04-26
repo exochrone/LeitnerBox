@@ -31,7 +31,7 @@ object DeckDateFormatter {
                     .dayOfWeek
                     .getDisplayName(TextStyle.FULL, locale)
                     .lowercase()
-                "$dayName prochain"
+                "$dayName ${target.dayOfMonth}"
             }
             else -> {
                 val day = target.dayOfMonth

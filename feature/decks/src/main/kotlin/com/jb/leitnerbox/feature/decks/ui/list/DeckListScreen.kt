@@ -60,7 +60,7 @@ fun DeckListScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(title = { Text("Mes Decks") })
+            TopAppBar(title = { Text("${decks.size} decks") })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddDeckClick) {
@@ -78,7 +78,12 @@ fun DeckListScreen(
         } else {
             LazyColumn(
                 modifier = Modifier.padding(padding),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                    bottom = 80.dp // Extra padding for FAB
+                ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(
