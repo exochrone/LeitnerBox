@@ -8,8 +8,11 @@ import com.jb.leitnerbox.core.domain.repository.DeckRepository
 import com.jb.leitnerbox.core.domain.repository.SessionRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
+import com.jb.leitnerbox.core.domain.backup.BackupSerializer
 import com.jb.leitnerbox.core.domain.csv.CsvExporter
 import com.jb.leitnerbox.core.domain.csv.CsvParser
+import com.jb.leitnerbox.core.domain.usecase.backup.ExportBackupUseCase
+import com.jb.leitnerbox.core.domain.usecase.backup.RestoreBackupUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.*
 import com.jb.leitnerbox.core.domain.usecase.deck.*
 import com.jb.leitnerbox.core.domain.usecase.importexport.*
@@ -238,4 +241,33 @@ object DomainModule {
     fun provideGetMasteredCardsUseCase(
         cardRepository: CardRepository
     ): GetMasteredCardsUseCase = GetMasteredCardsUseCase(cardRepository)
+
+    @Provides
+    @Singleton
+    fun provideBackupSerializer(): BackupSerializer = BackupSerializer()
+
+    @Provides
+    @Singleton
+    fun provideExportBackupUseCase(
+        deckRepository: DeckRepository,
+        cardRepository: CardRepository,
+        sessionRepository: SessionRepository,
+        settingsRepository: SettingsRepository,
+        serializer: BackupSerializer
+    ): ExportBackupUseCase = ExportBackupUseCase(
+        deckRepository, cardRepository, sessionRepository,
+        settingsRepository, serializer, "1.0" // TODO: Use real BuildConfig.VERSION_NAME
+    )
+
+    @Provides
+    @Singleton
+    fun provideRestoreBackupUseCase(
+        deckRepository: DeckRepository,
+        cardRepository: CardRepository,
+        sessionRepository: SessionRepository,
+        settingsRepository: SettingsRepository,
+        serializer: BackupSerializer
+    ): RestoreBackupUseCase = RestoreBackupUseCase(
+        deckRepository, cardRepository, sessionRepository, settingsRepository, serializer
+    )
 }

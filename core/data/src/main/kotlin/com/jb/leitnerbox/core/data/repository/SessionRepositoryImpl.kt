@@ -24,6 +24,10 @@ class SessionRepositoryImpl @Inject constructor(
         return sessionDao.insert(session.toEntity())
     }
 
+    override suspend fun insertSessionWithId(session: Session) {
+        sessionDao.insertSessionWithId(session.toEntity())
+    }
+
     override suspend fun deleteSession(session: Session) {
         sessionDao.delete(session.toEntity())
     }

@@ -26,6 +26,7 @@ internal fun SettingsContent(
     onDayToggled: (DayOfWeek) -> Unit,
     onThemeSelected: (AppTheme) -> Unit,
     onNotificationTimeClick: () -> Unit,
+    backupSection: @Composable () -> Unit = {},
     debugSection: @Composable () -> Unit = {}
 ) {
     Column(
@@ -54,8 +55,42 @@ internal fun SettingsContent(
             notificationTime = uiState.notificationTime,
             onTimeClick = onNotificationTimeClick
         )
+
+        HorizontalDivider()
+
+        backupSection()
         
         debugSection()
+    }
+}
+
+@Composable
+fun BackupSection(
+    isLoading: Boolean,
+    onExport: () -> Unit,
+    onImport: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = stringResource(R.string.backup_section_title),
+            style = MaterialTheme.typography.titleSmall
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = onExport,
+                enabled = !isLoading,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(stringResource(R.string.backup_export_button))
+            }
+            OutlinedButton(
+                onClick = onImport,
+                enabled = !isLoading,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(stringResource(R.string.backup_import_button))
+            }
+        }
     }
 }
 

@@ -149,7 +149,13 @@ fun LeitnerNavHost(
             )
         }
         composable(Screen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(
+                onRestoreSuccess = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(Screen.SessionSelection.route) {
             SessionSelectionScreen(

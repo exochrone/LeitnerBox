@@ -37,11 +37,19 @@ class DeckRepositoryImpl(
         return dao.insertDeck(DeckEntity.fromDomain(deck))
     }
 
+    override suspend fun insertDeckWithId(deck: Deck): Long {
+        return dao.insertDeckWithId(DeckEntity.fromDomain(deck))
+    }
+
     override suspend fun updateDeck(deck: Deck) {
         dao.updateDeck(DeckEntity.fromDomain(deck))
     }
 
     override suspend fun deleteDeck(deck: Deck) {
         dao.deleteDeck(DeckEntity.fromDomain(deck))
+    }
+
+    override suspend fun deleteAllDecks() {
+        dao.deleteAllDecks()
     }
 }

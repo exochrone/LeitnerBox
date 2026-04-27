@@ -7,4 +7,16 @@
     <string name="settings_theme_system">Suivre le système</string>
     <string name="settings_notification_time">Heure de rappel</string>
     <string name="settings_notification_label">Notifier à</string>
+
+    <string name="backup_section_title">Sauvegarde et restauration</string>
+    <string name="backup_export_button">Exporter la sauvegarde</string>
+    <string name="backup_import_button">Restaurer une sauvegarde</string>
+    <string name="backup_restore_confirm_title">Confirmer la restauration</string>
+    <string name="backup_restore_warning">⚠️ Cette action remplacera toutes vos données actuelles. Cette opération est irréversible.</string>
+    <string name="backup_restore_deck_count">%1$d deck(s)</string>
+    <string name="backup_restore_card_count">%1$d carte(s)</string>
+    <string name="backup_restore_session_count">%1$d session(s)</string>
+    <string name="backup_restore_date">Sauvegardé le : %1$s</string>
+    <string name="backup_restore_confirm_button">Restaurer</string>
+    <string name="cancel">Annuler</string>
 </resources>

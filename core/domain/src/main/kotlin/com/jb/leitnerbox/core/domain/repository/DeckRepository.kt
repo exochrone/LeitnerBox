@@ -9,6 +9,8 @@ interface DeckRepository {
     fun getDecksWithCardCount(): Flow<List<DeckWithCardCount>>
     fun getDeckById(id: Long): Flow<Deck?>
     suspend fun insertDeck(deck: Deck): Long
+    suspend fun insertDeckWithId(deck: Deck): Long
     suspend fun updateDeck(deck: Deck)
     suspend fun deleteDeck(deck: Deck)
+    suspend fun deleteAllDecks()
 }

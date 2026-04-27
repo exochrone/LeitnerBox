@@ -43,6 +43,10 @@ class CardRepositoryImpl(
         return dao.insertCard(CardEntity.fromDomain(card))
     }
 
+    override suspend fun insertCardWithId(card: Card) {
+        dao.insertCardWithId(CardEntity.fromDomain(card))
+    }
+
     override suspend fun updateCard(card: Card) {
         dao.updateCard(CardEntity.fromDomain(card))
     }

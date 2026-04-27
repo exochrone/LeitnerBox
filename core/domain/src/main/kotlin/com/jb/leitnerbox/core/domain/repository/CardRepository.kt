@@ -10,6 +10,7 @@ interface CardRepository {
     fun getCardById(id: Long): Flow<Card?>
     fun getCardsToReview(deckId: Long): Flow<List<Card>>
     suspend fun insertCard(card: Card): Long
+    suspend fun insertCardWithId(card: Card)
     suspend fun updateCard(card: Card)
     suspend fun deleteCard(card: Card)
     suspend fun getCardByRectoNormalized(deckId: Long, rectoNormalized: String): Card?
