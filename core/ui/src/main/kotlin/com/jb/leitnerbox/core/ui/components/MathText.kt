@@ -1,7 +1,12 @@
 package com.jb.leitnerbox.core.ui.components
 
+import android.os.Handler
+import android.os.Looper
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.LocalContentColor
@@ -9,7 +14,9 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -17,13 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
-
-class HeightCallback(private val onHeightChanged: (Int) -> Unit) {
-    @JavascriptInterface
-    fun reportHeight(heightPx: Int) {
-        onHeightChanged(heightPx)
-    }
-}
 
 /**
  * Composable qui affiche du texte avec rendu LaTeX si nécessaire.
@@ -54,6 +54,19 @@ fun MathText(
 
     // Stockage de la hauteur rapportée par la WebView (en pixels)
     var contentHeightPx by remember { mutableIntStateOf(0) }
+    var isRendered by remember { mutableStateOf(false) }
+
+    // Réinitialiser à chaque changement de texte
+    LaunchedEffect(text) {
+        isRendered = false
+    }
+
+    // Animation de fondu
+    val alpha by animateFloatAsState(
+        targetValue   = if (isRendered) 1f else 0f,
+        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+        label         = "mathTextAlpha"
+    )
 
     val template = remember {
         context.assets
@@ -68,14 +81,19 @@ fun MathText(
                 settings.apply {
                     javaScriptEnabled = true
                     allowFileAccess = true
-                    // On ne désactive pas tout pour permettre le chargement local
                 }
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 
                 // Interface pour recevoir la hauteur depuis JS
                 addJavascriptInterface(
-                    HeightCallback { height ->
-                        contentHeightPx = height
+                    object : Any() {
+                        @JavascriptInterface
+                        fun reportHeight(height: Int) {
+                            Handler(Looper.getMainLooper()).post {
+                                contentHeightPx = height
+                                isRendered = true
+                            }
+                        }
                     },
                     "Android"
                 )
@@ -108,8 +126,10 @@ fun MathText(
                 if (contentHeightPx > 20) {
                     contentHeightPx.dp
                 } else {
-                    80.dp // Hauteur par défaut pendant le chargement
+                    80.dp
                 }
             )
+            .alpha(alpha)
+            .graphicsLayer { }
     )
 }
