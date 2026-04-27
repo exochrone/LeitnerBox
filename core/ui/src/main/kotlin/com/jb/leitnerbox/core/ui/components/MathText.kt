@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
@@ -41,6 +42,7 @@ fun MathText(
             text     = text,
             style    = style,
             color    = color,
+            textAlign = TextAlign.Center,
             modifier = modifier
         )
         return
