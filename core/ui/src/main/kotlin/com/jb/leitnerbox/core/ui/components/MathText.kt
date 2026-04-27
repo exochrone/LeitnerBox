@@ -80,10 +80,14 @@ fun MathText(
             }
         },
         update = { webView ->
+            val escapedContent = text
+                .replace("\\", "\\\\")
+                .replace("`", "\\`")
+
             val html = template
                 .replace("{{FONT_SIZE}}", fontSizeSp.toString())
                 .replace("{{TEXT_COLOR}}", textColorHex)
-                .replace("{{LATEX_CONTENT}}", text.replace("`", "\\`"))
+                .replace("{{LATEX_CONTENT}}", escapedContent)
 
             webView.loadDataWithBaseURL(
                 "file:///android_asset/katex/",
