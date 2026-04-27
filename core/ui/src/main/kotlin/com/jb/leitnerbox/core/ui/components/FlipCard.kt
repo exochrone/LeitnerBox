@@ -12,8 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -48,12 +47,22 @@ fun FlipCard(
 
     val isAtRecto = rotation <= 90f
 
+    // État de préparation du recto
+    var rectoReady by remember { mutableStateOf(false) }
+
+    val cardAlpha by animateFloatAsState(
+        targetValue = if (rectoReady) 1f else 0f,
+        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
+        label = "cardAlpha"
+    )
+
     Card(
         modifier = modifier
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density
             }
+            .alpha(cardAlpha)
             .clickable { onFlip() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -93,6 +102,7 @@ fun FlipCard(
                 MathText(
                     text = recto,
                     style = MaterialTheme.typography.headlineMedium,
+                    onRendered = { rectoReady = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)

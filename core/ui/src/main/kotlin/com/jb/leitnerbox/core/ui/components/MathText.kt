@@ -1,5 +1,7 @@
 package com.jb.leitnerbox.core.ui.components
 
+import android.os.Handler
+import android.os.Looper
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,9 +30,12 @@ fun MathText(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
-    color: Color = LocalContentColor.current
+    color: Color = LocalContentColor.current,
+    onRendered: () -> Unit = {}
 ) {
     if (!LatexDetector.containsLatex(text)) {
+        // Texte pur → prêt immédiatement
+        LaunchedEffect(Unit) { onRendered() }
         Text(
             text     = text,
             style    = style,
@@ -69,7 +74,10 @@ fun MathText(
                     object : Any() {
                         @JavascriptInterface
                         fun reportHeight(height: Int) {
-                            contentHeightPx = height
+                            Handler(Looper.getMainLooper()).post {
+                                contentHeightPx = height
+                                onRendered()
+                            }
                         }
                     },
                     "Android"
