@@ -20,8 +20,8 @@
     <string name="session_incorrect">Incorrect ✗</string>
     <string name="session_your_input">Votre saisie : %s</string>
     <string name="session_continue">Continuer</string>
-    <string name="eval_wrong">👎</string>
-    <string name="eval_correct">👍</string>
+    <string name="eval_wrong">Mauvaise réponse</string>
+    <string name="eval_correct">Bonne réponse</string>
     <string name="session_card_mastered">Carte maîtrisée</string>
     <string name="session_mastered_congrats">Félicitations !</string>
 

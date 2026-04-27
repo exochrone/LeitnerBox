@@ -7,6 +7,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -242,7 +244,10 @@ private fun EvaluationButtons(
                 containerColor = MaterialTheme.colorScheme.error
             )
         ) {
-            Text(stringResource(R.string.eval_wrong))
+            Icon(
+                imageVector = Icons.Default.ThumbDown,
+                contentDescription = stringResource(R.string.eval_wrong)
+            )
         }
 
         Button(
@@ -252,7 +257,10 @@ private fun EvaluationButtons(
                 containerColor = SuccessGreen
             )
         ) {
-            Text(stringResource(R.string.eval_correct))
+            Icon(
+                imageVector = Icons.Default.ThumbUp,
+                contentDescription = stringResource(R.string.eval_correct)
+            )
         }
     }
 }
