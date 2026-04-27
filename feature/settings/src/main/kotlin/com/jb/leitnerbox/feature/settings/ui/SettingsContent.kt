@@ -65,7 +65,7 @@ internal fun SettingsContent(
 }
 
 @Composable
-fun BackupSection(
+internal fun BackupSection(
     isLoading: Boolean,
     onExport: () -> Unit,
     onImport: () -> Unit

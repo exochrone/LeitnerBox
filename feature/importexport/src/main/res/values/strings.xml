@@ -12,6 +12,8 @@
     <string name="import_error_encoding">L\'encodage du fichier n\'est pas reconnu. Exportez-le en UTF-8.</string>
     <string name="import_error_format">Le format du fichier est invalide. Vérifiez qu\'il respecte le format CSV standard.</string>
     <string name="import_error_missing_columns">Colonnes obligatoires manquantes : « question » et « reponse » sont requis.</string>
+    <string name="import_error_title">Erreur</string>
+    <string name="import_success_title">Succès</string>
     <string name="export_section_title">Exporter ce deck</string>
     <string name="export_card_count">%1$d carte(s) à exporter</string>
     <string name="export_button">Exporter en CSV</string>

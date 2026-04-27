@@ -18,5 +18,6 @@
     <string name="backup_restore_session_count">%1$d session(s)</string>
     <string name="backup_restore_date">Sauvegardé le : %1$s</string>
     <string name="backup_restore_confirm_button">Restaurer</string>
+    <string name="backup_error_title">Erreur</string>
     <string name="cancel">Annuler</string>
 </resources>

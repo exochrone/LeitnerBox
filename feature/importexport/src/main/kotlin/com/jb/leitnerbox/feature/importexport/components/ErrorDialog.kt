@@ -14,7 +14,7 @@ fun ErrorDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Erreur") },
+        title = { Text(stringResource(R.string.import_error_title)) },
         text = { Text(message) },
         confirmButton = {
             TextButton(onClick = onDismiss) {

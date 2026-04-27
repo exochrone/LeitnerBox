@@ -67,7 +67,7 @@ internal fun ImportExportContent(
             is ImportUiResult.Success -> {
                 AlertDialog(
                     onDismissRequest = onResultDismissed,
-                    title = { Text("Succès") },
+                    title = { Text(stringResource(R.string.import_success_title)) },
                     text = { Text(stringResource(R.string.import_success, result.count)) },
                     confirmButton = {
                         TextButton(onClick = onResultDismissed) {

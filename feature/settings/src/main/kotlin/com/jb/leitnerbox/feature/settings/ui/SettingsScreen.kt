@@ -98,7 +98,7 @@ fun SettingsScreen(
     backupUiState.error?.let { error ->
         AlertDialog(
             onDismissRequest = backupViewModel::onErrorDismissed,
-            title = { Text("Erreur") },
+            title = { Text(stringResource(R.string.backup_error_title)) },
             text = { Text(error) },
             confirmButton = {
                 TextButton(onClick = backupViewModel::onErrorDismissed) {
@@ -123,7 +123,7 @@ fun SettingsScreen(
                     BackupSection(
                         isLoading = backupUiState.isLoading,
                         onExport = backupViewModel::onExportClick,
-                        onImport = { openFileLauncher.launch(arrayOf("*/*")) }
+                        onImport = { openFileLauncher.launch(arrayOf("application/octet-stream", "*/*")) }
                     )
                 },
                 debugSection = {
