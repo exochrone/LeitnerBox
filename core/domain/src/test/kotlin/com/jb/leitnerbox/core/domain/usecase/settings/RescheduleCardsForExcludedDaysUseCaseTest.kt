@@ -14,6 +14,7 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 
 class RescheduleCardsForExcludedDaysUseCaseTest {
 
@@ -37,7 +38,7 @@ class RescheduleCardsForExcludedDaysUseCaseTest {
     @Test
     fun `carte future sur jour exclu est avancee au jour suivant`() = runTest {
         val today = LocalDate.now(ZoneId.systemDefault())
-        val nextSaturday = today.with(java.time.temporal.TemporalAdjusters.next(DayOfWeek.SATURDAY))
+        val nextSaturday = today.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
         val nextSunday = nextSaturday.plusDays(1)
 
         // On part d'une carte révisée le vendredi (box 1, intervalle 1j) -> prévue samedi
@@ -56,7 +57,7 @@ class RescheduleCardsForExcludedDaysUseCaseTest {
     @Test
     fun `recalcul depuis lastReviewDate même si nextReviewDate était déjà décalée`() = runTest {
         val today = LocalDate.now(ZoneId.systemDefault())
-        val nextMonday = today.with(java.time.temporal.TemporalAdjusters.next(DayOfWeek.MONDAY))
+        val nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
         val previousFriday = nextMonday.minusDays(3)
         
         // naturalDate = Vendredi + 1j = Samedi
@@ -91,10 +92,86 @@ class RescheduleCardsForExcludedDaysUseCaseTest {
     @Test
     fun `tous les jours exclus - aucune modification`() = runTest {
         val today = LocalDate.now(ZoneId.systemDefault())
-        val nextSaturday = today.with(java.time.temporal.TemporalAdjusters.next(DayOfWeek.SATURDAY))
+        val nextSaturday = today.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
         val card = createCard(nextSaturday, lastReview = nextSaturday.minusDays(1))
         
         every { settingsRepository.getExcludedDays() } returns flowOf(DayOfWeek.entries.toSet())
+        every { cardRepository.getAllCards() } returns flowOf(listOf(card))
+
+        useCase()
+
+        coVerify(exactly = 0) { cardRepository.updateCard(any()) }
+    }
+
+    @Test
+    fun `carte maitrisee n'est pas modifiee`() = runTest {
+        val nextSaturday = LocalDate.now(ZoneId.systemDefault())
+            .with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
+        val card = createCard(nextSaturday, lastReview = nextSaturday.minusDays(1))
+            .copy(isLearned = true)
+
+        every { settingsRepository.getExcludedDays() } returns flowOf(setOf(DayOfWeek.SATURDAY))
+        every { cardRepository.getAllCards() } returns flowOf(listOf(card))
+
+        useCase()
+
+        coVerify(exactly = 0) { cardRepository.updateCard(any()) }
+    }
+
+    @Test
+    fun `carte sans lastReviewDate n'est pas modifiee`() = runTest {
+        val nextSaturday = LocalDate.now(ZoneId.systemDefault())
+            .with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
+        val card = createCard(nextSaturday, lastReview = nextSaturday.minusDays(1))
+            .copy(lastReviewDate = null)
+
+        every { settingsRepository.getExcludedDays() } returns flowOf(setOf(DayOfWeek.SATURDAY))
+        every { cardRepository.getAllCards() } returns flowOf(listOf(card))
+
+        useCase()
+
+        coVerify(exactly = 0) { cardRepository.updateCard(any()) }
+    }
+
+    @Test
+    fun `carte dont la date naturelle n'est pas un jour exclu n'est pas modifiee`() = runTest {
+        val nextMonday = LocalDate.now(ZoneId.systemDefault())
+            .with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+        // Révisée dimanche, intervalle 1j → naturellement lundi (non exclu)
+        val card = createCard(nextMonday, lastReview = nextMonday.minusDays(1))
+
+        every { settingsRepository.getExcludedDays() } returns flowOf(setOf(DayOfWeek.SATURDAY))
+        every { cardRepository.getAllCards() } returns flowOf(listOf(card))
+
+        useCase()
+
+        coVerify(exactly = 0) { cardRepository.updateCard(any()) }
+    }
+
+    @Test
+    fun `carte dont le deck est introuvable est ignoree`() = runTest {
+        val nextSaturday = LocalDate.now(ZoneId.systemDefault())
+            .with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
+        val card = createCard(nextSaturday, lastReview = nextSaturday.minusDays(1))
+            .copy(deckId = 999L)  // deck inexistant
+
+        every { settingsRepository.getExcludedDays() } returns flowOf(setOf(DayOfWeek.SATURDAY))
+        every { cardRepository.getAllCards() } returns flowOf(listOf(card))
+
+        useCase()  // ne doit pas crasher
+
+        coVerify(exactly = 0) { cardRepository.updateCard(any()) }
+    }
+
+    @Test
+    fun `pas d'ecriture en base si la date est deja correcte`() = runTest {
+        val nextSunday = LocalDate.now(ZoneId.systemDefault())
+            .with(TemporalAdjusters.next(DayOfWeek.SUNDAY))
+        // Révisée samedi, intervalle 1j → naturellement dimanche
+        // Samedi exclu → adjusted = dimanche = currentDate → pas d'update
+        val card = createCard(nextSunday, lastReview = nextSunday.minusDays(1))
+
+        every { settingsRepository.getExcludedDays() } returns flowOf(setOf(DayOfWeek.SATURDAY))
         every { cardRepository.getAllCards() } returns flowOf(listOf(card))
 
         useCase()
