@@ -9,7 +9,7 @@
     <string name="settings_notification_label">Notifier à</string>
 
     <string name="excluded_days_title">Jours exclus</string>
-    <string name="excluded_days_subtitle">Les sessions planifiées ces jours-là seront avancées au prochain jour disponible.</string>
+    <string name="excluded_days_subtitle">Indiquer les jours où vous ne souhaitez pas réviser. Ces jours seront exclus du calendrier de révisions et il n\'y aura pas de notifications ces jours là</string>
     <string name="excluded_days_none">Aucun</string>
     <string name="excluded_days_all">Tous</string>
 
