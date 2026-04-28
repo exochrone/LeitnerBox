@@ -29,7 +29,7 @@ internal fun SessionHistorySection(items: List<SessionHistoryItem>) {
 }
 
 @Composable
-private fun SessionHistoryCard(item: SessionHistoryItem) {
+fun SessionHistoryCard(item: SessionHistoryItem) {
     val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
     val date = item.session.date
         .atZone(ZoneId.systemDefault())

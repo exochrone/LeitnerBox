@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_title">Leitner Box</string>
     <string name="dashboard_empty_title">Aucune révision prévue pour aujourd\'hui.</string>
     <string name="dashboard_empty_subtitle">Revenez plus tard ou ajoutez de nouvelles cartes !</string>
-    <string name="dashboard_cards_to_review">%1$d cartes à réviser</string>
-    <string name="dashboard_deck_distribution">Réparties dans %1$d deck(s)</string>
-    <string name="dashboard_start_session">Commencer la session</string>
-    <string name="dashboard_streak">%1$d jour(s) de suite</string>
-    <string name="dashboard_streak_zero">Révisez aujourd\'hui pour démarrer un streak !</string>
+    <string name="dashboard_cards_to_review">X cartes à réviser</string>
+    <string name="dashboard_cards_to_review_count">%1$d cartes à réviser</string>
+    <string name="dashboard_decks_distribution">réparties dans %1$d deck(s)</string>
+    <string name="dashboard_no_decks">Aucun deck</string>
+    <string name="dashboard_deck_count">%1$d deck(s)</string>
+
+    <string name="menu_decks">Liste des decks</string>
+    <string name="menu_history">Historique</string>
+    <string name="menu_challenge">Challenge</string>
+    <string name="menu_settings">Paramètres</string>
+
+    <string name="stats_streak">Streak</string>
+    <string name="stats_total_cards">Cartes</string>
+    <string name="stats_mastered">Maîtrisées</string>
+    <string name="stats_success_rate">Bonnes réponses</string>
+    <string name="stats_progression">Progression</string>
+    <string name="stats_sessions">Sessions</string>
+    <string name="stats_no_data">--</string>
 </resources>

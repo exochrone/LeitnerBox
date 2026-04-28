@@ -28,4 +28,5 @@ sealed class Screen(val route: String) {
     object ExcludedDays : Screen("excluded-days")
     object Theme : Screen("theme")
     object Backup : Screen("backup")
+    object History : Screen("history")
 }

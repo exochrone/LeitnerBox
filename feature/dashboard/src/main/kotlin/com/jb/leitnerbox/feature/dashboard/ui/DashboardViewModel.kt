@@ -2,7 +2,7 @@ package com.jb.leitnerbox.feature.dashboard.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jb.leitnerbox.core.domain.usecase.session.GetCurrentStreakUseCase
+import com.jb.leitnerbox.core.domain.usecase.dashboard.GetDashboardStatsUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -10,27 +10,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    getDailySessionPlanUseCase: GetDailySessionPlanUseCase,
-    getCurrentStreakUseCase: GetCurrentStreakUseCase
+    private val getDailySessionPlan: GetDailySessionPlanUseCase,
+    private val getDashboardStats: GetDashboardStatsUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<DashboardUiState> = combine(
-        getDailySessionPlanUseCase(),
-        getCurrentStreakUseCase()
-    ) { plan, streak ->
-        if (plan.items.isEmpty()) {
-            DashboardUiState.Empty(streak = streak)
-        } else {
-            DashboardUiState.Success(
-                totalCardsToReview = plan.items.sumOf { it.cardCount },
-                decksWithReviews = plan.items.map { it.deck.id }.distinct().size,
-                streak = streak
-            )
-        }
-    }
-    .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = DashboardUiState.Loading
+        getDailySessionPlan(),
+        getDashboardStats()
+    ) { plan, stats ->
+        DashboardUiState(
+            sessionPlan       = plan,
+            stats             = stats,
+            masteredCardCount = stats.masteredCards,
+            isLoading         = false
+        )
+    }.stateIn(
+        scope        = viewModelScope,
+        started      = SharingStarted.WhileSubscribed(5_000),
+        initialValue = DashboardUiState()
     )
 }

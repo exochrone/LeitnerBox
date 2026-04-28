@@ -29,6 +29,7 @@ import com.jb.leitnerbox.feature.session.ui.SessionScreen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
 import com.jb.leitnerbox.feature.importexport.ui.ImportExportScreen
 import com.jb.leitnerbox.feature.stats.ui.StatsScreen
+import com.jb.leitnerbox.feature.stats.ui.HistoryScreen
 import com.jb.leitnerbox.feature.challenge.ui.ChallengeScreen
 import com.jb.leitnerbox.feature.settings.ui.ExcludedDaysScreen
 import com.jb.leitnerbox.feature.settings.ui.ThemeScreen
@@ -52,14 +53,20 @@ fun LeitnerNavHost(
             val viewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(
                 viewModel = viewModel,
-                onStartSession = {
+                onNavigateToSessionSelection = {
                     navController.navigate(Screen.SessionSelection.route)
                 },
-                onStatsClick = {
-                    navController.navigate(Screen.Stats.route)
+                onNavigateToDecks = {
+                    navController.navigate(Screen.Decks.route)
                 },
-                onChallengeClick = {
+                onNavigateToHistory = {
+                    navController.navigate(Screen.History.route)
+                },
+                onNavigateToChallenge = {
                     navController.navigate(Screen.Challenge.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route)
                 }
             )
         }
@@ -72,6 +79,9 @@ fun LeitnerNavHost(
                 },
                 onAddDeckClick = { 
                     navController.navigate(Screen.DeckEdit.route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
                 },
                 deletedDeck = lastDeletedDeck,
                 onUndoDelete = { deck ->
@@ -163,6 +173,9 @@ fun LeitnerNavHost(
                 onNavigateToBackup = {
                     navController.navigate(Screen.Backup.route)
                 },
+                onBackClick = {
+                    navController.popBackStack()
+                },
                 onRestoreSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(0) { inclusive = true }
@@ -205,6 +218,11 @@ fun LeitnerNavHost(
         }
         composable(Screen.Stats.route) {
             StatsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.History.route) {
+            HistoryScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }

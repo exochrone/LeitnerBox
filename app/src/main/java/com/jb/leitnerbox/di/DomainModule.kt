@@ -15,6 +15,7 @@ import com.jb.leitnerbox.core.domain.usecase.backup.ExportBackupUseCase
 import com.jb.leitnerbox.core.domain.usecase.backup.RestoreBackupUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.*
 import com.jb.leitnerbox.core.domain.usecase.deck.*
+import com.jb.leitnerbox.core.domain.usecase.dashboard.GetDashboardStatsUseCase
 import com.jb.leitnerbox.core.domain.usecase.importexport.*
 import com.jb.leitnerbox.core.domain.usecase.session.*
 import com.jb.leitnerbox.core.domain.usecase.settings.*
@@ -106,6 +107,17 @@ object DomainModule {
         cardRepository: CardRepository,
         settingsRepository: SettingsRepository
     ): EvaluateCardUseCase = EvaluateCardUseCase(cardRepository, settingsRepository, nextSessionDateCalculator)
+
+    @Provides
+    @Singleton
+    fun provideGetDashboardStatsUseCase(
+        cardRepository: CardRepository,
+        sessionRepository: SessionRepository,
+        deckRepository: DeckRepository,
+        getCurrentStreak: GetCurrentStreakUseCase
+    ): GetDashboardStatsUseCase = GetDashboardStatsUseCase(
+        cardRepository, sessionRepository, deckRepository, getCurrentStreak
+    )
 
     @Provides
     @Singleton
