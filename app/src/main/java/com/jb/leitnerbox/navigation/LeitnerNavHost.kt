@@ -32,6 +32,7 @@ import com.jb.leitnerbox.feature.stats.ui.StatsScreen
 import com.jb.leitnerbox.feature.challenge.ui.ChallengeScreen
 import com.jb.leitnerbox.feature.settings.ui.ExcludedDaysScreen
 import com.jb.leitnerbox.feature.settings.ui.ThemeScreen
+import com.jb.leitnerbox.feature.settings.ui.BackupScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -159,6 +160,9 @@ fun LeitnerNavHost(
                 onNavigateToTheme = {
                     navController.navigate(Screen.Theme.route)
                 },
+                onNavigateToBackup = {
+                    navController.navigate(Screen.Backup.route)
+                },
                 onRestoreSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(0) { inclusive = true }
@@ -227,6 +231,16 @@ fun LeitnerNavHost(
         composable(Screen.Theme.route) {
             ThemeScreen(
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.Backup.route) {
+            BackupScreen(
+                onBackClick = { navController.popBackStack() },
+                onRestoreSuccess = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
     }

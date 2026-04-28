@@ -27,4 +27,5 @@ sealed class Screen(val route: String) {
     object Challenge : Screen("challenge")
     object ExcludedDays : Screen("excluded-days")
     object Theme : Screen("theme")
+    object Backup : Screen("backup")
 }

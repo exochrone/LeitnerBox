@@ -4,12 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.AppTheme
@@ -26,8 +24,8 @@ internal fun SettingsContent(
     uiState: SettingsUiState,
     onExcludedDaysClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onBackupClick: () -> Unit,
     onNotificationTimeClick: () -> Unit,
-    backupSection: @Composable () -> Unit = {},
     debugSection: @Composable () -> Unit = {}
 ) {
     Column(
@@ -52,14 +50,16 @@ internal fun SettingsContent(
 
         HorizontalDivider()
 
+        BackupEntry(onClick = onBackupClick)
+
+        HorizontalDivider()
+
         NotificationTimeSection(
             notificationTime = uiState.notificationTime,
             onTimeClick = onNotificationTimeClick
         )
 
         HorizontalDivider()
-
-        backupSection()
         
         debugSection()
     }
@@ -131,32 +131,22 @@ private fun ThemeEntry(
 }
 
 @Composable
-internal fun BackupSection(
-    isLoading: Boolean,
-    onExport: () -> Unit,
-    onImport: () -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun BackupEntry(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 4.dp)
+    ) {
         Text(
-            text = stringResource(R.string.backup_section_title),
-            style = MaterialTheme.typography.titleSmall
+            text  = stringResource(R.string.settings_backup_title),
+            style = MaterialTheme.typography.bodyLarge
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
-                onClick = onExport,
-                enabled = !isLoading,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(R.string.backup_export_button))
-            }
-            OutlinedButton(
-                onClick = onImport,
-                enabled = !isLoading,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(R.string.backup_import_button))
-            }
-        }
+        Text(
+            text  = stringResource(R.string.settings_backup_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
     }
 }
 

@@ -5,6 +5,8 @@
     <string name="settings_theme_light">Clair</string>
     <string name="settings_theme_dark">Sombre</string>
     <string name="settings_theme_system">Suivre le système</string>
+    <string name="settings_backup_title">Sauvegarde et restauration</string>
+    <string name="settings_backup_subtitle">Exporter ou restaurer vos données</string>
     <string name="settings_notification_time">Heure de rappel</string>
     <string name="settings_notification_label">Notifier à</string>
 
@@ -14,6 +16,7 @@
     <string name="excluded_days_all">Tous</string>
 
     <string name="backup_section_title">Sauvegarde et restauration</string>
+    <string name="backup_description">Exportez une sauvegarde complète de vos decks, cartes, sessions et paramètres. Restaurez-la sur n\'importe quel appareil avec LeitnerBox installé.</string>
     <string name="backup_export_button">Exporter la sauvegarde</string>
     <string name="backup_import_button">Restaurer une sauvegarde</string>
     <string name="backup_restore_confirm_title">Confirmer la restauration</string>
