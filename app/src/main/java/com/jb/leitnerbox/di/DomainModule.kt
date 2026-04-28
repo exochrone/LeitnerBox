@@ -198,8 +198,9 @@ object DomainModule {
     @Singleton
     fun provideRescheduleCardsForExcludedDaysUseCase(
         cardRepository: CardRepository,
+        deckRepository: DeckRepository,
         settingsRepository: SettingsRepository
-    ): RescheduleCardsForExcludedDaysUseCase = RescheduleCardsForExcludedDaysUseCase(cardRepository, settingsRepository)
+    ): RescheduleCardsForExcludedDaysUseCase = RescheduleCardsForExcludedDaysUseCase(cardRepository, deckRepository, settingsRepository)
 
     @Provides
     @Singleton
