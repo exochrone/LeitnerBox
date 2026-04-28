@@ -4,4 +4,5 @@ import java.time.LocalTime
 
 interface RescheduleNotificationUseCase {
     operator fun invoke(time: LocalTime)
+    fun scheduleTest()
 }

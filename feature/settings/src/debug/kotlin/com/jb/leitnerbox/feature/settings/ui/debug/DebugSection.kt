@@ -43,6 +43,12 @@ fun DebugSection(
         viewModel.cleanTestData()
     }
 
+    DebugSectionTitle("Notifications")
+
+    DebugButton("🔔 Notification dans 10s") {
+        viewModel.scheduleTestNotification()
+    }
+
     DebugSectionTitle("Données de session")
 
     DebugButton(

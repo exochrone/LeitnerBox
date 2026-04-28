@@ -192,6 +192,13 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideRescheduleCardsForExcludedDaysUseCase(
+        cardRepository: CardRepository,
+        settingsRepository: SettingsRepository
+    ): RescheduleCardsForExcludedDaysUseCase = RescheduleCardsForExcludedDaysUseCase(cardRepository, settingsRepository)
+
+    @Provides
+    @Singleton
     fun provideCsvParser(): CsvParser = CsvParser()
 
     @Provides

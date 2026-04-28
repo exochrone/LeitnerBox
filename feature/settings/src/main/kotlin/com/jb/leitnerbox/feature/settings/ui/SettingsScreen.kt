@@ -27,6 +27,8 @@ import java.time.LocalDate
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     backupViewModel: BackupViewModel = hiltViewModel(),
+    onNavigateToExcludedDays: () -> Unit,
+    onNavigateToTheme: () -> Unit,
     onRestoreSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -116,8 +118,8 @@ fun SettingsScreen(
         Box(modifier = Modifier.padding(padding)) {
             SettingsContent(
                 uiState = uiState,
-                onDayToggled = viewModel::onDayToggled,
-                onThemeSelected = viewModel::onThemeSelected,
+                onExcludedDaysClick = onNavigateToExcludedDays,
+                onThemeClick = onNavigateToTheme,
                 onNotificationTimeClick = { showTimePicker = true },
                 backupSection = {
                     BackupSection(

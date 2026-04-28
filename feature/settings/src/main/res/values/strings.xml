@@ -8,6 +8,11 @@
     <string name="settings_notification_time">Heure de rappel</string>
     <string name="settings_notification_label">Notifier à</string>
 
+    <string name="excluded_days_title">Jours exclus</string>
+    <string name="excluded_days_subtitle">Les sessions planifiées ces jours-là seront avancées au prochain jour disponible.</string>
+    <string name="excluded_days_none">Aucun</string>
+    <string name="excluded_days_all">Tous</string>
+
     <string name="backup_section_title">Sauvegarde et restauration</string>
     <string name="backup_export_button">Exporter la sauvegarde</string>
     <string name="backup_import_button">Restaurer une sauvegarde</string>

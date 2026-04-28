@@ -19,7 +19,8 @@ class SettingsViewModel @Inject constructor(
     private val setTheme: SetThemeUseCase,
     private val getNotificationTime: GetNotificationTimeUseCase,
     private val setNotificationTime: SetNotificationTimeUseCase,
-    private val rescheduleNotification: RescheduleNotificationUseCase
+    private val rescheduleNotification: RescheduleNotificationUseCase,
+    private val rescheduleCards: RescheduleCardsForExcludedDaysUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<SettingsUiState> = combine(
@@ -55,6 +56,12 @@ class SettingsViewModel @Inject constructor(
             val newTime = LocalTime.of(hour, minute)
             setNotificationTime(newTime)
             rescheduleNotification(newTime)
+        }
+    }
+
+    fun onReturnFromExcludedDays() {
+        viewModelScope.launch {
+            rescheduleCards()
         }
     }
 }

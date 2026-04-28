@@ -2,6 +2,7 @@ package com.jb.leitnerbox.feature.settings.ui.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jb.leitnerbox.core.domain.usecase.settings.RescheduleNotificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DebugViewModel @Inject constructor(
-    private val seeder: DebugDataSeeder
+    private val seeder: DebugDataSeeder,
+    private val rescheduleNotification: RescheduleNotificationUseCase
 ) : ViewModel() {
 
     private val _message = Channel<String>(Channel.BUFFERED)
@@ -29,6 +31,10 @@ class DebugViewModel @Inject constructor(
     fun cleanTestData() = launch("🗑 Données [TEST] supprimées") { seeder.cleanAllTestData() }
 
     fun clearSessions() = launch("🗑 Table sessions vidée") { seeder.clearAllSessions() }
+
+    fun scheduleTestNotification() = launch("🔔 Notification planifiée dans 10 secondes") {
+        rescheduleNotification.scheduleTest()
+    }
 
     private fun launch(successMessage: String, block: suspend () -> Unit) {
         viewModelScope.launch {

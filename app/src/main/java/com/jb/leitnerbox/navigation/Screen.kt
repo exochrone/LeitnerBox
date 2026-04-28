@@ -25,4 +25,6 @@ sealed class Screen(val route: String) {
     }
     object Stats : Screen("stats")
     object Challenge : Screen("challenge")
+    object ExcludedDays : Screen("excluded-days")
+    object Theme : Screen("theme")
 }

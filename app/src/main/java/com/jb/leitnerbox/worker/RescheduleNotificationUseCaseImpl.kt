@@ -12,4 +12,8 @@ class RescheduleNotificationUseCaseImpl @Inject constructor(
     override fun invoke(time: LocalTime) {
         NotificationScheduler.schedule(context, time)
     }
+
+    override fun scheduleTest() {
+        NotificationScheduler.scheduleTest(context)
+    }
 }

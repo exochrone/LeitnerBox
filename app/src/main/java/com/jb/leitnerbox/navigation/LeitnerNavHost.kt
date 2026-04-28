@@ -18,6 +18,7 @@ import com.jb.leitnerbox.feature.decks.ui.detail.BoxDetailScreen
 import com.jb.leitnerbox.feature.decks.ui.detail.BoxDetailViewModel
 import com.jb.leitnerbox.feature.dashboard.ui.DashboardScreen
 import com.jb.leitnerbox.feature.dashboard.ui.DashboardViewModel
+import com.jb.leitnerbox.feature.settings.ui.SettingsViewModel
 import com.jb.leitnerbox.feature.settings.ui.SettingsScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardEditScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardEditViewModel
@@ -29,6 +30,8 @@ import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
 import com.jb.leitnerbox.feature.importexport.ui.ImportExportScreen
 import com.jb.leitnerbox.feature.stats.ui.StatsScreen
 import com.jb.leitnerbox.feature.challenge.ui.ChallengeScreen
+import com.jb.leitnerbox.feature.settings.ui.ExcludedDaysScreen
+import com.jb.leitnerbox.feature.settings.ui.ThemeScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -150,6 +153,12 @@ fun LeitnerNavHost(
         }
         composable(Screen.Settings.route) {
             SettingsScreen(
+                onNavigateToExcludedDays = {
+                    navController.navigate(Screen.ExcludedDays.route)
+                },
+                onNavigateToTheme = {
+                    navController.navigate(Screen.Theme.route)
+                },
                 onRestoreSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(0) { inclusive = true }
@@ -200,6 +209,24 @@ fun LeitnerNavHost(
                 onStartChallenge = {
                     navController.navigate(Screen.Session.route)
                 }
+            )
+        }
+        composable(Screen.ExcludedDays.route) {
+            val settingsEntry = remember {
+                navController.getBackStackEntry(Screen.Settings.route)
+            }
+            val settingsViewModel = hiltViewModel<SettingsViewModel>(settingsEntry)
+
+            ExcludedDaysScreen(
+                onBackClick = {
+                    settingsViewModel.onReturnFromExcludedDays()
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.Theme.route) {
+            ThemeScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

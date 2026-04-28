@@ -6,6 +6,8 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.ExistingWorkPolicy
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,6 +37,22 @@ object NotificationScheduler {
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             WORK_NAME,
             ExistingPeriodicWorkPolicy.UPDATE,
+            request
+        )
+    }
+
+    /**
+     * Planifie le Worker de notification avec un délai de 10 secondes.
+     * Uniquement appelé depuis la zone debug.
+     */
+    fun scheduleTest(context: Context) {
+        val request = OneTimeWorkRequestBuilder<SessionReminderWorker>()
+            .setInitialDelay(10, TimeUnit.SECONDS)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "notification_test",
+            ExistingWorkPolicy.REPLACE,
             request
         )
     }
