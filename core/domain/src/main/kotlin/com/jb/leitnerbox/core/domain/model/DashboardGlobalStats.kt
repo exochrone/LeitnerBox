@@ -5,8 +5,7 @@ data class DashboardGlobalStats(
     val totalCards: Int,
     val masteredCards: Int,
     val successRate: Int?,          // null si aucune session
-    val progressionByDeck: Int,     // Option A : moyenne des progressions par deck
-    val progressionGlobal: Int,     // Option B : progression globale toutes cartes
+    val progressionGlobal: Int,     // progression globale toutes cartes
     val sessionCount: Int,
     val deckCount: Int
 ) {

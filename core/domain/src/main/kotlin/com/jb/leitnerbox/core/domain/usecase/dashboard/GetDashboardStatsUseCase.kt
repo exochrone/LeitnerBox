@@ -29,21 +29,8 @@ class GetDashboardStatsUseCase(
         val successRate = if (totalCardCount > 0)
             (totalSuccessCount * 100) / totalCardCount else null
 
-        // Progression Option A — moyenne des progressions par deck
-        val boxCount = 5 // valeur par défaut si deck vide
-        val deckProgressions = decks.map { deck ->
-            val deckCards = cards.filter { it.deckId == deck.id }
-            if (deckCards.isEmpty()) return@map 0
-            val bc = deck.intervals.size
-            val score = deckCards.sumOf { c ->
-                if (c.isLearned) bc.toDouble() else (c.box - 1).toDouble()
-            }
-            ((score / (deckCards.size * bc)) * 100).toInt()
-        }
-        val progressionByDeck = if (deckProgressions.isEmpty()) 0
-            else deckProgressions.average().toInt()
-
-        // Progression Option B — globale toutes cartes confondues
+        // Progression — globale toutes cartes confondues
+        val boxCount = 5
         val progressionGlobal = if (cards.isEmpty()) 0 else {
             val totalScore = cards.sumOf { card ->
                 val bc = decks.firstOrNull { it.id == card.deckId }?.intervals?.size ?: boxCount
@@ -60,7 +47,6 @@ class GetDashboardStatsUseCase(
             totalCards        = cards.size,
             masteredCards     = cards.count { it.isLearned },
             successRate       = successRate,
-            progressionByDeck = progressionByDeck,
             progressionGlobal = progressionGlobal,
             sessionCount      = completedSessions.size,
             deckCount         = decks.size

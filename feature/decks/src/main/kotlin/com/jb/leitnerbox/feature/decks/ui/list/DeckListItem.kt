@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +38,7 @@ import java.time.Instant
 internal fun DeckListItem(
     item: DeckDisplayItem,
     onClick: () -> Unit,
+    onLaunch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val deckColor = item.deck.resolveColor()
@@ -74,7 +76,12 @@ internal fun DeckListItem(
             ProgressRow(progress = item.progress, color = deckColor)
 
             // ── Ligne 4 : Footer date + bouton Lancer ────────────────────────
-            FooterRow(nextReviewDate = item.nextReviewDate)
+            FooterRow(
+                nextReviewDate = item.nextReviewDate,
+                deckColor = deckColor,
+                enabled = item.totalCardCount - item.masteredCount > 0,
+                onLaunch = onLaunch
+            )
         }
     }
 }
@@ -198,7 +205,12 @@ private fun ProgressRow(progress: Float, color: Color) {
 }
 
 @Composable
-private fun FooterRow(nextReviewDate: Instant?) {
+private fun FooterRow(
+    nextReviewDate: Instant?,
+    deckColor: Color,
+    enabled: Boolean,
+    onLaunch: () -> Unit
+) {
     val locale = LocalConfiguration.current.locales[0]
     val dateLabel = remember(nextReviewDate) {
         DeckDateFormatter.format(nextReviewDate, locale)
@@ -213,14 +225,17 @@ private fun FooterRow(nextReviewDate: Instant?) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        FilledTonalButton(
-            onClick  = { },
-            enabled  = false,
-            shape    = RoundedCornerShape(50)
+        IconButton(
+            onClick  = onLaunch,
+            enabled  = enabled,
+            colors   = IconButtonDefaults.filledIconButtonColors(
+                containerColor = deckColor,
+                contentColor = if (deckColor == Color.White) Color.Black else Color.White
+            )
         ) {
-            Text(
-                text  = stringResource(R.string.deck_launch_button),
-                style = MaterialTheme.typography.labelMedium
+            Icon(
+                imageVector = Icons.Default.PlayArrow,
+                contentDescription = stringResource(R.string.deck_launch_button)
             )
         }
     }

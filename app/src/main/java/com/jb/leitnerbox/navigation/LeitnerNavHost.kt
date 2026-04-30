@@ -26,6 +26,8 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
 import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import com.jb.leitnerbox.feature.session.ui.SessionScreen
+import com.jb.leitnerbox.feature.session.ui.extra.ExtraSessionScreen
+import com.jb.leitnerbox.feature.session.ui.extra.ExtraSessionResultScreen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
 import com.jb.leitnerbox.feature.stats.ui.StatsScreen
 import com.jb.leitnerbox.feature.stats.ui.HistoryScreen
@@ -82,6 +84,9 @@ fun LeitnerNavHost(
                 },
                 onBackClick = {
                     navController.popBackStack()
+                },
+                onLaunchExtraSession = { deckId ->
+                    navController.navigate(Screen.ExtraSession.createRoute(deckId))
                 },
                 deletedDeck = lastDeletedDeck,
                 onUndoDelete = { deck ->
@@ -201,7 +206,9 @@ fun LeitnerNavHost(
         composable(Screen.SessionResult.route) {
             SessionResultScreen(
                 onFinish = {
-                    navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.SessionSelection.route) { inclusive = true }
+                    }
                 }
             )
         }
@@ -261,6 +268,28 @@ fun LeitnerNavHost(
         composable(Screen.CsvExport.route) {
             CsvExportScreen(
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route     = Screen.ExtraSession.route,
+            arguments = listOf(navArgument("deckId") { type = NavType.LongType })
+        ) {
+            ExtraSessionScreen(
+                onSessionFinished = {
+                    navController.navigate(Screen.ExtraSessionResult.route) {
+                        popUpTo(Screen.ExtraSession.route) { inclusive = true }
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.ExtraSessionResult.route) {
+            ExtraSessionResultScreen(
+                onFinish = {
+                    navController.navigate(Screen.Decks.route) {
+                        popUpTo(Screen.ExtraSessionResult.route) { inclusive = true }
+                    }
+                }
             )
         }
     }

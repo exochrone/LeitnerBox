@@ -119,7 +119,7 @@ fun CsvExportScreen(
     if (uiState.showSuccess && uiState.lastExportInfo != null) {
         AlertDialog(
             onDismissRequest = viewModel::onDismissSuccess,
-            title = { Text("Succès") },
+            title = { Text(stringResource(R.string.csv_import_success_title)) },
             text = { 
                 Text(stringResource(
                     R.string.csv_export_success, 
@@ -129,7 +129,7 @@ fun CsvExportScreen(
             },
             confirmButton = {
                 TextButton(onClick = viewModel::onDismissSuccess) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )
@@ -142,7 +142,7 @@ fun CsvExportScreen(
             text = { Text(error) },
             confirmButton = {
                 TextButton(onClick = viewModel::onDismissError) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )

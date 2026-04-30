@@ -1,5 +1,6 @@
 package com.jb.leitnerbox.feature.session.ui.result
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,8 @@ fun SessionResultScreen(
     onFinish: () -> Unit
 ) {
     val showCelebration by viewModel.showCelebration.collectAsStateWithLifecycle()
+
+    BackHandler { onFinish() }
 
     SessionResultContent(
         session = viewModel.session,
@@ -85,7 +89,8 @@ internal fun SessionResultContent(
                     text = headlineText,
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = headlineColor
+                    color = headlineColor,
+                    textAlign = TextAlign.Center
                 )
 
                 Card(
@@ -95,7 +100,7 @@ internal fun SessionResultContent(
                     )
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -103,11 +108,13 @@ internal fun SessionResultContent(
                             text = "$successRate%",
                             style = MaterialTheme.typography.displayMedium,
                             fontWeight = FontWeight.Black,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center
                         )
                         Text(
                             text = stringResource(R.string.session_result_success_rate),
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -121,25 +128,29 @@ internal fun SessionResultContent(
                 ResultItem(
                     icon = Icons.Default.CheckCircle,
                     label = stringResource(R.string.session_result_correct_answers),
-                    value = "${session.successCount}"
+                    value = "${session.successCount}",
+                    dimmed = session.successCount == 0
                 )
 
                 ResultItem(
                     icon = Icons.Default.Star,
                     label = stringResource(R.string.session_result_newly_mastered),
-                    value = "${session.masteredCount}"
+                    value = "${session.masteredCount}",
+                    dimmed = session.masteredCount == 0
                 )
 
                 ResultItem(
                     icon = Icons.Default.KeyboardArrowUp,
                     label = stringResource(R.string.session_result_advanced),
-                    value = "${session.advancedCount}"
+                    value = "${session.advancedCount}",
+                    dimmed = session.advancedCount == 0
                 )
 
                 ResultItem(
                     icon = Icons.Default.KeyboardArrowDown,
                     label = stringResource(R.string.session_result_retreated),
-                    value = "${session.retreatedCount}"
+                    value = "${session.retreatedCount}",
+                    dimmed = session.retreatedCount == 0
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -166,8 +177,14 @@ internal fun SessionResultContent(
 private fun ResultItem(
     icon: ImageVector,
     label: String,
-    value: String
+    value: String,
+    dimmed: Boolean = false
 ) {
+    val color = if (dimmed) 
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+    else 
+        MaterialTheme.colorScheme.onSurface
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -176,19 +193,21 @@ private fun ResultItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary
+            tint = if (dimmed) color else MaterialTheme.colorScheme.secondary
         )
         Text(
             text = label,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = color
         )
         Text(
             text = value,
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = color
         )
     }
 }

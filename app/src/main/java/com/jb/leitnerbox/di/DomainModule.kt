@@ -162,6 +162,10 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideBuildExtraSessionUseCase(cardRepository: CardRepository): BuildExtraSessionUseCase = BuildExtraSessionUseCase(cardRepository)
+
+    @Provides
+    @Singleton
     fun provideSaveSessionUseCase(repository: SessionRepository): SaveSessionUseCase = SaveSessionUseCase(repository)
 
     @Provides

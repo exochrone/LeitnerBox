@@ -19,6 +19,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.backup.BackupSummary
+import com.jb.leitnerbox.core.domain.csv.MalformedReason
 import com.jb.leitnerbox.feature.settings.R
 import java.io.File
 import java.time.LocalDate
@@ -127,7 +128,7 @@ fun BackupScreen(
                 csvImportViewModel.onResultDismissed()
                 if (result.importedCount > 0) onNavigateToDecks()
             },
-            title = { Text("Succès") },
+            title = { Text(stringResource(R.string.csv_import_success_title)) },
             text = {
                 Column {
                     Text(stringResource(R.string.csv_import_success, result.importedCount))
@@ -150,7 +151,7 @@ fun BackupScreen(
                     csvImportViewModel.onResultDismissed()
                     if (result.importedCount > 0) onNavigateToDecks()
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )
@@ -163,7 +164,7 @@ fun BackupScreen(
             text = { Text(error) },
             confirmButton = {
                 TextButton(onClick = viewModel::onErrorDismissed) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )
@@ -171,8 +172,8 @@ fun BackupScreen(
 
     csvImportUiState.parseError?.let { reason ->
         val message = when (reason) {
-            com.jb.leitnerbox.core.domain.csv.MalformedReason.MISSING_REQUIRED_COLUMN -> stringResource(R.string.csv_import_error_headers)
-            com.jb.leitnerbox.core.domain.csv.MalformedReason.EMPTY_FILE -> stringResource(R.string.csv_import_error_empty)
+            MalformedReason.MISSING_REQUIRED_COLUMN -> stringResource(R.string.csv_import_error_headers)
+            MalformedReason.EMPTY_FILE -> stringResource(R.string.csv_import_error_empty)
             else -> stringResource(R.string.csv_import_error_format)
         }
         AlertDialog(
@@ -181,7 +182,7 @@ fun BackupScreen(
             text = { Text(message) },
             confirmButton = {
                 TextButton(onClick = csvImportViewModel::onResultDismissed) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )

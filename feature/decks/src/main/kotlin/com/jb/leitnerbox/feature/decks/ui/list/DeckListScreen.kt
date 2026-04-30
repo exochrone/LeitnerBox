@@ -25,6 +25,7 @@ fun DeckListScreen(
     onDeckClick: (Long) -> Unit,
     onAddDeckClick: () -> Unit,
     onBackClick: () -> Unit,
+    onLaunchExtraSession: (Long) -> Unit,
     deletedDeck: Deck? = null,
     onUndoDelete: (Deck) -> Unit = {},
     onSnackbarDismissed: () -> Unit = {}
@@ -106,7 +107,8 @@ fun DeckListScreen(
                 ) { item ->
                     DeckListItem(
                         item = item,
-                        onClick = { onDeckClick(item.deck.id) }
+                        onClick = { onDeckClick(item.deck.id) },
+                        onLaunch = { onLaunchExtraSession(item.deck.id) }
                     )
                 }
             }

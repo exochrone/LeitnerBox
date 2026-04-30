@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -81,12 +82,13 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
                 verticalAlignment     = Alignment.Bottom
             ) {
                 StatItem(
-                    label = "",
-                    value = "🔥 ${stats.streak}",
+                    label = "🔥",
+                    value = stats.streak.toString(),
                     color = if (stats.streak == 0) 
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                     else 
-                        LocalContentColor.current
+                        LocalContentColor.current,
+                    labelStyle = MaterialTheme.typography.titleMedium
                 )
                 StatItem(
                     label = stringResource(R.string.stats_total_cards),
@@ -112,7 +114,7 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
                 )
                 StatItem(
                     label = stringResource(R.string.stats_progression),
-                    value = "${stats.progressionByDeck}% / ${stats.progressionGlobal}%"
+                    value = "${stats.progressionGlobal}%"
                 )
                 StatItem(
                     label = stringResource(R.string.stats_sessions),
@@ -127,7 +129,8 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
 private fun StatItem(
     label: String,
     value: String,
-    color: Color = LocalContentColor.current
+    color: Color = LocalContentColor.current,
+    labelStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelSmall
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -142,8 +145,10 @@ private fun StatItem(
         if (label.isNotEmpty()) {
             Text(
                 text  = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = labelStyle,
+                color = if (labelStyle == MaterialTheme.typography.labelSmall) 
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                else color
             )
         }
     }

@@ -9,4 +9,8 @@ class SessionStateHolder {
     var selectedItems: List<SessionPlanItem> = emptyList()
     var lastSessionResult: Session? = null
     var isChallengeMode: Boolean = false
+
+    // Session extraordinaire
+    var extraSessionCardCount: Int = 0
+    var extraSessionSuccessCount: Int = 0
 }
