@@ -27,5 +27,4 @@ sealed class Screen(val route: String) {
     object Backup : Screen("backup")
     object History : Screen("history")
     object CsvExport : Screen("csv-export")
-    object CsvImport : Screen("csv-import")
 }

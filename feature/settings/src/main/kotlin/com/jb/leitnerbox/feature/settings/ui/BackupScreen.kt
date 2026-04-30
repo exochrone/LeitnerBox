@@ -27,12 +27,14 @@ import java.time.LocalDate
 @Composable
 fun BackupScreen(
     viewModel: BackupViewModel = hiltViewModel(),
+    csvImportViewModel: CsvImportViewModel = hiltViewModel(),
     onNavigateToCsvExport: () -> Unit,
-    onNavigateToCsvImport: () -> Unit,
     onBackClick: () -> Unit,
+    onNavigateToDecks: () -> Unit,
     onRestoreSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val csvImportUiState by csvImportViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val openFileLauncher = rememberLauncherForActivityResult(
@@ -44,6 +46,15 @@ fun BackupScreen(
                 ?.use { stream -> stream.readBytes() }
                 ?: return@let
             viewModel.onFileSelected(bytes)
+        }
+    }
+
+    val openCsvLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            val content = context.contentResolver.openInputStream(it)?.bufferedReader()?.use { it.readText() }
+            content?.let { csvImportViewModel.onFileSelected(it) }
         }
     }
 
@@ -79,6 +90,72 @@ fun BackupScreen(
         )
     }
 
+    if (csvImportUiState.showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = csvImportViewModel::onImportCancelled,
+            title = { Text(stringResource(R.string.csv_import_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(stringResource(R.string.csv_import_confirm))
+                    if (csvImportUiState.mergingDeckNames.isNotEmpty()) {
+                        Text(
+                            text = stringResource(
+                                R.string.csv_import_merging_message,
+                                csvImportUiState.mergingDeckNames.joinToString(", ")
+                            ),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = csvImportViewModel::onImportConfirmed) {
+                    Text(stringResource(R.string.csv_import_confirm_button))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = csvImportViewModel::onImportCancelled) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    csvImportUiState.importResult?.let { result ->
+        AlertDialog(
+            onDismissRequest = {
+                csvImportViewModel.onResultDismissed()
+                if (result.importedCount > 0) onNavigateToDecks()
+            },
+            title = { Text("Succès") },
+            text = {
+                Column {
+                    Text(stringResource(R.string.csv_import_success, result.importedCount))
+                    if (result.ignoredLines.isNotEmpty()) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(
+                                R.string.csv_import_duplicates,
+                                result.ignoredLines.size,
+                                result.ignoredLines.joinToString(", ")
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    csvImportViewModel.onResultDismissed()
+                    if (result.importedCount > 0) onNavigateToDecks()
+                }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     uiState.error?.let { error ->
         AlertDialog(
             onDismissRequest = viewModel::onErrorDismissed,
@@ -86,6 +163,24 @@ fun BackupScreen(
             text = { Text(error) },
             confirmButton = {
                 TextButton(onClick = viewModel::onErrorDismissed) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    csvImportUiState.parseError?.let { reason ->
+        val message = when (reason) {
+            com.jb.leitnerbox.core.domain.csv.MalformedReason.MISSING_REQUIRED_COLUMN -> stringResource(R.string.csv_import_error_headers)
+            com.jb.leitnerbox.core.domain.csv.MalformedReason.EMPTY_FILE -> stringResource(R.string.csv_import_error_empty)
+            else -> stringResource(R.string.csv_import_error_format)
+        }
+        AlertDialog(
+            onDismissRequest = csvImportViewModel::onResultDismissed,
+            title = { Text(stringResource(R.string.backup_error_title)) },
+            text = { Text(message) },
+            confirmButton = {
+                TextButton(onClick = csvImportViewModel::onResultDismissed) {
                     Text("OK")
                 }
             }
@@ -110,7 +205,7 @@ fun BackupScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (uiState.isLoading) {
+            if (uiState.isLoading || csvImportUiState.isLoading) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
 
@@ -124,7 +219,7 @@ fun BackupScreen(
 
             Button(
                 onClick = viewModel::onExportClick,
-                enabled = !uiState.isLoading,
+                enabled = !uiState.isLoading && !csvImportUiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.backup_export_button))
@@ -136,7 +231,7 @@ fun BackupScreen(
                         arrayOf("application/octet-stream", "*/*")
                     )
                 },
-                enabled = !uiState.isLoading,
+                enabled = !uiState.isLoading && !csvImportUiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.backup_import_button))
@@ -152,13 +247,17 @@ fun BackupScreen(
 
             OutlinedButton(
                 onClick = onNavigateToCsvExport,
+                enabled = !uiState.isLoading && !csvImportUiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.csv_export_button))
             }
 
             OutlinedButton(
-                onClick = onNavigateToCsvImport,
+                onClick = {
+                    openCsvLauncher.launch(arrayOf("text/csv", "text/comma-separated-values", "application/octet-stream", "*/*"))
+                },
+                enabled = !uiState.isLoading && !csvImportUiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.csv_import_button))

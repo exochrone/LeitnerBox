@@ -34,7 +34,6 @@ import com.jb.leitnerbox.feature.settings.ui.ExcludedDaysScreen
 import com.jb.leitnerbox.feature.settings.ui.ThemeScreen
 import com.jb.leitnerbox.feature.settings.ui.BackupScreen
 import com.jb.leitnerbox.feature.settings.ui.CsvExportScreen
-import com.jb.leitnerbox.feature.settings.ui.CsvImportScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -246,10 +245,12 @@ fun LeitnerNavHost(
                 onNavigateToCsvExport = {
                     navController.navigate(Screen.CsvExport.route)
                 },
-                onNavigateToCsvImport = {
-                    navController.navigate(Screen.CsvImport.route)
-                },
                 onBackClick = { navController.popBackStack() },
+                onNavigateToDecks = {
+                    navController.navigate(Screen.Decks.route) {
+                        popUpTo(Screen.Dashboard.route)
+                    }
+                },
                 onRestoreSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(0) { inclusive = true }
@@ -260,16 +261,6 @@ fun LeitnerNavHost(
         composable(Screen.CsvExport.route) {
             CsvExportScreen(
                 onBackClick = { navController.popBackStack() }
-            )
-        }
-        composable(Screen.CsvImport.route) {
-            CsvImportScreen(
-                onBackClick = { navController.popBackStack() },
-                onImportSuccess = {
-                    navController.navigate(Screen.Decks.route) {
-                        popUpTo(Screen.Dashboard.route)
-                    }
-                }
             )
         }
     }

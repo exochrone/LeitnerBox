@@ -38,7 +38,7 @@
     <string name="csv_export_success">%1$d cartes exportées dans %2$d deck(s)</string>
     <string name="csv_import_title">Importer un fichier CSV</string>
     <string name="csv_import_select_file">Choisir un fichier CSV</string>
-    <string name="csv_import_merging_message">Les cartes seront ajoutées aux decks existants suivants : %1$s. Les question déjà existantes ne seront pas importées.</string>
+    <string name="csv_import_merging_message">Les cartes seront ajoutées aux decks existants suivants : %1$s.\n\nLes questions déjà existantes ne seront pas importées.</string>
     <string name="csv_import_confirm">Le fichier contient des cartes pour des decks existants. Voulez-vous continuer ?</string>
     <string name="csv_import_confirm_button">Importer</string>
     <string name="csv_import_success">%1$d carte(s) importée(s)</string>
