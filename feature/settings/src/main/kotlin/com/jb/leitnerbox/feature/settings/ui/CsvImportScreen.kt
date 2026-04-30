@@ -21,7 +21,8 @@ import com.jb.leitnerbox.feature.settings.R
 @Composable
 fun CsvImportScreen(
     viewModel: CsvImportViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onImportSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -62,7 +63,7 @@ fun CsvImportScreen(
                     onClick = { openFileLauncher.launch(arrayOf("text/csv", "text/comma-separated-values", "application/octet-stream", "*/*")) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.backup_import_button))
+                    Text(stringResource(R.string.csv_import_select_file))
                 }
             }
         }
@@ -101,7 +102,10 @@ fun CsvImportScreen(
 
     uiState.importResult?.let { result ->
         AlertDialog(
-            onDismissRequest = viewModel::onResultDismissed,
+            onDismissRequest = {
+                viewModel.onResultDismissed()
+                onImportSuccess()
+            },
             title = { Text("Succès") },
             text = {
                 Column {
@@ -121,7 +125,10 @@ fun CsvImportScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = viewModel::onResultDismissed) {
+                TextButton(onClick = {
+                    viewModel.onResultDismissed()
+                    onImportSuccess()
+                }) {
                     Text("OK")
                 }
             }

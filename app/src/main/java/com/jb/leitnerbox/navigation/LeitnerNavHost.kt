@@ -264,7 +264,12 @@ fun LeitnerNavHost(
         }
         composable(Screen.CsvImport.route) {
             CsvImportScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onImportSuccess = {
+                    navController.navigate(Screen.Decks.route) {
+                        popUpTo(Screen.Dashboard.route)
+                    }
+                }
             )
         }
     }
