@@ -224,18 +224,19 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideImportCardsUseCase(
+    fun provideImportCsvUseCase(
         cardRepository: CardRepository,
+        deckRepository: DeckRepository,
         parser: CsvParser,
         answerNormalizer: AnswerNormalizer
-    ): ImportCardsUseCase = ImportCardsUseCase(cardRepository, parser, answerNormalizer)
+    ): ImportCsvUseCase = ImportCsvUseCase(cardRepository, deckRepository, parser, answerNormalizer)
 
     @Provides
     @Singleton
-    fun provideExportDeckUseCase(
+    fun provideExportDecksUseCase(
         cardRepository: CardRepository,
         exporter: CsvExporter
-    ): ExportDeckUseCase = ExportDeckUseCase(cardRepository, exporter)
+    ): ExportDecksUseCase = ExportDecksUseCase(cardRepository, exporter)
 
     @Provides
     @Singleton

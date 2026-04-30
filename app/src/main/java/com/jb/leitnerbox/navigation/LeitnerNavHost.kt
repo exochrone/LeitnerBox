@@ -27,13 +27,14 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
 import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import com.jb.leitnerbox.feature.session.ui.SessionScreen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
-import com.jb.leitnerbox.feature.importexport.ui.ImportExportScreen
 import com.jb.leitnerbox.feature.stats.ui.StatsScreen
 import com.jb.leitnerbox.feature.stats.ui.HistoryScreen
 import com.jb.leitnerbox.feature.challenge.ui.ChallengeScreen
 import com.jb.leitnerbox.feature.settings.ui.ExcludedDaysScreen
 import com.jb.leitnerbox.feature.settings.ui.ThemeScreen
 import com.jb.leitnerbox.feature.settings.ui.BackupScreen
+import com.jb.leitnerbox.feature.settings.ui.CsvExportScreen
+import com.jb.leitnerbox.feature.settings.ui.CsvImportScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -114,9 +115,6 @@ fun LeitnerNavHost(
                 },
                 onBoxClick = { deckId, boxIndex ->
                     navController.navigate(Screen.BoxDetail.createRoute(deckId, boxIndex))
-                },
-                onImportExportClick = { deckId ->
-                    navController.navigate(Screen.ImportExport.createRoute(deckId))
                 },
                 onDeckDeleted = { deck ->
                     lastDeletedDeck = deck
@@ -208,14 +206,6 @@ fun LeitnerNavHost(
                 }
             )
         }
-        composable(
-            route = Screen.ImportExport.route,
-            arguments = listOf(navArgument("deckId") { type = NavType.LongType })
-        ) {
-            ImportExportScreen(
-                onBackClick = { navController.popBackStack() }
-            )
-        }
         composable(Screen.Stats.route) {
             StatsScreen(
                 onBackClick = { navController.popBackStack() }
@@ -253,12 +243,28 @@ fun LeitnerNavHost(
         }
         composable(Screen.Backup.route) {
             BackupScreen(
+                onNavigateToCsvExport = {
+                    navController.navigate(Screen.CsvExport.route)
+                },
+                onNavigateToCsvImport = {
+                    navController.navigate(Screen.CsvImport.route)
+                },
                 onBackClick = { navController.popBackStack() },
                 onRestoreSuccess = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
+            )
+        }
+        composable(Screen.CsvExport.route) {
+            CsvExportScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.CsvImport.route) {
+            CsvImportScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

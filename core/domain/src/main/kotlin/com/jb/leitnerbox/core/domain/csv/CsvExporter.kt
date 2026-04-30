@@ -1,38 +1,41 @@
 package com.jb.leitnerbox.core.domain.csv
 
 import com.jb.leitnerbox.core.domain.model.Card
-import java.time.ZoneId
+import com.jb.leitnerbox.core.domain.model.Deck
 
 class CsvExporter {
-    fun export(cards: List<Card>): String {
+    /**
+     * Exporte une map de decks et leurs cartes vers une chaîne CSV.
+     * Séparateur : ;
+     * Encodage : UTF-8 avec BOM
+     */
+    fun export(deckCardsMap: Map<Deck, List<Card>>): String {
         val sb = StringBuilder()
-        sb.append('\uFEFF')  // BOM UTF-8 — compatibilité Excel Windows
-        sb.appendLine("question,reponse,saisieRequise,boite,maitrisee,dateDerniereRevision")
-        cards.forEach { card ->
-            sb.appendLine(buildRow(card))
+        sb.append('\uFEFF')  // BOM UTF-8
+        sb.appendLine("nomDeck;question;reponse;saisieRequise")
+
+        deckCardsMap.forEach { (deck, cards) ->
+            cards.forEach { card ->
+                sb.appendLine(buildRow(deck.name, card))
+            }
         }
         return sb.toString()
     }
 
-    private fun buildRow(card: Card): String {
-        val lastReview = card.lastReviewDate
-            ?.atZone(ZoneId.systemDefault())
-            ?.toLocalDate()
-            ?.toString() ?: ""  // vide si jamais révisée
-
+    private fun buildRow(deckName: String, card: Card): String {
         return listOf(
-            card.recto.escapeCsv(),
-            card.verso.escapeCsv(),
-            card.needsInput.toString(),
-            card.box.toString(),
-            card.isLearned.toString(),
-            lastReview
-        ).joinToString(",")
+            deckName.escapeCsvSemicolon(),
+            card.recto.escapeCsvQuoted(),
+            card.verso.escapeCsvQuoted(),
+            if (card.needsInput) "oui" else "non"
+        ).joinToString(";")
     }
 
-    private fun String.escapeCsv(): String {
-        return if (contains(',') || contains('"') || contains('\n')) {
-            "\"${replace("\"", "\"\"")}\""
-        } else this
-    }
+    // Champs nomDeck : guillemets uniquement si contient ";"
+    private fun String.escapeCsvSemicolon(): String =
+        if (contains(';') || contains('"')) "\"${replace("\"", "\"\"")}\"" else this
+
+    // Champs question/réponse : toujours entre guillemets
+    private fun String.escapeCsvQuoted(): String =
+        "\"${replace("\"", "\"\"")}\""
 }

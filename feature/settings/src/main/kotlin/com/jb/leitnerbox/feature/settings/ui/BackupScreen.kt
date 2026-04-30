@@ -27,6 +27,8 @@ import java.time.LocalDate
 @Composable
 fun BackupScreen(
     viewModel: BackupViewModel = hiltViewModel(),
+    onNavigateToCsvExport: () -> Unit,
+    onNavigateToCsvImport: () -> Unit,
     onBackClick: () -> Unit,
     onRestoreSuccess: () -> Unit
 ) {
@@ -138,6 +140,28 @@ fun BackupScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.backup_import_button))
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            Text(
+                text = stringResource(R.string.csv_section_title),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            OutlinedButton(
+                onClick = onNavigateToCsvExport,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.csv_export_button))
+            }
+
+            OutlinedButton(
+                onClick = onNavigateToCsvImport,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.csv_import_button))
             }
         }
     }

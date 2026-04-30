@@ -1,6 +1,11 @@
 package com.jb.leitnerbox.core.domain.csv
 
 class CsvParser {
+
+    companion object {
+        val EXPECTED_HEADERS = listOf("nomdeck", "question", "reponse", "saisierequise")
+    }
+
     fun parse(csvContent: String): CsvParseResult {
         // Trim du BOM UTF-8 si présent (compatibilité fichiers Excel)
         val content = csvContent.trimStart('\uFEFF')
@@ -9,44 +14,70 @@ class CsvParser {
             return CsvParseResult.Error(MalformedReason.EMPTY_FILE)
         }
 
-        val lines = content.lines()
-            .map { it.trimEnd('\r') }
-            .filter { it.isNotBlank() }
-
+        val lines = splitRespectingQuotes(content)
         if (lines.isEmpty()) return CsvParseResult.Error(MalformedReason.EMPTY_FILE)
 
-        // Parser les en-têtes
-        val headers = parseRow(lines.first()).map { it.trim().lowercase() }
-        val questionIdx = headers.indexOf("question")
-        val reponseIdx = headers.indexOf("reponse")
-        val saisieIdx = headers.indexOf("saisierequise")
-
-        if (questionIdx == -1 || reponseIdx == -1) {
+        // Validation des en-têtes
+        val headers = parseRow(lines.first(), ';').map { it.trim().lowercase() }
+        if (headers != EXPECTED_HEADERS) {
             return CsvParseResult.Error(MalformedReason.MISSING_REQUIRED_COLUMN)
         }
 
-        // Parser les lignes de données
-        val cards = mutableListOf<ParsedCard>()
+        // Parsing des données
+        val cards = mutableListOf<ParsedCsvCard>()
         lines.drop(1).forEachIndexed { index, line ->
-            val lineNumber = index + 2  // +2 car on commence à la ligne 2 (après en-têtes)
-            val fields = parseRow(line)
+            val lineNumber = index + 2
+            if (line.isBlank()) return@forEachIndexed
+            val fields = parseRow(line, ';')
+            if (fields.size < 4) return CsvParseResult.Error(MalformedReason.INVALID_FORMAT)
 
-            if (fields.size <= maxOf(questionIdx, reponseIdx)) {
-                return CsvParseResult.Error(MalformedReason.INVALID_FORMAT)
-            }
-
-            val recto = fields[questionIdx].trim()
-            val verso = fields[reponseIdx].trim()
-            val needsInput = saisieIdx != -1 &&
-                fields.getOrNull(saisieIdx)?.trim()?.lowercase() == "true"
-
-            cards.add(ParsedCard(lineNumber, recto, verso, needsInput))
+            cards.add(
+                ParsedCsvCard(
+                    lineNumber  = lineNumber,
+                    deckName    = fields[0].trim(),
+                    recto       = fields[1],
+                    verso       = fields[2],
+                    needsInput  = fields[3].trim().lowercase() == "oui"
+                )
+            )
         }
 
         return CsvParseResult.Success(cards)
     }
 
-    private fun parseRow(line: String): List<String> {
+    /**
+     * Découpe le contenu en lignes en respectant les sauts de ligne
+     * à l'intérieur des champs entre guillemets.
+     */
+    private fun splitRespectingQuotes(content: String): List<String> {
+        val lines = mutableListOf<String>()
+        val current = StringBuilder()
+        var inQuotes = false
+        var i = 0
+        while (i < content.length) {
+            val c = content[i]
+            when {
+                c == '"' -> {
+                    inQuotes = !inQuotes
+                    current.append(c)
+                }
+                (c == '\n' || c == '\r') && !inQuotes -> {
+                    if (c == '\r' && i + 1 < content.length && content[i + 1] == '\n') i++
+                    lines.add(current.toString())
+                    current.clear()
+                }
+                else -> current.append(c)
+            }
+            i++
+        }
+        if (current.isNotEmpty()) lines.add(current.toString())
+        return lines
+    }
+
+    /**
+     * Parser RFC conforme pour un séparateur configurable.
+     */
+    private fun parseRow(line: String, separator: Char): List<String> {
         val fields = mutableListOf<String>()
         val current = StringBuilder()
         var inQuotes = false
@@ -56,13 +87,11 @@ class CsvParser {
             when {
                 c == '"' && !inQuotes -> inQuotes = true
                 c == '"' && inQuotes && i + 1 < line.length && line[i + 1] == '"' -> {
-                    current.append('"')
-                    i++  // sauter le doublon
+                    current.append('"'); i++
                 }
                 c == '"' && inQuotes -> inQuotes = false
-                c == ',' && !inQuotes -> {
-                    fields.add(current.toString())
-                    current.setLength(0)
+                c == separator && !inQuotes -> {
+                    fields.add(current.toString()); current.clear()
                 }
                 else -> current.append(c)
             }
@@ -73,7 +102,21 @@ class CsvParser {
     }
 }
 
+data class ParsedCsvCard(
+    val lineNumber: Int,
+    val deckName: String,
+    val recto: String,
+    val verso: String,
+    val needsInput: Boolean
+)
+
 sealed class CsvParseResult {
-    data class Success(val cards: List<ParsedCard>) : CsvParseResult()
+    data class Success(val cards: List<ParsedCsvCard>) : CsvParseResult()
     data class Error(val reason: MalformedReason) : CsvParseResult()
+}
+
+enum class MalformedReason {
+    MISSING_REQUIRED_COLUMN,
+    EMPTY_FILE,
+    INVALID_FORMAT
 }

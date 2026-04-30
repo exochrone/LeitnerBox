@@ -28,4 +28,22 @@
     <string name="backup_restore_confirm_button">Restaurer</string>
     <string name="backup_error_title">Erreur</string>
     <string name="cancel">Annuler</string>
+
+    <string name="csv_section_title">Échange de données CSV</string>
+    <string name="csv_export_button">Export CSV</string>
+    <string name="csv_import_button">Import CSV</string>
+    <string name="csv_export_title">Exporter en CSV</string>
+    <string name="csv_export_select_decks">Sélectionnez les decks à exporter</string>
+    <string name="csv_export_validate">Valider</string>
+    <string name="csv_export_success">%1$d cartes exportées dans %2$d deck(s)</string>
+    <string name="csv_import_title">Importer depuis CSV</string>
+    <string name="csv_import_merging_message">Les cartes seront ajoutées aux decks existants suivants : %1$s</string>
+    <string name="csv_import_confirm">Le fichier contient des cartes pour des decks existants. Voulez-vous continuer ?</string>
+    <string name="csv_import_confirm_button">Importer</string>
+    <string name="csv_import_success">%1$d carte(s) importée(s)</string>
+    <string name="csv_import_duplicates">%1$d doublon(s) ignoré(s) (lignes : %2$s)</string>
+    <string name="csv_import_error_headers">Format de fichier invalide. En-têtes attendues : nomDeck;question;reponse;saisieRequise</string>
+    <string name="csv_import_error_empty">Le fichier est vide ou ne contient aucune carte.</string>
+    <string name="csv_import_error_format">Le format du fichier CSV est invalide.</string>
+    <string name="stats_no_decks">Aucun deck disponible.</string>
 </resources>

@@ -9,7 +9,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +38,6 @@ fun DeckDetailScreen(
     onBackClick: () -> Unit,
     onAddCardClick: (Long) -> Unit,
     onBoxClick: (Long, Int) -> Unit,
-    onImportExportClick: (Long) -> Unit,
     onDeckDeleted: (Deck) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,16 +113,6 @@ fun DeckDetailScreen(
                         Icon(
                             imageVector = Icons.Default.Palette,
                             contentDescription = stringResource(R.string.deck_color_picker_cd),
-                            tint = deckColor
-                        )
-                    }
-                    IconButton(
-                        onClick = { uiState.deck?.id?.let { onImportExportClick(it) } },
-                        modifier = Modifier.width(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ImportExport,
-                            contentDescription = "Import / Export",
                             tint = deckColor
                         )
                     }
