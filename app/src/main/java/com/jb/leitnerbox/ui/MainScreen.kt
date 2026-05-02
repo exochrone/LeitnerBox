@@ -43,7 +43,7 @@ fun MainScreen(startDestination: String? = null) {
     )
 
     Scaffold(
-        bottomBar = {
+        /* bottomBar = {
             NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
@@ -59,24 +59,21 @@ fun MainScreen(startDestination: String? = null) {
                         label = { Text(label) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
+                            val isTransient = currentDestination?.route == Screen.SessionResult.route || 
+                                              currentDestination?.route == Screen.ExtraSessionResult.route
+
                             navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
                                 popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                                    saveState = !isTransient
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
                                 launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
+                                restoreState = !isTransient
                             }
                         }
                     )
                 }
             }
-        }
+        } */
     ) { innerPadding ->
         LeitnerNavHost(
             navController = navController,

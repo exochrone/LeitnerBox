@@ -28,9 +28,11 @@ android {
     }
 
     sourceSets {
-        getByName("main") {
+        getByName("debug") {
             java.srcDir("build/generated/source/proto/debug/java")
             java.srcDir("build/generated/source/proto/debug/kotlin")
+        }
+        getByName("release") {
             java.srcDir("build/generated/source/proto/release/java")
             java.srcDir("build/generated/source/proto/release/kotlin")
         }

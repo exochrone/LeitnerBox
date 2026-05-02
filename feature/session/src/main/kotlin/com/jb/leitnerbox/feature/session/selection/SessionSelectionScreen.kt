@@ -24,6 +24,12 @@ fun SessionSelectionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
+    LaunchedEffect(uiState.items, uiState.isLoading) {
+        if (!uiState.isLoading && uiState.items.isEmpty()) {
+            onBackClick()
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {

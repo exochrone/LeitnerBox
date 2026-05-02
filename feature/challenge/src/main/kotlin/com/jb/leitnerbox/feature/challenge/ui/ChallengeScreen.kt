@@ -2,12 +2,14 @@ package com.jb.leitnerbox.feature.challenge.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -18,13 +20,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun ChallengeScreen(
     viewModel: ChallengeViewModel = hiltViewModel(),
-    onStartChallenge: () -> Unit
+    onStartChallenge: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Challenge") })
+            TopAppBar(
+                title = { Text("Challenge") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Retour"
+                        )
+                    }
+                }
+            )
         }
     ) { padding ->
         Column(

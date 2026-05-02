@@ -5,7 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.DashboardGlobalStats
 import com.jb.leitnerbox.feature.dashboard.R
@@ -75,29 +75,36 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Ligne 1 : Streak | Total cartes | Maîtrisées
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment     = Alignment.Bottom
-            ) {
-                StatItem(
-                    label = "🔥",
-                    value = stats.streak.toString(),
-                    color = if (stats.streak == 0) 
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    else 
-                        LocalContentColor.current,
-                    labelStyle = MaterialTheme.typography.titleMedium
-                )
-                StatItem(
-                    label = stringResource(R.string.stats_total_cards),
-                    value = stats.totalCards.toString()
-                )
-                StatItem(
-                    label = stringResource(R.string.stats_mastered),
-                    value = "${stats.masteredCards} (${stats.masteredPercent}%)"
-                )
+            // Ligne 1 : 🔥 | Cartes | Maîtrisées (Libellés en haut, Valeurs en bas)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    LabelItem(
+                        text = "🔥",
+                        color = if (stats.streak == 0) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else LocalContentColor.current,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    LabelItem(text = stringResource(R.string.stats_total_cards))
+                    LabelItem(text = stringResource(R.string.stats_mastered))
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ValueItem(
+                        text = stats.streak.toString(),
+                        color = if (stats.streak == 0) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else LocalContentColor.current
+                    )
+                    ValueItem(text = stats.totalCards.toString())
+                    ValueItem(
+                        text = if (stats.masteredCards > 0)
+                            "${stats.masteredCards} (${stats.masteredPercent}%)"
+                        else
+                            stats.masteredCards.toString()
+                    )
+                }
             }
 
             HorizontalDivider()
@@ -126,30 +133,81 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
 }
 
 @Composable
+private fun LabelItem(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelSmall
+) {
+    Text(
+        text = text,
+        style = style,
+        color = color,
+        textAlign = TextAlign.Center,
+        modifier = modifier.width(80.dp) // Largeur fixe pour alignement vertical entre les deux lignes
+    )
+}
+
+@Composable
+private fun ValueItem(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = color,
+        textAlign = TextAlign.Center,
+        modifier = modifier.width(80.dp)
+    )
+}
+
+@Composable
 private fun StatItem(
     label: String,
     value: String,
     color: Color = LocalContentColor.current,
-    labelStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelSmall
+    labelStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelSmall,
+    reverseOrder: Boolean = false
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
-            text  = value,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = color
-        )
-        if (label.isNotEmpty()) {
+        if (reverseOrder) {
+            if (label.isNotEmpty()) {
+                Text(
+                    text  = label,
+                    style = labelStyle,
+                    color = if (labelStyle == MaterialTheme.typography.labelSmall) 
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    else color
+                )
+            }
             Text(
-                text  = label,
-                style = labelStyle,
-                color = if (labelStyle == MaterialTheme.typography.labelSmall) 
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                else color
+                text  = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = color
             )
+        } else {
+            Text(
+                text  = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+            if (label.isNotEmpty()) {
+                Text(
+                    text  = label,
+                    style = labelStyle,
+                    color = if (labelStyle == MaterialTheme.typography.labelSmall) 
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    else color
+                )
+            }
         }
     }
 }

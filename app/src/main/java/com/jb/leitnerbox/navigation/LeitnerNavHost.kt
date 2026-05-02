@@ -206,9 +206,7 @@ fun LeitnerNavHost(
         composable(Screen.SessionResult.route) {
             SessionResultScreen(
                 onFinish = {
-                    navController.navigate(Screen.Dashboard.route) {
-                        popUpTo(Screen.SessionSelection.route) { inclusive = true }
-                    }
+                    navController.popBackStack(Screen.Dashboard.route, inclusive = false)
                 }
             )
         }
@@ -226,6 +224,9 @@ fun LeitnerNavHost(
             ChallengeScreen(
                 onStartChallenge = {
                     navController.navigate(Screen.Session.route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -286,9 +287,7 @@ fun LeitnerNavHost(
         composable(Screen.ExtraSessionResult.route) {
             ExtraSessionResultScreen(
                 onFinish = {
-                    navController.navigate(Screen.Decks.route) {
-                        popUpTo(Screen.ExtraSessionResult.route) { inclusive = true }
-                    }
+                    navController.popBackStack(Screen.Decks.route, inclusive = false)
                 }
             )
         }
