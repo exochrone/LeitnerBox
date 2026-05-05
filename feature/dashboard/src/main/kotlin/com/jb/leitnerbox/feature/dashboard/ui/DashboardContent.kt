@@ -75,57 +75,52 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Ligne 1 : 🔥 | Cartes | Maîtrisées (Libellés en haut, Valeurs en bas)
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    LabelItem(
-                        text = "🔥",
-                        color = if (stats.streak == 0) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else LocalContentColor.current,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    LabelItem(text = stringResource(R.string.stats_total_cards))
-                    LabelItem(text = stringResource(R.string.stats_mastered))
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    ValueItem(
-                        text = stats.streak.toString(),
-                        color = if (stats.streak == 0) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else LocalContentColor.current
-                    )
-                    ValueItem(text = stats.totalCards.toString())
-                    ValueItem(
-                        text = if (stats.masteredCards > 0)
-                            "${stats.masteredCards} (${stats.masteredPercent}%)"
-                        else
-                            stats.masteredCards.toString()
-                    )
-                }
+            // Ligne 1 : 🔥 | Cartes | Maîtrisées
+            Row(modifier = Modifier.fillMaxWidth()) {
+                StatItem(
+                    label = "🔥",
+                    value = stats.streak.toString(),
+                    color = if (stats.streak == 0) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f) else LocalContentColor.current,
+                    labelStyle = MaterialTheme.typography.titleMedium,
+                    reverseOrder = true,
+                    modifier = Modifier.weight(1f)
+                )
+                StatItem(
+                    label = stringResource(R.string.stats_total_cards),
+                    value = stats.totalCards.toString(),
+                    reverseOrder = true,
+                    modifier = Modifier.weight(1f)
+                )
+                StatItem(
+                    label = stringResource(R.string.stats_mastered),
+                    value = if (stats.masteredCards > 0)
+                        "${stats.masteredCards} (${stats.masteredPercent}%)"
+                    else
+                        stats.masteredCards.toString(),
+                    reverseOrder = true,
+                    modifier = Modifier.weight(1f)
+                )
             }
 
             HorizontalDivider()
 
             // Ligne 2 : Bonnes réponses | Progression | Sessions
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 StatItem(
                     label = stringResource(R.string.stats_success_rate),
                     value = stats.successRate?.let { "$it%" }
-                        ?: stringResource(R.string.stats_no_data)
+                        ?: stringResource(R.string.stats_no_data),
+                    modifier = Modifier.weight(1f)
                 )
                 StatItem(
                     label = stringResource(R.string.stats_progression),
-                    value = "${stats.progressionGlobal}%"
+                    value = "${stats.progressionGlobal}%",
+                    modifier = Modifier.weight(1f)
                 )
                 StatItem(
                     label = stringResource(R.string.stats_sessions),
-                    value = stats.sessionCount.toString()
+                    value = stats.sessionCount.toString(),
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -133,79 +128,59 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
 }
 
 @Composable
-private fun LabelItem(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelSmall
-) {
-    Text(
-        text = text,
-        style = style,
-        color = color,
-        textAlign = TextAlign.Center,
-        modifier = modifier.width(80.dp) // Largeur fixe pour alignement vertical entre les deux lignes
-    )
-}
-
-@Composable
-private fun ValueItem(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = LocalContentColor.current
-) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        color = color,
-        textAlign = TextAlign.Center,
-        modifier = modifier.width(80.dp)
-    )
-}
-
-@Composable
 private fun StatItem(
     label: String,
     value: String,
+    modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
     labelStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelSmall,
     reverseOrder: Boolean = false
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
     ) {
         if (reverseOrder) {
-            if (label.isNotEmpty()) {
-                Text(
-                    text  = label,
-                    style = labelStyle,
-                    color = if (labelStyle == MaterialTheme.typography.labelSmall) 
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    else color
-                )
+            // Pour la ligne 1, on aligne les libellés sur le bas pour que les valeurs en dessous soient alignées
+            Box(
+                modifier = Modifier.height(24.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                if (label.isNotEmpty()) {
+                    Text(
+                        text = label,
+                        style = labelStyle,
+                        color = if (labelStyle == MaterialTheme.typography.labelSmall)
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        else color,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
             Text(
-                text  = value,
+                text = value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = color
+                color = color,
+                textAlign = TextAlign.Center
             )
         } else {
             Text(
-                text  = value,
+                text = value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = color
+                color = color,
+                textAlign = TextAlign.Center
             )
             if (label.isNotEmpty()) {
                 Text(
-                    text  = label,
+                    text = label,
                     style = labelStyle,
-                    color = if (labelStyle == MaterialTheme.typography.labelSmall) 
+                    color = if (labelStyle == MaterialTheme.typography.labelSmall)
                         MaterialTheme.colorScheme.onSurfaceVariant
-                    else color
+                    else color,
+                    textAlign = TextAlign.Center
                 )
             }
         }

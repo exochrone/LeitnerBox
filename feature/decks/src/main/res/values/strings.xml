@@ -4,4 +4,33 @@
     <string name="deck_launch_button">LANCER</string>
     <string name="deck_list_title">%1$d decks</string>
     <string name="deck_color_picker_cd">Choisir la couleur du deck</string>
+
+    <string name="deck_edit_title_new">Nouveau deck </string>
+    <string name="deck_edit_title_edit">Modifier le deck</string>
+    <string name="deck_edit_step"> (%1$d/3)</string>
+    <string name="deck_edit_exit_title">Quitter la configuration</string>
+    <string name="deck_edit_exit_message">Quitter la configuration de ce deck ?</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="next">Suivant</string>
+    <string name="save">Enregistrer</string>
+    <string name="create_deck">Créer le deck</string>
+    <string name="deck_name_label">Nom du deck</string>
+    <string name="deck_name_error">Le nom est obligatoire</string>
+    <string name="presentation_order_title">Ordre de présentation</string>
+    <string name="presentation_order_random">Aléatoire</string>
+    <string name="presentation_order_sequential">Séquentiel</string>
+    <string name="wrong_answer_title">En cas de mauvaise réponse</string>
+    <string name="wrong_answer_previous">Retour dans la boîte précédente</string>
+    <string name="wrong_answer_first">Retour dans la première boîte</string>
+    <string name="deck_color_title">Couleur du deck</string>
+    <string name="deck_color_default">Par défaut</string>
+    <string name="deck_color_custom">Personnalisée</string>
+    <string name="box_count_question">Nombre de boîtes dans le deck</string>
+    <string name="box_count_value">%1$d boîtes</string>
+    <string name="box_intervals_title">Intervalle pour chaque boîte</string>
+    <string name="box_label">Boîte %1$d</string>
+    <string name="box_interval_label">Délai</string>
+    <string name="box_interval_hint">Nombre de jours</string>
+    <string name="days">jours</string>
 </resources>

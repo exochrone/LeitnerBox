@@ -37,7 +37,7 @@ fun SessionHistoryCard(item: SessionHistoryItem) {
         .format(formatter)
 
     val deckNamesText = when {
-        item.deckNames.isEmpty() -> "Challenge des Maîtres"
+        item.deckNames.isEmpty() -> stringResource(R.string.challenge_masters)
         item.deckNames.size == 1 -> item.deckNames.first()
         else -> stringResource(
             R.string.stats_multiple_decks,

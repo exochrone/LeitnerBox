@@ -24,12 +24,6 @@ fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Placeholder for illustration (V1)
-        Text(
-            text = "📭",
-            style = MaterialTheme.typography.displayLarge
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,

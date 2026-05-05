@@ -15,4 +15,5 @@
     <string name="stats_empty_history">Commencez une révision pour voir votre historique ici !</string>
     <string name="stats_no_decks">Aucun deck disponible.</string>
     <string name="history_title">Historique</string>
+    <string name="challenge_masters">Challenge des Maîtres</string>
 </resources>
