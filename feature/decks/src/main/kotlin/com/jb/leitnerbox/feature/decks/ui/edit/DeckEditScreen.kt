@@ -98,7 +98,7 @@ fun DeckEditScreen(
                         stringResource(R.string.deck_edit_title_edit) 
                     else 
                         stringResource(R.string.deck_edit_title_new)
-                    Text("$prefix${stringResource(R.string.deck_edit_step, uiState.step)}")
+                    Text("$prefix ${stringResource(R.string.deck_edit_step, uiState.step).trim()}")
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {

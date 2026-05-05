@@ -22,7 +22,7 @@ data class DeckEditUiState(
     val wrongAnswerRule: WrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX,
     val color: String = "default",
     val boxCount: Int = 5,
-    val intervals: List<String> = listOf("1", "2", "3", "7", "14"),
+    val intervals: List<String> = listOf("1", "3", "5", "7", "14"),
     val isLoading: Boolean = false,
     val isEditing: Boolean = false,
     val showExitConfirm: Boolean = false
@@ -49,7 +49,7 @@ class DeckEditViewModel @Inject constructor(
     private val _events = MutableSharedFlow<DeckEditEvent>()
     val events = _events.asSharedFlow()
 
-    private val defaultIntervals = listOf(1, 2, 3, 7, 14, 30, 60)
+    private val defaultIntervals = listOf(1, 3, 5, 7, 14, 30, 60)
 
     init {
         deckId?.let { id ->

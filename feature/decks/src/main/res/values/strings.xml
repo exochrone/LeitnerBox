@@ -5,7 +5,7 @@
     <string name="deck_list_title">%1$d decks</string>
     <string name="deck_color_picker_cd">Choisir la couleur du deck</string>
 
-    <string name="deck_edit_title_new">Nouveau deck </string>
+    <string name="deck_edit_title_new">Nouveau deck</string>
     <string name="deck_edit_title_edit">Modifier le deck</string>
     <string name="deck_edit_step"> (%1$d/3)</string>
     <string name="deck_edit_exit_title">Quitter la configuration</string>
