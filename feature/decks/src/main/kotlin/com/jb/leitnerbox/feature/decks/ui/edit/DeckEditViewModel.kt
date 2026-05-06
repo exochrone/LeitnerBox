@@ -146,7 +146,6 @@ class DeckEditViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             
             val deck = Deck(
-                id = deckId ?: 0,
                 name = name,
                 intervals = intervals,
                 wrongAnswerRule = _uiState.value.wrongAnswerRule,
@@ -154,10 +153,10 @@ class DeckEditViewModel @Inject constructor(
                 color = _uiState.value.color
             )
             
-            if (deck.id > 0) {
-                updateDeckUseCase(deck)
+            if (_uiState.value.isEditing && deckId != null && deckId > 0) {
+                updateDeckUseCase(deck.copy(id = deckId))
             } else {
-                addDeckUseCase(deck)
+                addDeckUseCase(deck.copy(id = 0L))
             }
 
             _events.emit(DeckEditEvent.DeckSaved)
