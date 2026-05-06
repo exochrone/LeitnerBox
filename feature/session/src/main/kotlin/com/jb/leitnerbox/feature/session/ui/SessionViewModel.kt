@@ -202,6 +202,7 @@ class SessionViewModel @Inject constructor(
 
         // Stocker le résultat pour l'écran suivant
         sessionStateHolder.lastSessionResult = session
+        sessionStateHolder.isExtraSession = false
         _events.send(SessionUiEvent.SessionFinished)
     }
 

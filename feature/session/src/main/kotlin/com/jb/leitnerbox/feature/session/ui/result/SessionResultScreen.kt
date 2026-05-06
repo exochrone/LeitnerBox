@@ -43,6 +43,7 @@ fun SessionResultScreen(
         session = viewModel.session,
         successRate = viewModel.successRate,
         showCelebration = showCelebration,
+        isExtraSession = viewModel.isExtraSession,
         onCelebrationFinished = viewModel::onCelebrationFinished,
         onFinish = onFinish
     )
@@ -54,6 +55,7 @@ internal fun SessionResultContent(
     session: Session,
     successRate: Int,
     showCelebration: Boolean,
+    isExtraSession: Boolean = false,
     onCelebrationFinished: () -> Unit,
     onFinish: () -> Unit
 ) {
@@ -138,34 +140,36 @@ internal fun SessionResultContent(
                     dimmed = session.successCount == 0
                 )
 
-                ResultItem(
-                    icon = Icons.Default.EmojiEvents,
-                    label = stringResource(R.string.session_result_newly_mastered),
-                    value = "${session.masteredCount}",
-                    dimmed = session.masteredCount == 0
-                )
+                if (!isExtraSession) {
+                    ResultItem(
+                        icon = Icons.Default.EmojiEvents,
+                        label = stringResource(R.string.session_result_newly_mastered),
+                        value = "${session.masteredCount}",
+                        dimmed = session.masteredCount == 0
+                    )
 
-                ResultItem(
-                    icon = Icons.Default.KeyboardArrowUp,
-                    label = stringResource(R.string.session_result_advanced),
-                    value = "${session.advancedCount}",
-                    dimmed = session.advancedCount == 0
-                )
+                    ResultItem(
+                        icon = Icons.Default.KeyboardArrowUp,
+                        label = stringResource(R.string.session_result_advanced),
+                        value = "${session.advancedCount}",
+                        dimmed = session.advancedCount == 0
+                    )
 
-                val stayedCount = session.cardCount - (session.masteredCount + session.advancedCount + session.retreatedCount)
-                ResultItem(
-                    icon = Icons.Default.HorizontalRule,
-                    label = stringResource(R.string.session_result_stayed),
-                    value = "$stayedCount",
-                    dimmed = stayedCount == 0
-                )
+                    val stayedCount = session.cardCount - (session.masteredCount + session.advancedCount + session.retreatedCount)
+                    ResultItem(
+                        icon = Icons.Default.HorizontalRule,
+                        label = stringResource(R.string.session_result_stayed),
+                        value = "$stayedCount",
+                        dimmed = stayedCount == 0
+                    )
 
-                ResultItem(
-                    icon = Icons.Default.KeyboardArrowDown,
-                    label = stringResource(R.string.session_result_retreated),
-                    value = "${session.retreatedCount}",
-                    dimmed = session.retreatedCount == 0
-                )
+                    ResultItem(
+                        icon = Icons.Default.KeyboardArrowDown,
+                        label = stringResource(R.string.session_result_retreated),
+                        value = "${session.retreatedCount}",
+                        dimmed = session.retreatedCount == 0
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 

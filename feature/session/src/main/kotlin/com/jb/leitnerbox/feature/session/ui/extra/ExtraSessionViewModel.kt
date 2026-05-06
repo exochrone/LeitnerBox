@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
+import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
@@ -92,8 +93,20 @@ class ExtraSessionViewModel @Inject constructor(
         val state = _uiState.value
         val nextIndex = state.currentIndex + 1
         if (nextIndex >= state.cards.size) {
-            sessionStateHolder.extraSessionCardCount  = state.evaluatedCount
-            sessionStateHolder.extraSessionSuccessCount = state.successCount
+            val fakeSession = Session(
+                id = 0,
+                date = java.time.Instant.now(),
+                deckIds = listOf(deckId),
+                cardCount = state.evaluatedCount,
+                successCount = state.successCount,
+                masteredCount = 0,
+                advancedCount = 0,
+                retreatedCount = 0,
+                isReported = false
+            )
+            sessionStateHolder.lastSessionResult = fakeSession
+            sessionStateHolder.isExtraSession = true
+
             viewModelScope.launch {
                 _events.send(ExtraSessionEvent.SessionFinished)
             }

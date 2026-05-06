@@ -33,5 +33,4 @@ sealed class Screen(val route: String) {
     object ExtraSession : Screen("extra-session/{deckId}") {
         fun createRoute(deckId: Long) = "extra-session/$deckId"
     }
-    object ExtraSessionResult : Screen("extra-session/result")
 }

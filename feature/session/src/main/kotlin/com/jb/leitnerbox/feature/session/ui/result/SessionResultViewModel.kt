@@ -33,4 +33,7 @@ class SessionResultViewModel @Inject constructor(
     val successRate: Int
         get() = if (session.cardCount == 0) 0
         else (session.successCount * 100) / session.cardCount
+
+    val isExtraSession: Boolean
+        get() = sessionStateHolder.isExtraSession
 }

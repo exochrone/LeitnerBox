@@ -27,8 +27,8 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
 import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import com.jb.leitnerbox.feature.session.ui.SessionScreen
 import com.jb.leitnerbox.feature.session.ui.extra.ExtraSessionScreen
-import com.jb.leitnerbox.feature.session.ui.extra.ExtraSessionResultScreen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
+import com.jb.leitnerbox.feature.session.ui.result.SessionResultViewModel
 import com.jb.leitnerbox.feature.stats.ui.StatsScreen
 import com.jb.leitnerbox.feature.stats.ui.HistoryScreen
 import com.jb.leitnerbox.feature.challenge.ui.ChallengeScreen
@@ -215,9 +215,14 @@ fun LeitnerNavHost(
             )
         }
         composable(Screen.SessionResult.route) {
+            val viewModel: SessionResultViewModel = hiltViewModel()
             SessionResultScreen(
+                viewModel = viewModel,
                 onFinish = {
-                    navController.popBackStack(Screen.Dashboard.route, inclusive = false)
+                    val target = if (viewModel.isExtraSession) Screen.Decks.route else Screen.Dashboard.route
+                    navController.navigate(target) {
+                        popUpTo(Screen.Dashboard.route) { inclusive = false }
+                    }
                 }
             )
         }
@@ -288,18 +293,11 @@ fun LeitnerNavHost(
         ) {
             ExtraSessionScreen(
                 onSessionFinished = {
-                    navController.navigate(Screen.ExtraSessionResult.route) {
+                    navController.navigate(Screen.SessionResult.route) {
                         popUpTo(Screen.ExtraSession.route) { inclusive = true }
                     }
                 },
                 onBackClick = { navController.popBackStack() }
-            )
-        }
-        composable(Screen.ExtraSessionResult.route) {
-            ExtraSessionResultScreen(
-                onFinish = {
-                    navController.popBackStack(Screen.Decks.route, inclusive = false)
-                }
             )
         }
     }
