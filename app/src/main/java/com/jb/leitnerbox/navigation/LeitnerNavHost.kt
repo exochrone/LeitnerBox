@@ -80,7 +80,7 @@ fun LeitnerNavHost(
                     navController.navigate(Screen.DeckDetail.createRoute(deckId))
                 },
                 onAddDeckClick = { 
-                    navController.navigate(Screen.DeckEdit.route)
+                    navController.navigate(Screen.DeckEdit.createRoute())
                 },
                 onBackClick = {
                     navController.popBackStack()
@@ -98,7 +98,15 @@ fun LeitnerNavHost(
                 }
             )
         }
-        composable(Screen.DeckEdit.route) {
+        composable(
+            route = Screen.DeckEdit.route,
+            arguments = listOf(
+                navArgument("deckId") { 
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )
+        ) {
             val viewModel: DeckEditViewModel = hiltViewModel()
             DeckEditScreen(
                 viewModel = viewModel,
@@ -116,6 +124,9 @@ fun LeitnerNavHost(
                 onBackClick = { navController.popBackStack() },
                 onAddCardClick = { deckId ->
                     navController.navigate(Screen.CardEdit.createRoute(deckId))
+                },
+                onEditDeckClick = { deckId ->
+                    navController.navigate(Screen.DeckEdit.createRoute(deckId))
                 },
                 onBoxClick = { deckId, boxIndex ->
                     navController.navigate(Screen.BoxDetail.createRoute(deckId, boxIndex))

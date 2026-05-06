@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jb.leitnerbox.core.ui.components.CelebrationOverlay
@@ -47,12 +48,21 @@ internal fun ExtraSessionResultContent(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val headlineText = when {
+                successRate >= 100 -> stringResource(R.string.session_result_congrats_100)
+                successRate >= 80 -> stringResource(R.string.session_result_congrats_80)
+                successRate >= 60 -> stringResource(R.string.session_result_congrats_60)
+                successRate >= 50 -> stringResource(R.string.session_result_congrats_50)
+                successRate >= 40 -> stringResource(R.string.session_result_congrats_40)
+                successRate >= 20 -> stringResource(R.string.session_result_congrats_20)
+                else -> stringResource(R.string.session_result_congrats_0)
+            }
+
             Text(
-                text  = if (successRate >= 60)
-                    stringResource(R.string.session_result_congrats)
-                else
-                    stringResource(R.string.session_result_neutral),
-                style = MaterialTheme.typography.headlineSmall
+                text  = headlineText,
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
             // Résultats — sans cartes maîtrisées ni avancement/recul

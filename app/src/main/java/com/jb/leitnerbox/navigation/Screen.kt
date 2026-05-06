@@ -4,7 +4,10 @@ sealed class Screen(val route: String) {
     object Dashboard : Screen("dashboard")
     object Decks : Screen("decks")
     object Settings : Screen("settings")
-    object DeckEdit : Screen("deck_edit")
+    object DeckEdit : Screen("deck_edit?deckId={deckId}") {
+        fun createRoute(deckId: Long? = null) = 
+            if (deckId != null) "deck_edit?deckId=$deckId" else "deck_edit"
+    }
     object CardEdit : Screen("card_edit/{deckId}") {
         fun createRoute(deckId: Long) = "card_edit/$deckId"
     }

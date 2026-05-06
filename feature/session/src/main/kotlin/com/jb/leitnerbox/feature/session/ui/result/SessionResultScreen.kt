@@ -6,10 +6,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.HorizontalRule
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -73,10 +74,14 @@ internal fun SessionResultContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                val headlineText = if (successRate >= 60) {
-                    stringResource(R.string.session_result_congrats)
-                } else {
-                    stringResource(R.string.session_result_title)
+                val headlineText = when {
+                    successRate >= 100 -> stringResource(R.string.session_result_congrats_100)
+                    successRate >= 80 -> stringResource(R.string.session_result_congrats_80)
+                    successRate >= 60 -> stringResource(R.string.session_result_congrats_60)
+                    successRate >= 50 -> stringResource(R.string.session_result_congrats_50)
+                    successRate >= 40 -> stringResource(R.string.session_result_congrats_40)
+                    successRate >= 20 -> stringResource(R.string.session_result_congrats_20)
+                    else -> stringResource(R.string.session_result_congrats_0)
                 }
 
                 val headlineColor = if (successRate >= 60) {
@@ -134,7 +139,7 @@ internal fun SessionResultContent(
                 )
 
                 ResultItem(
-                    icon = Icons.Default.Star,
+                    icon = Icons.Default.EmojiEvents,
                     label = stringResource(R.string.session_result_newly_mastered),
                     value = "${session.masteredCount}",
                     dimmed = session.masteredCount == 0
@@ -145,6 +150,14 @@ internal fun SessionResultContent(
                     label = stringResource(R.string.session_result_advanced),
                     value = "${session.advancedCount}",
                     dimmed = session.advancedCount == 0
+                )
+
+                val stayedCount = session.cardCount - (session.masteredCount + session.advancedCount + session.retreatedCount)
+                ResultItem(
+                    icon = Icons.Default.HorizontalRule,
+                    label = stringResource(R.string.session_result_stayed),
+                    value = "$stayedCount",
+                    dimmed = stayedCount == 0
                 )
 
                 ResultItem(

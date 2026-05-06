@@ -26,12 +26,19 @@
     <string name="session_mastered_congrats">Félicitations !</string>
 
     <string name="session_result_title">Session terminée</string>
-    <string name="session_result_congrats">Bravo !</string>
+    <string name="session_result_congrats_0">Courage !</string>
+    <string name="session_result_congrats_20">Continue !</string>
+    <string name="session_result_congrats_40">Tu progresses !</string>
+    <string name="session_result_congrats_50">En bonne voie !</string>
+    <string name="session_result_congrats_60">Bravo !</string>
+    <string name="session_result_congrats_80">Félicitations !</string>
+    <string name="session_result_congrats_100">Extraordinaire !</string>
     <string name="session_result_success_rate">de réussite</string>
     <string name="session_result_reviewed_cards">Cartes révisées</string>
     <string name="session_result_correct_answers">Bonnes réponses</string>
-    <string name="session_result_newly_mastered">Nouvellement maîtrisées</string>
+    <string name="session_result_newly_mastered">Maîtrisées</string>
     <string name="session_result_advanced">Ont avancé d\'une boîte</string>
+    <string name="session_result_stayed">Restent dans leur boîte</string>
     <string name="session_result_retreated">Ont reculé d\'une boîte</string>
     <string name="session_result_finish">Terminer</string>
 

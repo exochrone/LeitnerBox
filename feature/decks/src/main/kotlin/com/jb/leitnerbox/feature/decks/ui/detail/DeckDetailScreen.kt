@@ -8,7 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,6 +37,7 @@ fun DeckDetailScreen(
     viewModel: DeckDetailViewModel,
     onBackClick: () -> Unit,
     onAddCardClick: (Long) -> Unit,
+    onEditDeckClick: (Long) -> Unit,
     onBoxClick: (Long, Int) -> Unit,
     onDeckDeleted: (Deck) -> Unit
 ) {
@@ -107,12 +108,12 @@ fun DeckDetailScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { showColorPicker = true },
+                        onClick = { uiState.deck?.id?.let { onEditDeckClick(it) } },
                         modifier = Modifier.width(36.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Palette,
-                            contentDescription = stringResource(R.string.deck_color_picker_cd),
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.deck_edit_title_edit),
                             tint = deckColor
                         )
                     }
