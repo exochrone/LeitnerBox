@@ -9,6 +9,7 @@ import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckSummaryUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDecksUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.RestoreDeckUseCase
 import com.jb.leitnerbox.feature.decks.ui.list.model.DeckDisplayItem
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -35,6 +36,7 @@ class DeckListViewModelTest {
     private val getDeckSummary = mockk<GetDeckSummaryUseCase>()
     private val deleteDeckUseCase = mockk<DeleteDeckUseCase>()
     private val addDeckUseCase = mockk<AddDeckUseCase>()
+    private val restoreDeckUseCase = mockk<RestoreDeckUseCase>()
     private val getCardsUseCase = mockk<GetCardsUseCase>()
     private val insertCardsUseCase = mockk<InsertCardsUseCase>()
     private lateinit var viewModel: DeckListViewModel
@@ -52,6 +54,7 @@ class DeckListViewModelTest {
             getDeckSummary,
             deleteDeckUseCase,
             addDeckUseCase,
+            restoreDeckUseCase,
             getCardsUseCase,
             insertCardsUseCase
         )
@@ -73,6 +76,7 @@ class DeckListViewModelTest {
             getDeckSummary,
             deleteDeckUseCase,
             addDeckUseCase,
+            restoreDeckUseCase,
             getCardsUseCase,
             insertCardsUseCase
         )
@@ -97,6 +101,7 @@ class DeckListViewModelTest {
             getDeckSummary,
             deleteDeckUseCase,
             addDeckUseCase,
+            restoreDeckUseCase,
             getCardsUseCase,
             insertCardsUseCase
         )
@@ -127,7 +132,7 @@ class DeckListViewModelTest {
         // Arrange
         val cards = listOf(createCard(1), createCard(2))
         coEvery { getCardsUseCase(deckId) } returns flowOf(cards)
-        coEvery { addDeckUseCase(deck) } returns Result.success(deckId)
+        coEvery { restoreDeckUseCase(deck) } returns Result.success(deckId)
         coEvery { insertCardsUseCase(cards) } returns Unit
         coEvery { deleteDeckUseCase(deck) } returns Unit
 
@@ -137,21 +142,21 @@ class DeckListViewModelTest {
         viewModel.undoDelete(deck)
 
         // Assert
-        coVerify { addDeckUseCase(deck) }
+        coVerify { restoreDeckUseCase(deck) }
         coVerify { insertCardsUseCase(cards) }
     }
 
     @Test
     fun `undoDelete avec deck sans cartes ne plante pas`() = runTest {
         coEvery { getCardsUseCase(deckId) } returns flowOf(emptyList())
-        coEvery { addDeckUseCase(deck) } returns Result.success(deckId)
+        coEvery { restoreDeckUseCase(deck) } returns Result.success(deckId)
         coEvery { insertCardsUseCase(emptyList()) } returns Unit
         coEvery { deleteDeckUseCase(deck) } returns Unit
 
         viewModel.deleteDeck(deck)
         viewModel.undoDelete(deck)
 
-        coVerify { addDeckUseCase(deck) }
+        coVerify { restoreDeckUseCase(deck) }
         coVerify { insertCardsUseCase(emptyList()) }
     }
 
@@ -159,7 +164,7 @@ class DeckListViewModelTest {
     fun `onDeleteConfirmed vide les cartes sauvegardees`() = runTest {
         val cards = listOf(createCard(1))
         coEvery { getCardsUseCase(deckId) } returns flowOf(cards)
-        coEvery { addDeckUseCase(deck) } returns Result.success(deckId)
+        coEvery { restoreDeckUseCase(deck) } returns Result.success(deckId)
         coEvery { insertCardsUseCase(any()) } returns Unit
         coEvery { deleteDeckUseCase(deck) } returns Unit
 

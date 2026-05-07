@@ -10,6 +10,7 @@ import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckSummaryUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDecksUseCase
+import com.jb.leitnerbox.core.domain.usecase.deck.RestoreDeckUseCase
 import com.jb.leitnerbox.feature.decks.ui.list.model.DeckDisplayItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +25,7 @@ class DeckListViewModel @Inject constructor(
     private val getDeckSummary: GetDeckSummaryUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val addDeckUseCase: AddDeckUseCase,
+    private val restoreDeckUseCase: RestoreDeckUseCase,
     private val getCardsUseCase: GetCardsUseCase,
     private val insertCardsUseCase: InsertCardsUseCase
 ) : ViewModel() {
@@ -72,7 +74,7 @@ class DeckListViewModel @Inject constructor(
 
     fun undoDelete(deck: Deck) {
         viewModelScope.launch {
-            addDeckUseCase(deck)
+            restoreDeckUseCase(deck)
             insertCardsUseCase(deletedDeckCards)
             deletedDeckCards = emptyList()
         }

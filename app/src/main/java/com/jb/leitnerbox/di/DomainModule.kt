@@ -64,6 +64,10 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideRestoreDeckUseCase(repository: DeckRepository): RestoreDeckUseCase = RestoreDeckUseCase(repository)
+
+    @Provides
+    @Singleton
     fun provideAddCardUseCase(
         repository: CardRepository,
         answerNormalizer: AnswerNormalizer
