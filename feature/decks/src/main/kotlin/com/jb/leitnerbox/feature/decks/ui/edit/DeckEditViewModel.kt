@@ -18,7 +18,7 @@ data class DeckEditUiState(
     val step: Int = 1,
     val name: String = "",
     val nameError: Boolean = false,
-    val presentationOrder: PresentationOrder = PresentationOrder.RANDOM,
+    val presentationOrder: PresentationOrder = PresentationOrder.BY_BOX,
     val wrongAnswerRule: WrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX,
     val color: String = "default",
     val boxCount: Int = 5,
@@ -111,7 +111,7 @@ class DeckEditViewModel @Inject constructor(
             _uiState.update { it.copy(nameError = true) }
             return
         }
-        if (_uiState.value.step < 3) {
+        if (_uiState.value.step < 2) {
             _uiState.update { it.copy(step = it.step + 1) }
         } else {
             saveDeck()

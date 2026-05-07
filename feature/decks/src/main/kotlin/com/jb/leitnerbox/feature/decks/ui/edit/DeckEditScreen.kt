@@ -106,6 +106,37 @@ fun DeckEditScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            Surface(
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
+            ) {
+                Button(
+                    onClick = viewModel::nextStep,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    enabled = !uiState.isLoading && (
+                        uiState.step == 1 || 
+                        (uiState.step == 2 && uiState.intervals.all { it.isNotBlank() })
+                    )
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        val label = when {
+                            uiState.step < 2 -> stringResource(R.string.next)
+                            uiState.isEditing -> stringResource(R.string.save)
+                            else -> stringResource(R.string.create_deck)
+                        }
+                        Text(label)
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         Column(
@@ -118,31 +149,11 @@ fun DeckEditScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             when (uiState.step) {
-                1 -> StepOne(uiState, viewModel, onShowColorPicker = { showColorPicker = true })
-                2 -> StepTwo(uiState, viewModel)
-                3 -> StepThree(uiState, viewModel)
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = viewModel::nextStep,
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading && (uiState.step < 3 || uiState.intervals.all { it.isNotBlank() })
-            ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    val label = when {
-                        uiState.step < 3 -> stringResource(R.string.next)
-                        uiState.isEditing -> stringResource(R.string.save)
-                        else -> stringResource(R.string.create_deck)
-                    }
-                    Text(label)
+                1 -> {
+                    StepOne(uiState, viewModel, onShowColorPicker = { showColorPicker = true })
+                    StepTwo(uiState, viewModel)
                 }
+                2 -> StepThree(uiState, viewModel)
             }
         }
     }
@@ -170,24 +181,6 @@ private fun StepOne(
             ),
             modifier = Modifier.fillMaxWidth()
         )
-
-        Text(
-            text = stringResource(R.string.presentation_order_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Column(Modifier.selectableGroup()) {
-            WizardRadioButton(
-                text = stringResource(R.string.presentation_order_random),
-                selected = uiState.presentationOrder == PresentationOrder.RANDOM,
-                onClick = { viewModel.onPresentationOrderChange(PresentationOrder.RANDOM) }
-            )
-            WizardRadioButton(
-                text = stringResource(R.string.presentation_order_sequential),
-                selected = uiState.presentationOrder == PresentationOrder.BY_BOX,
-                onClick = { viewModel.onPresentationOrderChange(PresentationOrder.BY_BOX) }
-            )
-        }
 
         Text(
             text = stringResource(R.string.wrong_answer_title),

@@ -7,7 +7,7 @@
 
     <string name="deck_edit_title_new">Nouveau deck</string>
     <string name="deck_edit_title_edit">Modifier le deck</string>
-    <string name="deck_edit_step"> (%1$d/3)</string>
+    <string name="deck_edit_step"> (%1$d/2)</string>
     <string name="deck_edit_exit_title">Quitter la configuration</string>
     <string name="deck_edit_exit_message">Quitter la configuration de ce deck ?</string>
     <string name="yes">Oui</string>
