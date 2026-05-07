@@ -111,6 +111,7 @@ fun SessionContent(
                                 },
                                 modifier = Modifier.fillMaxSize(),
                                 rectoLabel = uiState.currentDeckName,
+                                rectoSubLabel = stringResource(R.string.box_number, card.box),
                                 versoLabel = stringResource(R.string.session_answer_label)
                             )
                         }

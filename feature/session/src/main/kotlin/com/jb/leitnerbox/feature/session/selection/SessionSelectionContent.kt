@@ -11,10 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.EmptyState
+import com.jb.leitnerbox.core.ui.utils.resolveColor
 import com.jb.leitnerbox.feature.session.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,16 +96,19 @@ fun SessionSelectionContent(
                     .sortedBy { it.key.name }
                 
                 groupedByDeck.forEach { (deck, boxes) ->
+                    val sortedBoxes = boxes.sortedBy { it.planItem.boxNumber }
                     item {
                         Text(
                             text = deck.name,
                             style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = deck.resolveColor(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
-                    items(boxes) { item ->
+                    items(sortedBoxes) { item ->
                         SelectableBoxRow(
                             item = item,
                             onToggle = { onBoxToggled(item) },

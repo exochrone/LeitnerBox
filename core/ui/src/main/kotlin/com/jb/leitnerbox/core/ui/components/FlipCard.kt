@@ -34,7 +34,9 @@ fun FlipCard(
     onFlip: () -> Unit,
     modifier: Modifier = Modifier,
     rectoLabel: String = "",
-    versoLabel: String = ""
+    rectoSubLabel: String = "",
+    versoLabel: String = "",
+    versoSubLabel: String = ""
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
@@ -78,19 +80,35 @@ fun FlipCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Label en haut
-            Text(
-                text = if (rotation <= 90f) rectoLabel else versoLabel,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .graphicsLayer {
                         if (rotation > 90f) rotationY = 180f
                     },
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = if (rotation <= 90f) rectoLabel else versoLabel,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                
+                val subLabel = if (rotation <= 90f) rectoSubLabel else versoSubLabel
+                if (subLabel.isNotBlank()) {
+                    Text(
+                        text = subLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
 
             Box(
                 modifier = Modifier

@@ -2,6 +2,7 @@ package com.jb.leitnerbox.core.ui.components
 
 import android.os.Handler
 import android.os.Looper
+import android.view.MotionEvent
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,13 +63,23 @@ fun MathText(
 
     AndroidView(
         factory = { ctx ->
-            WebView(ctx).apply {
+            object : WebView(ctx) {
+                override fun onTouchEvent(event: MotionEvent): Boolean = false
+                override fun dispatchTouchEvent(event: MotionEvent): Boolean = false
+            }.apply {
                 settings.apply {
                     javaScriptEnabled = true
                     allowFileAccess = true
                 }
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 
+                // Désactiver les interactions pour laisser passer les clics au parent (ex: FlipCard)
+                isEnabled = false
+                isClickable = false
+                isLongClickable = false
+                isFocusable = false
+                isFocusableInTouchMode = false
+
                 // Interface pour recevoir la hauteur depuis JS
                 addJavascriptInterface(
                     object : Any() {

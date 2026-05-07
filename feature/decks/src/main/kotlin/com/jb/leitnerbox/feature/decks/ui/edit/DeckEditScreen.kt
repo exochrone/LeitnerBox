@@ -41,6 +41,7 @@ fun DeckEditScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showColorPicker by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -48,6 +49,12 @@ fun DeckEditScreen(
                 DeckEditEvent.DeckSaved -> onDeckSaved()
                 DeckEditEvent.ExitWizard -> onBackClick()
             }
+        }
+    }
+
+    LaunchedEffect(uiState.nameError) {
+        if (uiState.nameError) {
+            scrollState.animateScrollTo(0)
         }
     }
 
@@ -118,7 +125,7 @@ fun DeckEditScreen(
                         .fillMaxWidth()
                         .padding(16.dp),
                     enabled = !uiState.isLoading && when (uiState.step) {
-                        1    -> uiState.name.isNotBlank()
+                        1    -> true
                         2    -> uiState.intervals.all { it.isNotBlank() }
                         else -> false
                     }
@@ -146,7 +153,7 @@ fun DeckEditScreen(
                 .imePadding()
                 .padding(16.dp)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             when (uiState.step) {
