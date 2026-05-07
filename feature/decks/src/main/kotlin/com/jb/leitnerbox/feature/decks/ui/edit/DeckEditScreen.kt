@@ -117,10 +117,11 @@ fun DeckEditScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    enabled = !uiState.isLoading && (
-                        uiState.step == 1 || 
-                        (uiState.step == 2 && uiState.intervals.all { it.isNotBlank() })
-                    )
+                    enabled = !uiState.isLoading && when (uiState.step) {
+                        1    -> uiState.name.isNotBlank()
+                        2    -> uiState.intervals.all { it.isNotBlank() }
+                        else -> false
+                    }
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(

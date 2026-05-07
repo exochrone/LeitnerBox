@@ -72,15 +72,11 @@ class DeckListViewModel @Inject constructor(
     fun undoDelete(deck: Deck, cards: List<Card>? = null) {
         viewModelScope.launch {
             val cardsToRestore = cards ?: deletedDeckCards
-            if (cardsToRestore.isEmpty() && cards == null) {
-                // Si on n'a pas de cartes passées et que le tampon interne est vide,
-                // on restaure quand même le deck.
-                restoreDeckUseCase(deck)
-            } else {
-                restoreDeckUseCase(deck)
+            restoreDeckUseCase(deck)
+            if (cardsToRestore.isNotEmpty()) {
                 insertCardsUseCase(cardsToRestore)
             }
-            if (cards == null) deletedDeckCards = emptyList()
+            deletedDeckCards = emptyList()
         }
     }
 
