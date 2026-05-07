@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.feature.decks.ui.list.DeckListScreen
 import com.jb.leitnerbox.feature.decks.ui.list.DeckListViewModel
@@ -45,6 +46,7 @@ fun LeitnerNavHost(
     modifier: Modifier = Modifier
 ) {
     var lastDeletedDeck by remember { mutableStateOf<Deck?>(null) }
+    var lastDeletedCards by remember { mutableStateOf<List<Card>>(emptyList()) }
 
     NavHost(
         navController = navController,
@@ -90,11 +92,15 @@ fun LeitnerNavHost(
                 },
                 deletedDeck = lastDeletedDeck,
                 onUndoDelete = { deck ->
+                    viewModel.setDeletedDeck(deck, lastDeletedCards)
                     viewModel.undoDelete(deck)
                     lastDeletedDeck = null
+                    lastDeletedCards = emptyList()
                 },
                 onSnackbarDismissed = {
+                    viewModel.onDeleteConfirmed()
                     lastDeletedDeck = null
+                    lastDeletedCards = emptyList()
                 }
             )
         }
@@ -131,8 +137,9 @@ fun LeitnerNavHost(
                 onBoxClick = { deckId, boxIndex ->
                     navController.navigate(Screen.BoxDetail.createRoute(deckId, boxIndex))
                 },
-                onDeckDeleted = { deck ->
+                onDeckDeleted = { deck, cards ->
                     lastDeletedDeck = deck
+                    lastDeletedCards = cards
                     navController.popBackStack()
                 }
             )

@@ -71,6 +71,12 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideInsertCardsUseCase(
+        repository: CardRepository
+    ): InsertCardsUseCase = InsertCardsUseCase(repository)
+
+    @Provides
+    @Singleton
     fun provideGetCardsUseCase(repository: CardRepository): GetCardsUseCase = GetCardsUseCase(repository)
 
     @Provides

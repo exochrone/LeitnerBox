@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.components.ColorPickerDialog
 import com.jb.leitnerbox.core.ui.components.DeckProgressBar
@@ -39,7 +40,7 @@ fun DeckDetailScreen(
     onAddCardClick: (Long) -> Unit,
     onEditDeckClick: (Long) -> Unit,
     onBoxClick: (Long, Int) -> Unit,
-    onDeckDeleted: (Deck) -> Unit
+    onDeckDeleted: (Deck, List<Card>) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -119,8 +120,8 @@ fun DeckDetailScreen(
                     }
                     IconButton(
                         onClick = {
-                            viewModel.deleteDeck { deletedDeck ->
-                                onDeckDeleted(deletedDeck)
+                            viewModel.deleteDeck { deck, cards ->
+                                onDeckDeleted(deck, cards)
                             }
                         },
                         modifier = Modifier.width(36.dp)

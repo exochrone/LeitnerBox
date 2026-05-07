@@ -2,7 +2,10 @@ package com.jb.leitnerbox.feature.decks.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
+import com.jb.leitnerbox.core.domain.usecase.card.InsertCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.DeleteDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckSummaryUseCase
@@ -20,8 +23,12 @@ class DeckListViewModel @Inject constructor(
     private val getDecksUseCase: GetDecksUseCase,
     private val getDeckSummary: GetDeckSummaryUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
-    private val addDeckUseCase: AddDeckUseCase
+    private val addDeckUseCase: AddDeckUseCase,
+    private val getCardsUseCase: GetCardsUseCase,
+    private val insertCardsUseCase: InsertCardsUseCase
 ) : ViewModel() {
+
+    private var deletedDeckCards: List<Card> = emptyList()
 
     val decks: StateFlow<List<DeckDisplayItem>> = getDecksUseCase.executeWithCardCount()
         .flatMapLatest { items ->
@@ -52,9 +59,26 @@ class DeckListViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    fun setDeletedDeck(deck: Deck, cards: List<Card>) {
+        deletedDeckCards = cards
+    }
+
+    fun deleteDeck(deck: Deck) {
+        viewModelScope.launch {
+            deletedDeckCards = getCardsUseCase(deck.id).first()
+            deleteDeckUseCase(deck)
+        }
+    }
+
     fun undoDelete(deck: Deck) {
         viewModelScope.launch {
             addDeckUseCase(deck)
+            insertCardsUseCase(deletedDeckCards)
+            deletedDeckCards = emptyList()
         }
+    }
+
+    fun onDeleteConfirmed() {
+        deletedDeckCards = emptyList()
     }
 }

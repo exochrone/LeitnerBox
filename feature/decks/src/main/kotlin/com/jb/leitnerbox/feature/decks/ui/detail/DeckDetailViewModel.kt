@@ -3,6 +3,7 @@ package com.jb.leitnerbox.feature.decks.ui.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.*
@@ -51,12 +52,12 @@ class DeckDetailViewModel @Inject constructor(
             initialValue = DeckDetailUiState(isLoading = true)
         )
 
-    fun deleteDeck(onDeleted: (Deck) -> Unit) {
+    fun deleteDeck(onDeleted: (Deck, List<Card>) -> Unit) {
         viewModelScope.launch {
-            uiState.value.deck?.let {
-                val deckToDelete = it
-                deleteDeckUseCase(deckToDelete)
-                onDeleted(deckToDelete)
+            uiState.value.deck?.let { deck ->
+                val cards = getCardsUseCase(deck.id).first()
+                deleteDeckUseCase(deck)
+                onDeleted(deck, cards)
             }
         }
     }
