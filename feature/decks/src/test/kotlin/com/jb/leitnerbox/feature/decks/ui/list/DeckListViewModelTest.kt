@@ -136,10 +136,8 @@ class DeckListViewModelTest {
         coEvery { insertCardsUseCase(cards) } returns Unit
         coEvery { deleteDeckUseCase(deck) } returns Unit
 
-        viewModel.deleteDeck(deck)
-
         // Act
-        viewModel.undoDelete(deck)
+        viewModel.undoDelete(deck, cards)
 
         // Assert
         coVerify { restoreDeckUseCase(deck) }

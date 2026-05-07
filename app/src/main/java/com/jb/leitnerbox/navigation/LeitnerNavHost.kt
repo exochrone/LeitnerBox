@@ -92,8 +92,7 @@ fun LeitnerNavHost(
                 },
                 deletedDeck = lastDeletedDeck,
                 onUndoDelete = { deck ->
-                    viewModel.setDeletedDeck(deck, lastDeletedCards)
-                    viewModel.undoDelete(deck)
+                    viewModel.undoDelete(deck, lastDeletedCards)
                     lastDeletedDeck = null
                     lastDeletedCards = emptyList()
                 },

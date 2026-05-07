@@ -61,22 +61,26 @@ class DeckListViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    fun setDeletedDeck(deck: Deck, cards: List<Card>) {
-        deletedDeckCards = cards
-    }
-
     fun deleteDeck(deck: Deck) {
         viewModelScope.launch {
-            deletedDeckCards = getCardsUseCase(deck.id).first()
+            val cards = getCardsUseCase(deck.id).first()
             deleteDeckUseCase(deck)
+            deletedDeckCards = cards
         }
     }
 
-    fun undoDelete(deck: Deck) {
+    fun undoDelete(deck: Deck, cards: List<Card>? = null) {
         viewModelScope.launch {
-            restoreDeckUseCase(deck)
-            insertCardsUseCase(deletedDeckCards)
-            deletedDeckCards = emptyList()
+            val cardsToRestore = cards ?: deletedDeckCards
+            if (cardsToRestore.isEmpty() && cards == null) {
+                // Si on n'a pas de cartes passées et que le tampon interne est vide,
+                // on restaure quand même le deck.
+                restoreDeckUseCase(deck)
+            } else {
+                restoreDeckUseCase(deck)
+                insertCardsUseCase(cardsToRestore)
+            }
+            if (cards == null) deletedDeckCards = emptyList()
         }
     }
 

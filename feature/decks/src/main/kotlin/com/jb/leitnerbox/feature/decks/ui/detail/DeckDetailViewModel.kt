@@ -20,7 +20,6 @@ class DeckDetailViewModel @Inject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     private val getDeckSummary: GetDeckSummaryUseCase,
     private val deleteDeckUseCase: DeleteDeckUseCase,
-    private val addDeckUseCase: AddDeckUseCase,
     private val updateDeckUseCase: UpdateDeckUseCase,
     private val updateDeckColorUseCase: UpdateDeckColorUseCase,
     savedStateHandle: SavedStateHandle
@@ -55,16 +54,10 @@ class DeckDetailViewModel @Inject constructor(
     fun deleteDeck(onDeleted: (Deck, List<Card>) -> Unit) {
         viewModelScope.launch {
             uiState.value.deck?.let { deck ->
-                val cards = getCardsUseCase(deck.id).first()
+                val cards = uiState.value.cards
                 deleteDeckUseCase(deck)
                 onDeleted(deck, cards)
             }
-        }
-    }
-
-    fun undoDelete(deck: Deck) {
-        viewModelScope.launch {
-            addDeckUseCase(deck)
         }
     }
 
