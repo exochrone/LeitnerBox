@@ -10,6 +10,7 @@ import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.SaveSessionUseCase
+import com.jb.leitnerbox.core.ui.components.TtsSessionHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,9 +71,13 @@ class SessionViewModel @Inject constructor(
     fun onFlipCard() {
         _uiState.update { it.copy(isFlipped = !it.isFlipped) }
         val state = _uiState.value
-        if (state.isTextToSpeechEnabled && state.isFlipped) {
-            state.currentCard?.let { onSpeakRequest(it.verso) }
-        }
+        // Utilisation du helper centralisé
+        TtsSessionHelper.resolveTextAndSpeak(
+            card = state.currentCard,
+            isFlipped = state.isFlipped,
+            isTtsEnabled = state.isTextToSpeechEnabled,
+            onSpeakRequest = ::onSpeakRequest
+        )
     }
 
     fun onInputChanged(text: String) {
@@ -93,9 +98,14 @@ class SessionViewModel @Inject constructor(
             )
         }
 
-        if (state.isTextToSpeechEnabled) {
-            onSpeakRequest(card.verso)
-        }
+        // Le déclenchement de la parole se base désormais uniquement sur le nouvel état stabilisé
+        val newState = _uiState.value
+        TtsSessionHelper.resolveTextAndSpeak(
+            card = newState.currentCard,
+            isFlipped = newState.isFlipped,
+            isTtsEnabled = newState.isTextToSpeechEnabled,
+            onSpeakRequest = ::onSpeakRequest
+        )
         
         // On déclenche l'évaluation métier
         onEvaluate(isCorrect)
@@ -173,11 +183,14 @@ class SessionViewModel @Inject constructor(
         _uiState.update { it.copy(isTextToSpeechEnabled = !it.isTextToSpeechEnabled) }
         val state = _uiState.value
         if (state.isTextToSpeechEnabled) {
-            val currentCard = state.currentCard ?: return
-            val textToSpeak = if (state.isFlipped) currentCard.verso else currentCard.recto
-            onSpeakRequest(textToSpeak)
+            TtsSessionHelper.resolveTextAndSpeak(
+                card = state.currentCard,
+                isFlipped = state.isFlipped,
+                isTtsEnabled = state.isTextToSpeechEnabled,
+                onSpeakRequest = ::onSpeakRequest
+            )
         } else {
-            onSpeakRequest("") // Stop audio
+            onSpeakRequest("") // Stop immédiat du flux audio
         }
     }
 
@@ -203,9 +216,13 @@ class SessionViewModel @Inject constructor(
                     checkResult = null
                 )
             }
-            if (_uiState.value.isTextToSpeechEnabled) {
-                onSpeakRequest(nextCard.recto)
-            }
+            // Lecture automatique du recto de la nouvelle carte via le helper
+            TtsSessionHelper.resolveTextAndSpeak(
+                card = nextCard,
+                isFlipped = false,
+                isTtsEnabled = _uiState.value.isTextToSpeechEnabled,
+                onSpeakRequest = ::onSpeakRequest
+            )
         }
     }
 

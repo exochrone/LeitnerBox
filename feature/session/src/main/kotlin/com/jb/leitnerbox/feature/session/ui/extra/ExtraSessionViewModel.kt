@@ -9,6 +9,7 @@ import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.BuildExtraSessionUseCase
+import com.jb.leitnerbox.core.ui.components.TtsSessionHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -47,9 +48,12 @@ class ExtraSessionViewModel @Inject constructor(
     fun onFlipCard() {
         _uiState.update { it.copy(isFlipped = true) }
         val state = _uiState.value
-        if (state.isTextToSpeechEnabled && state.isFlipped) {
-            state.currentCard?.let { onSpeakRequest(it.verso) }
-        }
+        TtsSessionHelper.resolveTextAndSpeak(
+            card = state.currentCard,
+            isFlipped = state.isFlipped,
+            isTtsEnabled = state.isTextToSpeechEnabled,
+            onSpeakRequest = ::onSpeakRequest
+        )
     }
 
     fun onEvaluate(isCorrect: Boolean) {
@@ -81,9 +85,13 @@ class ExtraSessionViewModel @Inject constructor(
             )
         }
 
-        if (state.isTextToSpeechEnabled) {
-            onSpeakRequest(card.verso)
-        }
+        val newState = _uiState.value
+        TtsSessionHelper.resolveTextAndSpeak(
+            card = newState.currentCard,
+            isFlipped = newState.isFlipped,
+            isTtsEnabled = newState.isTextToSpeechEnabled,
+            onSpeakRequest = ::onSpeakRequest
+        )
     }
 
     fun onContinue() {
@@ -107,11 +115,14 @@ class ExtraSessionViewModel @Inject constructor(
         _uiState.update { it.copy(isTextToSpeechEnabled = !it.isTextToSpeechEnabled) }
         val state = _uiState.value
         if (state.isTextToSpeechEnabled) {
-            val currentCard = state.currentCard ?: return
-            val textToSpeak = if (state.isFlipped) currentCard.verso else currentCard.recto
-            onSpeakRequest(textToSpeak)
+            TtsSessionHelper.resolveTextAndSpeak(
+                card = state.currentCard,
+                isFlipped = state.isFlipped,
+                isTtsEnabled = state.isTextToSpeechEnabled,
+                onSpeakRequest = ::onSpeakRequest
+            )
         } else {
-            onSpeakRequest("") // Stop audio
+            onSpeakRequest("")
         }
     }
 
@@ -147,9 +158,12 @@ class ExtraSessionViewModel @Inject constructor(
                     userInput      = ""
                 )
             }
-            if (_uiState.value.isTextToSpeechEnabled) {
-                onSpeakRequest(nextCard.recto)
-            }
+            TtsSessionHelper.resolveTextAndSpeak(
+                card = nextCard,
+                isFlipped = false,
+                isTtsEnabled = _uiState.value.isTextToSpeechEnabled,
+                onSpeakRequest = ::onSpeakRequest
+            )
         }
     }
 
