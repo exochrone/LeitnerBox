@@ -9,6 +9,7 @@ import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
 import kotlinx.coroutines.flow.first
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 class ImportCsvUseCase(
     private val cardRepository: CardRepository,
@@ -49,19 +50,29 @@ class ImportCsvUseCase(
         val now = Instant.now()
         val nowMs = System.currentTimeMillis()
         val ignoredLines = mutableListOf<Int>()
-        val quota = settingsRepository.getNewCardsPerDay().first()
+        
+        // 1. Extraction unique des configurations globales (Évite les appels répétés en boucle)
+        val maxQuota = settingsRepository.getNewCardsPerDay().first()
+        val allCardsInDb = cardRepository.getAllCards().first()
+        
+        // Calcul du tampon restant pour aujourd'hui (cartes actives sans historique ou révisées aujourd'hui)
+        val startOfToday = now.truncatedTo(ChronoUnit.DAYS)
+        val cardsActivatedToday = allCardsInDb.count { card ->
+            card.isActive && (card.lastReviewDate == null || card.lastReviewDate.isAfter(startOfToday))
+        }
+        val remainingQuota = (maxQuota - cardsActivatedToday).coerceAtLeast(0)
 
-        // 1. Préparer la liste de toutes les cartes à importer (en résolvant les decks et doublons)
+        // Indexation des ressources existantes pour accélération O(1)
+        var currentDecksMap = deckRepository.getDecks().first().associateBy { it.name }
+        val allCardsByDeck = allCardsInDb.groupBy { it.deckId }
+        
         val cardsToInsert = mutableListOf<Card>()
-
-        // On groupe par deck pour créer les decks nécessaires et vérifier les doublons efficacement
         val groupedCards = cards.groupBy { it.deckName.trim() }
         
         for ((deckName, deckCards) in groupedCards) {
-            val currentDecks = deckRepository.getDecks().first()
-            val existingDeck = currentDecks.firstOrNull { it.name == deckName }
+            var deck = currentDecksMap[deckName]
 
-            val deck = existingDeck ?: run {
+            if (deck == null) {
                 val newDeck = Deck(
                     name              = deckName,
                     intervals         = listOf(1, 3, 5, 7, 14),
@@ -70,20 +81,25 @@ class ImportCsvUseCase(
                     color             = "default"
                 )
                 val id = deckRepository.insertDeck(newDeck)
-                newDeck.copy(id = id)
+                deck = newDeck.copy(id = id)
+                // Mettre à jour la map locale
+                currentDecksMap = currentDecksMap + (deckName to deck)
             }
 
-            val existingNormalized = cardRepository.getCardsByDeckId(deck.id)
-                .first()
-                .map { it.rectoNormalized }
-                .toSet()
+            // Récupération optimisée des doublons via la map en mémoire
+            val existingNormalized = allCardsByDeck[deck.id]
+                ?.map { it.rectoNormalized }
+                ?.toSet() ?: emptySet()
+            
+            val seenInThisImport = mutableSetOf<String>()
 
             deckCards.forEach { parsed ->
                 val normalized = normalizer.normalize(parsed.recto)
-                if (normalized in existingNormalized) {
+                if (normalized in existingNormalized || normalized in seenInThisImport) {
                     ignoredLines.add(parsed.lineNumber)
                 } else {
-                    val safeNeedsInput = if (LatexDetector.containsLatex(parsed.verso)) false
+                    seenInThisImport.add(normalized)
+                    val safeNeedsInput = if (LatexDetector.containsLatex(parsed.verso)) false 
                                          else parsed.needsInput
                     
                     cardsToInsert.add(
@@ -93,25 +109,24 @@ class ImportCsvUseCase(
                             verso            = parsed.verso,
                             box              = 1,
                             needsInput       = safeNeedsInput,
-                            nextReviewDate   = null, // Sera défini après le shuffle
+                            nextReviewDate   = null,
                             lastReviewDate   = null,
                             rectoNormalized  = normalized,
                             answerNormalized = normalizer.normalize(parsed.verso),
                             isLearned        = false,
-                            isActive         = false // Par défaut, on activera après
+                            isActive         = false
                         )
                     )
                 }
             }
         }
 
-        // 2. Mélanger toutes les nouvelles cartes pour l'activation aléatoire
+        // 2. Mélange et activation selon le quota restant
         val shuffledCards = cardsToInsert.shuffled()
         var inactiveCount = 0
         
-        // 3. Appliquer le quota et insérer
         shuffledCards.forEachIndexed { index, card ->
-            val isActive = index < quota
+            val isActive = index < remainingQuota
             if (!isActive) inactiveCount++
             
             val finalCard = card.copy(

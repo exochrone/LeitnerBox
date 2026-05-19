@@ -29,16 +29,21 @@ class GetDashboardStatsUseCase(
         val successRate = if (totalCardCount > 0)
             (totalSuccessCount * 100) / totalCardCount else null
 
-        // Progression — globale toutes cartes confondues
-        val boxCount = 5
+        // OPTIMISATION : Map d'accès direct O(1) pour associer deckId -> taille des intervalles
+        val defaultBoxCount = 5
+        val deckIntervalsSizeMap = decks.associate { it.id to it.intervals.size }
+
+        // Progression globale linéaire optimisée O(N)
         val progressionGlobal = if (cards.isEmpty()) 0 else {
-            val totalScore = cards.sumOf { card ->
-                val bc = decks.firstOrNull { it.id == card.deckId }?.intervals?.size ?: boxCount
-                if (card.isLearned) bc.toDouble() else (card.box - 1).toDouble()
+            var totalScore = 0.0
+            var maxScore = 0.0
+
+            cards.forEach { card ->
+                val bc = deckIntervalsSizeMap[card.deckId] ?: defaultBoxCount
+                totalScore += if (card.isLearned) bc.toDouble() else (card.box - 1).toDouble()
+                maxScore += bc.toDouble()
             }
-            val maxScore = cards.sumOf { card ->
-                (decks.firstOrNull { it.id == card.deckId }?.intervals?.size ?: boxCount).toDouble()
-            }
+
             if (maxScore > 0) ((totalScore / maxScore) * 100).toInt() else 0
         }
 
