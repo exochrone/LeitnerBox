@@ -128,11 +128,10 @@ class ImportCsvUseCase(
 
         // 2. Mélange et activation selon le quota restant
         val shuffledCards = cardsToInsert.shuffled()
-        var inactiveCount = 0
+        val inactiveCount = (shuffledCards.size - remainingQuota).coerceAtLeast(0)
         
         val finalCardsToInsert = shuffledCards.mapIndexed { index, card ->
             val isActive = index < remainingQuota
-            if (!isActive) inactiveCount++
             
             card.copy(
                 isActive       = isActive,

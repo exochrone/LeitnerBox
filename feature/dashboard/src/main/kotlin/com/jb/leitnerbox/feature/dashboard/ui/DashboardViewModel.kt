@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.usecase.dashboard.GetDashboardStatsUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -16,7 +17,7 @@ class DashboardViewModel @Inject constructor(
 
     val uiState: StateFlow<DashboardUiState> = combine(
         getDailySessionPlan(),
-        getDashboardStats()
+        getDashboardStats().flowOn(Dispatchers.Default)
     ) { plan, stats ->
         DashboardUiState(
             sessionPlan       = plan,

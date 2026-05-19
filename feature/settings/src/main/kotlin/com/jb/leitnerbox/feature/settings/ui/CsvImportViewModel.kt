@@ -8,6 +8,7 @@ import com.jb.leitnerbox.core.domain.usecase.importexport.CsvAnalysisResult
 import com.jb.leitnerbox.core.domain.usecase.importexport.CsvImportResult
 import com.jb.leitnerbox.core.domain.usecase.importexport.ImportCsvUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,41 +21,55 @@ class CsvImportViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CsvImportUiState())
     val uiState: StateFlow<CsvImportUiState> = _uiState.asStateFlow()
 
+    private var importJob: Job? = null
+
     fun onFileSelected(csvContent: String) {
-        viewModelScope.launch {
+        if (importJob?.isActive == true) return
+
+        importJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            when (val analysis = importCsvUseCase.analyze(csvContent)) {
-                is CsvAnalysisResult.ParseError -> {
-                    _uiState.update {
-                        it.copy(isLoading = false, parseError = analysis.reason)
+            try {
+                when (val analysis = importCsvUseCase.analyze(csvContent)) {
+                    is CsvAnalysisResult.ParseError -> {
+                        _uiState.update {
+                            it.copy(isLoading = false, parseError = analysis.reason)
+                        }
+                    }
+                    is CsvAnalysisResult.Ready -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading        = false,
+                                pendingCards     = analysis.cards,
+                                mergingDeckNames = analysis.mergingDeckNames,
+                                mergingCardsCount = analysis.mergingCardsCount,
+                                showConfirmDialog = true
+                            )
+                        }
                     }
                 }
-                is CsvAnalysisResult.Ready -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading        = false,
-                            pendingCards     = analysis.cards,
-                            mergingDeckNames = analysis.mergingDeckNames,
-                            mergingCardsCount = analysis.mergingCardsCount,
-                            showConfirmDialog = true
-                        )
-                    }
-                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun onImportConfirmed() {
+        if (importJob?.isActive == true && _uiState.value.isLoading) return
         val cards = _uiState.value.pendingCards ?: return
-        viewModelScope.launch {
+
+        importJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, showConfirmDialog = false) }
-            val result = importCsvUseCase.import(cards)
-            _uiState.update {
-                it.copy(
-                    isLoading     = false,
-                    importResult  = result,
-                    pendingCards  = null
-                )
+            try {
+                val result = importCsvUseCase.import(cards)
+                _uiState.update {
+                    it.copy(
+                        isLoading     = false,
+                        importResult  = result,
+                        pendingCards  = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }

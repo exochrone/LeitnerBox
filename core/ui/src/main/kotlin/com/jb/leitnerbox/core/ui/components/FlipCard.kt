@@ -36,7 +36,8 @@ fun FlipCard(
     rectoLabel: String = "",
     rectoSubLabel: String = "",
     versoLabel: String = "",
-    versoSubLabel: String = ""
+    versoSubLabel: String = "",
+    actions: @Composable () -> Unit = {}
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
@@ -79,34 +80,47 @@ fun FlipCard(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Label en haut
-            Column(
+            // Ligne du haut avec Label + Actions
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .graphicsLayer {
                         if (rotation > 90f) rotationY = 180f
                     },
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = if (rotation <= 90f) rectoLabel else versoLabel,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                
-                val subLabel = if (rotation <= 90f) rectoSubLabel else versoSubLabel
-                if (subLabel.isNotBlank()) {
+                // Espaceur à gauche pour centrer le titre
+                Spacer(modifier = Modifier.size(48.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = subLabel,
+                        text = if (rotation <= 90f) rectoLabel else versoLabel,
                         style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    
+                    val subLabel = if (rotation <= 90f) rectoSubLabel else versoSubLabel
+                    if (subLabel.isNotBlank()) {
+                        Text(
+                            text = subLabel,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+
+                Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                    actions()
                 }
             }
 

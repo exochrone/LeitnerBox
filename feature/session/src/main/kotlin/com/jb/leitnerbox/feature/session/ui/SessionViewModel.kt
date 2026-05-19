@@ -155,6 +155,12 @@ class SessionViewModel @Inject constructor(
         moveToNextCard()
     }
 
+    fun onSpeakRequest(text: String) {
+        viewModelScope.launch {
+            _events.send(SessionUiEvent.SpeakText(text))
+        }
+    }
+
     private fun moveToNextCard() {
         val state = _uiState.value
         val nextIndex = state.currentIndex + 1

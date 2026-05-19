@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -38,6 +39,7 @@ fun SessionContent(
     onInputChanged: (String) -> Unit,
     onInputValidated: () -> Unit,
     onContinue: () -> Unit,
+    onSpeak: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -112,7 +114,19 @@ fun SessionContent(
                                 modifier = Modifier.fillMaxSize(),
                                 rectoLabel = uiState.currentDeckName,
                                 rectoSubLabel = stringResource(R.string.box_number, card.box),
-                                versoLabel = stringResource(R.string.session_answer_label)
+                                versoLabel = stringResource(R.string.session_answer_label),
+                                actions = {
+                                    IconButton(
+                                        onClick = {
+                                            onSpeak(if (uiState.isFlipped) card.verso else card.recto)
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.VolumeUp,
+                                            contentDescription = "Lire à voix haute"
+                                        )
+                                    }
+                                }
                             )
                         }
                     }
