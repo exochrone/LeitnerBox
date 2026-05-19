@@ -43,8 +43,14 @@ interface CardDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertCard(card: CardEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertCards(cards: List<CardEntity>): List<Long>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCardWithId(card: CardEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCardsWithId(cards: List<CardEntity>)
 
     @Update
     suspend fun updateCard(card: CardEntity)

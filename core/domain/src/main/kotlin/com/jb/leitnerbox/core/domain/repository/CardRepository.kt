@@ -13,7 +13,9 @@ interface CardRepository {
     fun observeInactiveCardsCount(deckId: Long): Flow<Int>
     suspend fun getDecksWithInactiveCards(): List<com.jb.leitnerbox.core.domain.model.Deck>
     suspend fun insertCard(card: Card): Long
+    suspend fun insertCards(cards: List<Card>): List<Long>
     suspend fun insertCardWithId(card: Card)
+    suspend fun insertCardsWithId(cards: List<Card>)
     suspend fun updateCard(card: Card)
     suspend fun deleteCard(card: Card)
     suspend fun getCardByRectoNormalized(deckId: Long, rectoNormalized: String): Card?

@@ -55,8 +55,16 @@ class CardRepositoryImpl(
         return dao.insertCard(CardEntity.fromDomain(card))
     }
 
+    override suspend fun insertCards(cards: List<Card>): List<Long> {
+        return dao.insertCards(cards.map { CardEntity.fromDomain(it) })
+    }
+
     override suspend fun insertCardWithId(card: Card) {
         dao.insertCardWithId(CardEntity.fromDomain(card))
+    }
+
+    override suspend fun insertCardsWithId(cards: List<Card>) {
+        dao.insertCardsWithId(cards.map { CardEntity.fromDomain(it) })
     }
 
     override suspend fun updateCard(card: Card) {

@@ -11,8 +11,7 @@ class InsertCardsUseCase(
      * Utilisé uniquement pour la restauration après annulation de suppression.
      */
     suspend operator fun invoke(cards: List<Card>) {
-        cards.forEach { card ->
-            cardRepository.insertCardWithId(card)
-        }
+        if (cards.isEmpty()) return
+        cardRepository.insertCardsWithId(cards)
     }
 }

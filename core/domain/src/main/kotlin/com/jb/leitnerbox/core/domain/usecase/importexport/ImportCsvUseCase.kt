@@ -55,10 +55,15 @@ class ImportCsvUseCase(
         val maxQuota = settingsRepository.getNewCardsPerDay().first()
         val allCardsInDb = cardRepository.getAllCards().first()
         
-        // Calcul du tampon restant pour aujourd'hui (cartes actives sans historique ou révisées aujourd'hui)
+        // Calcul du tampon restant pour aujourd'hui
+        // On considère comme "activée aujourd'hui" une carte active dont le prochain examen est aujourd'hui (nouvelle)
+        // ou qui a été révisée aujourd'hui.
         val startOfToday = now.truncatedTo(ChronoUnit.DAYS)
         val cardsActivatedToday = allCardsInDb.count { card ->
-            card.isActive && (card.lastReviewDate == null || card.lastReviewDate.isAfter(startOfToday))
+            card.isActive && (
+                (card.lastReviewDate == null && card.nextReviewDate != null && !card.nextReviewDate.isBefore(startOfToday)) ||
+                (card.lastReviewDate != null && !card.lastReviewDate.isBefore(startOfToday))
+            )
         }
         val remainingQuota = (maxQuota - cardsActivatedToday).coerceAtLeast(0)
 
@@ -125,17 +130,18 @@ class ImportCsvUseCase(
         val shuffledCards = cardsToInsert.shuffled()
         var inactiveCount = 0
         
-        shuffledCards.forEachIndexed { index, card ->
+        val finalCardsToInsert = shuffledCards.mapIndexed { index, card ->
             val isActive = index < remainingQuota
             if (!isActive) inactiveCount++
             
-            val finalCard = card.copy(
+            card.copy(
                 isActive       = isActive,
                 nextReviewDate = if (isActive) now else null,
                 importOrder    = nowMs + index
             )
-            cardRepository.insertCard(finalCard)
         }
+        
+        cardRepository.insertCards(finalCardsToInsert)
 
         return CsvImportResult(
             importedCount = shuffledCards.size,
