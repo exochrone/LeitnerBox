@@ -23,7 +23,8 @@ class DeckRepositoryImpl(
             list.map { item ->
                 DeckWithCardCount(
                     deck = item.deck.toDomain(),
-                    cardCount = item.cardCount
+                    cardCount = item.cardCount,
+                    inactiveCardCount = item.inactiveCardCount
                 )
             }
         }

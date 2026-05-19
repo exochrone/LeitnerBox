@@ -126,7 +126,7 @@ fun CardEditScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             ) {
-                Text("Enregistrer & nouvelle carte")
+                Text(stringResource(R.string.save_and_new))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -142,7 +142,7 @@ fun CardEditScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
                 } else {
-                    Text("Enregistrer & fermer")
+                    Text(stringResource(R.string.save_and_close))
                 }
             }
         }

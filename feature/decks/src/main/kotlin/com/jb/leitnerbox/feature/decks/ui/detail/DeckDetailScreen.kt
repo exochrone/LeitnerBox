@@ -46,6 +46,7 @@ fun DeckDetailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showColorPicker by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
+    var showActivateDialog by remember { mutableStateOf(false) }
     
     val deckColor = uiState.deck?.resolveColor() ?: MaterialTheme.colorScheme.onSurface
     val boxCount = uiState.deck?.intervals?.size ?: 5
@@ -81,6 +82,18 @@ fun DeckDetailScreen(
                 showRenameDialog = false
             },
             onDismiss = { showRenameDialog = false }
+        )
+    }
+
+    if (showActivateDialog) {
+        ActivateCardsDialog(
+            inactiveCount = uiState.inactiveCardCount,
+            defaultCount = uiState.newCardsPerDay,
+            onConfirm = { count ->
+                viewModel.activateCards(count)
+                showActivateDialog = false
+            },
+            onDismiss = { showActivateDialog = false }
         )
     }
 
@@ -198,6 +211,16 @@ fun DeckDetailScreen(
                             }
                         }
 
+                        if (uiState.inactiveCardCount > 0) {
+                            item {
+                                CartesEnReserveCard(
+                                    count = uiState.inactiveCardCount,
+                                    deckColor = deckColor,
+                                    onClick = { showActivateDialog = true }
+                                )
+                            }
+                        }
+
                         itemsIndexed(currentDeck.intervals) { index, interval ->
                             val boxNumber = index + 1
                             val cardsInBox = uiState.cards.count { it.box == boxNumber }
@@ -296,6 +319,89 @@ fun RenameDeckDialog(
                 enabled = text.isNotBlank()
             ) {
                 Text("Confirmer")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
+}
+
+@Composable
+fun CartesEnReserveCard(
+    count: Int,
+    deckColor: Color,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = deckColor.copy(alpha = 0.05f)
+        ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, deckColor.copy(alpha = 0.2f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Cartes en réserve",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = deckColor
+            )
+            Text(
+                text = "$count cartes inactives",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun ActivateCardsDialog(
+    inactiveCount: Int,
+    defaultCount: Int,
+    onConfirm: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var text by remember {
+        mutableStateOf(minOf(defaultCount, inactiveCount).toString())
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Activer des cartes") },
+        text = {
+            Column {
+                Text("Combien de cartes voulez-vous activer maintenant ?")
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { if (it.all { c -> c.isDigit() }) text = it },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    ),
+                    label = { Text("Nombre de cartes") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "Maximum : $inactiveCount",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            val count = text.toIntOrNull() ?: 0
+            TextButton(
+                onClick = { onConfirm(count.coerceIn(1, inactiveCount)) },
+                enabled = count > 0
+            ) {
+                Text("Activer")
             }
         },
         dismissButton = {

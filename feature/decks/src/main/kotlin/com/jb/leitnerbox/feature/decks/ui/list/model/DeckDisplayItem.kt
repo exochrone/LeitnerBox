@@ -6,6 +6,7 @@ import java.time.Instant
 data class DeckDisplayItem(
     val deck: Deck,
     val totalCardCount: Int,
+    val inactiveCardCount: Int = 0,
     val masteredCount: Int = 0,
     val cardsPerBox: Map<Int, Int> = emptyMap(),
     val nextReviewDate: Instant? = null,

@@ -4,5 +4,6 @@ import androidx.room.Embedded
 
 data class DeckWithCount(
     @Embedded val deck: DeckEntity,
-    val cardCount: Int
+    val cardCount: Int,
+    val inactiveCardCount: Int
 )

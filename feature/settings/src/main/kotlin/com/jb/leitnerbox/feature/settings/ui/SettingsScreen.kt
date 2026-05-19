@@ -70,6 +70,7 @@ fun SettingsScreen(
                 onThemeClick = onNavigateToTheme,
                 onBackupClick = onNavigateToBackup,
                 onNotificationTimeClick = { showTimePicker = true },
+                onNewCardsPerDayChange = { viewModel.onNewCardsPerDayChanged(it) },
                 debugSection = {
                     if (BuildConfig.DEBUG) {
                         DebugSection()

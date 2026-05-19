@@ -14,4 +14,7 @@ interface SettingsRepository {
 
     fun getTheme(): Flow<AppTheme>
     suspend fun setTheme(theme: AppTheme)
+
+    fun getNewCardsPerDay(): Flow<Int>
+    suspend fun setNewCardsPerDay(count: Int)
 }

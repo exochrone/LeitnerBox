@@ -222,6 +222,14 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideGetNewCardsPerDayUseCase(repository: SettingsRepository) = GetNewCardsPerDayUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSetNewCardsPerDayUseCase(repository: SettingsRepository) = SetNewCardsPerDayUseCase(repository)
+
+    @Provides
+    @Singleton
     fun provideRescheduleCardsForExcludedDaysUseCase(
         cardRepository: CardRepository,
         deckRepository: DeckRepository,
@@ -241,9 +249,10 @@ object DomainModule {
     fun provideImportCsvUseCase(
         cardRepository: CardRepository,
         deckRepository: DeckRepository,
+        settingsRepository: SettingsRepository,
         parser: CsvParser,
         answerNormalizer: AnswerNormalizer
-    ): ImportCsvUseCase = ImportCsvUseCase(cardRepository, deckRepository, parser, answerNormalizer)
+    ): ImportCsvUseCase = ImportCsvUseCase(cardRepository, deckRepository, settingsRepository, parser, answerNormalizer)
 
     @Provides
     @Singleton
@@ -280,6 +289,20 @@ object DomainModule {
     fun provideGetMasteredCardsUseCase(
         cardRepository: CardRepository
     ): GetMasteredCardsUseCase = GetMasteredCardsUseCase(cardRepository)
+
+    @Provides
+    @Singleton
+    fun provideActivateInactiveCardsUseCase(
+        cardRepository: CardRepository,
+        settingsRepository: SettingsRepository
+    ): ActivateInactiveCardsUseCase = ActivateInactiveCardsUseCase(cardRepository, settingsRepository)
+
+    @Provides
+    @Singleton
+    fun provideActivateAllDecksCardsUseCase(
+        cardRepository: CardRepository,
+        activateCardsUseCase: ActivateInactiveCardsUseCase
+    ): ActivateAllDecksCardsUseCase = ActivateAllDecksCardsUseCase(cardRepository, activateCardsUseCase)
 
     @Provides
     @Singleton

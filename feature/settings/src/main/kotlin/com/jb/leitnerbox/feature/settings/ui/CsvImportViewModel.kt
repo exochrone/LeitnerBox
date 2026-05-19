@@ -35,6 +35,7 @@ class CsvImportViewModel @Inject constructor(
                             isLoading        = false,
                             pendingCards     = analysis.cards,
                             mergingDeckNames = analysis.mergingDeckNames,
+                            mergingCardsCount = analysis.mergingCardsCount,
                             showConfirmDialog = true
                         )
                     }
@@ -73,6 +74,7 @@ data class CsvImportUiState(
     val isLoading: Boolean = false,
     val pendingCards: List<ParsedCsvCard>? = null,
     val mergingDeckNames: List<String> = emptyList(),
+    val mergingCardsCount: Int = 0,
     val showConfirmDialog: Boolean = false,
     val importResult: CsvImportResult? = null,
     val parseError: MalformedReason? = null

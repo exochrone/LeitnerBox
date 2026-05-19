@@ -19,8 +19,11 @@ class GetDeckSummaryUseCase(
      */
     operator fun invoke(deckId: Long, boxCount: Int): Flow<DeckSummary> =
         cardRepository.getCardsByDeckId(deckId).map { cards ->
-            val masteredCards = cards.filter { it.isLearned }
-            val inProgressCards = cards.filter { !it.isLearned }
+            val inactiveCards = cards.filter { !it.isActive }
+            val activeCards = cards.filter { it.isActive }
+            
+            val masteredCards = activeCards.filter { it.isLearned }
+            val inProgressCards = activeCards.filter { !it.isLearned }
 
             val cardsPerBox = inProgressCards
                 .groupBy { it.box }
@@ -31,7 +34,9 @@ class GetDeckSummaryUseCase(
                 .minOrNull()
 
             val totalScore = cards.sumOf { card ->
-                if (card.isLearned) boxCount.toDouble() else (card.box - 1).toDouble()
+                if (card.isLearned && card.isActive) boxCount.toDouble() 
+                else if (card.isActive) (card.box - 1).toDouble()
+                else 0.0
             }
             val progress = if (cards.isEmpty()) 0f
                            else (totalScore / (cards.size * boxCount)).toFloat()
@@ -40,7 +45,8 @@ class GetDeckSummaryUseCase(
                 masteredCount  = masteredCards.size,
                 cardsPerBox    = cardsPerBox,
                 nextReviewDate = nextReviewDate,
-                progress       = progress
+                progress       = progress,
+                inactiveCount  = inactiveCards.size
             )
         }
 }

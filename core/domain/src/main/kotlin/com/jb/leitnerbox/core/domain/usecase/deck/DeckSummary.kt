@@ -6,5 +6,6 @@ data class DeckSummary(
     val masteredCount: Int,
     val cardsPerBox: Map<Int, Int>,
     val nextReviewDate: Instant?,
-    val progress: Float
+    val progress: Float,
+    val inactiveCount: Int = 0
 )

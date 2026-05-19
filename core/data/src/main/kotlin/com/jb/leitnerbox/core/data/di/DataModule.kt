@@ -47,7 +47,8 @@ object DataModule {
             .addMigrations(
                 LeitnerDatabase.MIGRATION_1_2,
                 LeitnerDatabase.MIGRATION_2_3,
-                LeitnerDatabase.MIGRATION_3_4
+                LeitnerDatabase.MIGRATION_3_4,
+                LeitnerDatabase.MIGRATION_4_5
             )
             .build()
     }

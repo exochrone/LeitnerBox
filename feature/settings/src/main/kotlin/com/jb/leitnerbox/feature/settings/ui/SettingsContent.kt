@@ -6,6 +6,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,6 +30,7 @@ internal fun SettingsContent(
     onThemeClick: () -> Unit,
     onBackupClick: () -> Unit,
     onNotificationTimeClick: () -> Unit,
+    onNewCardsPerDayChange: (Int) -> Unit,
     debugSection: @Composable () -> Unit = {}
 ) {
     Column(
@@ -57,6 +62,13 @@ internal fun SettingsContent(
         NotificationTimeSection(
             notificationTime = uiState.notificationTime,
             onTimeClick = onNotificationTimeClick
+        )
+
+        HorizontalDivider()
+
+        NewCardsPerDaySection(
+            count = uiState.newCardsPerDay,
+            onCountChange = onNewCardsPerDayChange
         )
 
         HorizontalDivider()
@@ -187,5 +199,46 @@ private fun NotificationTimeSection(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun NewCardsPerDaySection(
+    count: Int,
+    onCountChange: (Int) -> Unit
+) {
+    var textValue by remember(count) {
+        mutableStateOf(count.toString())
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Activation journalière",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        OutlinedTextField(
+            value = textValue,
+            onValueChange = { newValue ->
+                if (newValue.isEmpty() || newValue.all { c -> c.isDigit() }) {
+                    textValue = newValue
+                    newValue.toIntOrNull()?.let { n ->
+                        if (n > 0) onCountChange(n)
+                    }
+                }
+            },
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+            ),
+            label = { Text("Nouvelles cartes par jour") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+        Text(
+            text = "Nombre de nouvelles cartes activées automatiquement chaque jour dans chaque deck.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp)
+        )
     }
 }

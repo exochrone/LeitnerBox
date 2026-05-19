@@ -39,6 +39,18 @@ class CardRepositoryImpl(
         }
     }
 
+    override suspend fun getInactiveCards(deckId: Long, limit: Int): List<Card> {
+        return dao.getInactiveCards(deckId, limit).map { it.toDomain() }
+    }
+
+    override fun observeInactiveCardsCount(deckId: Long): Flow<Int> {
+        return dao.observeInactiveCardsCount(deckId)
+    }
+
+    override suspend fun getDecksWithInactiveCards(): List<com.jb.leitnerbox.core.domain.model.Deck> {
+        return dao.getDecksWithInactiveCards().map { it.toDomain() }
+    }
+
     override suspend fun insertCard(card: Card): Long {
         return dao.insertCard(CardEntity.fromDomain(card))
     }

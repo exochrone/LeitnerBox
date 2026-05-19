@@ -112,8 +112,9 @@ private fun LeitnerBoxesRow(
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
+            val inactiveText = if (item.inactiveCardCount > 0) " (${item.inactiveCardCount})" else ""
             Text(
-                text     = totalCardCount.toString(),
+                text     = "$totalCardCount$inactiveText",
                 style    = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold
             )

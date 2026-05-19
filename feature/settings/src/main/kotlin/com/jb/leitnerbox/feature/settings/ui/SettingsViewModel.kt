@@ -19,6 +19,8 @@ class SettingsViewModel @Inject constructor(
     private val setTheme: SetThemeUseCase,
     private val getNotificationTime: GetNotificationTimeUseCase,
     private val setNotificationTime: SetNotificationTimeUseCase,
+    private val getNewCardsPerDay: GetNewCardsPerDayUseCase,
+    private val setNewCardsPerDay: SetNewCardsPerDayUseCase,
     private val rescheduleNotification: RescheduleNotificationUseCase,
     private val rescheduleCards: RescheduleCardsForExcludedDaysUseCase
 ) : ViewModel() {
@@ -26,12 +28,14 @@ class SettingsViewModel @Inject constructor(
     val uiState: StateFlow<SettingsUiState> = combine(
         getExcludedDays(),
         getTheme(),
-        getNotificationTime()
-    ) { excludedDays, theme, notifTime ->
+        getNotificationTime(),
+        getNewCardsPerDay()
+    ) { excludedDays, theme, notifTime, newCardsPerDay ->
         SettingsUiState(
             excludedDays = excludedDays,
             theme = theme,
-            notificationTime = notifTime
+            notificationTime = notifTime,
+            newCardsPerDay = newCardsPerDay
         )
     }.stateIn(
         scope = viewModelScope,
@@ -62,6 +66,12 @@ class SettingsViewModel @Inject constructor(
     fun onReturnFromExcludedDays() {
         viewModelScope.launch {
             rescheduleCards()
+        }
+    }
+
+    fun onNewCardsPerDayChanged(count: Int) {
+        viewModelScope.launch {
+            setNewCardsPerDay(count)
         }
     }
 }

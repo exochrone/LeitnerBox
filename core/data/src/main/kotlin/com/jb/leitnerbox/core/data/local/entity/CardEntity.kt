@@ -31,7 +31,9 @@ data class CardEntity(
     val lastReviewDate: Instant?,
     val nextReviewDate: Instant?,
     val isLearned: Boolean,
-    val needsInput: Boolean = false
+    val needsInput: Boolean = false,
+    val importOrder: Long = 0L,
+    val isActive: Boolean = true
 ) {
     fun toDomain(): Card = Card(
         id = id,
@@ -44,7 +46,9 @@ data class CardEntity(
         lastReviewDate = lastReviewDate,
         nextReviewDate = nextReviewDate,
         isLearned = isLearned,
-        needsInput = needsInput
+        needsInput = needsInput,
+        importOrder = importOrder,
+        isActive = isActive
     )
 
     companion object {
@@ -59,7 +63,9 @@ data class CardEntity(
             lastReviewDate = card.lastReviewDate,
             nextReviewDate = card.nextReviewDate,
             isLearned = card.isLearned,
-            needsInput = card.needsInput
+            needsInput = card.needsInput,
+            importOrder = card.importOrder,
+            isActive = card.isActive
         )
     }
 }

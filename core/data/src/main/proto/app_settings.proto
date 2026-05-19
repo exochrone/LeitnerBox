@@ -8,4 +8,5 @@ message AppSettingsProto {
     int32 notification_hour = 2;
     int32 notification_minute = 3;
     int32 theme = 4;                   // 0=System, 1=Light, 2=Dark
+    int32 new_cards_per_day = 5;
 }

@@ -43,6 +43,7 @@ class DeckListViewModel @Inject constructor(
                             DeckDisplayItem(
                                 deck           = item.deck,
                                 totalCardCount = item.cardCount,
+                                inactiveCardCount = item.inactiveCardCount,
                                 masteredCount  = summary.masteredCount,
                                 cardsPerBox    = summary.cardsPerBox,
                                 nextReviewDate = summary.nextReviewDate,

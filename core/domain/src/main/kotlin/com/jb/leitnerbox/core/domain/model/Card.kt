@@ -13,5 +13,7 @@ data class Card(
     val lastReviewDate: Instant? = null,
     val nextReviewDate: Instant? = null,
     val isLearned: Boolean = false,
-    val needsInput: Boolean = false // P3-UI-22 : Saisie requise
+    val needsInput: Boolean = false, // P3-UI-22 : Saisie requise
+    val importOrder: Long = 0L,
+    val isActive: Boolean = true
 )

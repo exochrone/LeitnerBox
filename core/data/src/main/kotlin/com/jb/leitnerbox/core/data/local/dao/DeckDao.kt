@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DeckDao {
     @Query("""
-        SELECT decks.*, (SELECT COUNT(*) FROM cards WHERE cards.deckId = decks.id) as cardCount 
+        SELECT decks.*, 
+        (SELECT COUNT(*) FROM cards WHERE cards.deckId = decks.id) as cardCount,
+        (SELECT COUNT(*) FROM cards WHERE cards.deckId = decks.id AND cards.isActive = 0) as inactiveCardCount
         FROM decks 
         ORDER BY name ASC
     """)

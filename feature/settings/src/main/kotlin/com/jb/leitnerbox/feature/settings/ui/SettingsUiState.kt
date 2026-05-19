@@ -7,5 +7,6 @@ import java.time.LocalTime
 data class SettingsUiState(
     val excludedDays: Set<DayOfWeek> = emptySet(),
     val theme: AppTheme = AppTheme.SYSTEM,
-    val notificationTime: LocalTime = LocalTime.of(20, 0)
+    val notificationTime: LocalTime = LocalTime.of(20, 0),
+    val newCardsPerDay: Int = 25
 )

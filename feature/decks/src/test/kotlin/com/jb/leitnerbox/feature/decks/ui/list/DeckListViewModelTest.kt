@@ -89,8 +89,8 @@ class DeckListViewModelTest {
     fun `decks should emit list from repository`() {
         // Given
         val mockDecks = listOf(
-            DeckWithCardCount(Deck(id = 1, name = "Deck 1"), 0),
-            DeckWithCardCount(Deck(id = 2, name = "Deck 2"), 0)
+            DeckWithCardCount(Deck(id = 1, name = "Deck 1"), 0, 0),
+            DeckWithCardCount(Deck(id = 2, name = "Deck 2"), 0, 0)
         )
         every { getDecksUseCase.executeWithCardCount() } returns flowOf(mockDecks)
         every { getDeckSummary(any(), any()) } returns flowOf(mockk(relaxed = true))

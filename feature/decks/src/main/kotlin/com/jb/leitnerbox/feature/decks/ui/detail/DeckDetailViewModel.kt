@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.repository.SettingsRepository
+import com.jb.leitnerbox.core.domain.usecase.card.ActivateInactiveCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +24,8 @@ class DeckDetailViewModel @Inject constructor(
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val updateDeckUseCase: UpdateDeckUseCase,
     private val updateDeckColorUseCase: UpdateDeckColorUseCase,
+    private val activateInactiveCardsUseCase: ActivateInactiveCardsUseCase,
+    private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,11 +38,14 @@ class DeckDetailViewModel @Inject constructor(
             } else {
                 combine(
                     getCardsUseCase(deckId),
-                    getDeckSummary(deckId, deck.intervals.size)
-                ) { cards, summary ->
+                    getDeckSummary(deckId, deck.intervals.size),
+                    settingsRepository.getNewCardsPerDay()
+                ) { cards, summary, newCardsPerDay ->
                     DeckDetailUiState(
                         deck = deck,
                         cards = cards,
+                        inactiveCardCount = summary.inactiveCount,
+                        newCardsPerDay = newCardsPerDay,
                         progress = summary.progress,
                         isLoading = false
                     )
@@ -76,6 +83,12 @@ class DeckDetailViewModel @Inject constructor(
                     updateDeckUseCase(deck.copy(name = newName.trim()))
                 }
             }
+        }
+    }
+
+    fun activateCards(count: Int) {
+        viewModelScope.launch {
+            activateInactiveCardsUseCase(deckId, count)
         }
     }
 }

@@ -66,4 +66,18 @@ class SettingsRepositoryImpl(
                 .build()
         }
     }
+
+    override fun getNewCardsPerDay(): Flow<Int> {
+        return dataStore.data.map { proto ->
+            if (proto.newCardsPerDay == 0) 25 else proto.newCardsPerDay
+        }
+    }
+
+    override suspend fun setNewCardsPerDay(count: Int) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.toBuilder()
+                .setNewCardsPerDay(count)
+                .build()
+        }
+    }
 }

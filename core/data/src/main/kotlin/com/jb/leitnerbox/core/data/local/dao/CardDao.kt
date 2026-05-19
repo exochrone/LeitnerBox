@@ -23,8 +23,22 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE id = :id")
     fun getCardById(id: Long): Flow<CardEntity?>
 
-    @Query("SELECT * FROM cards WHERE deckId = :deckId AND (nextReviewDate IS NULL OR nextReviewDate <= :now)")
+    @Query("SELECT * FROM cards WHERE deckId = :deckId AND isActive = 1 AND (nextReviewDate IS NULL OR nextReviewDate <= :now)")
     fun getCardsToReview(deckId: Long, now: Long): Flow<List<CardEntity>>
+
+    @Query("""
+        SELECT * FROM cards 
+        WHERE deckId = :deckId AND isActive = 0 
+        ORDER BY importOrder ASC 
+        LIMIT :limit
+    """)
+    suspend fun getInactiveCards(deckId: Long, limit: Int): List<CardEntity>
+
+    @Query("SELECT COUNT(*) FROM cards WHERE deckId = :deckId AND isActive = 0")
+    fun observeInactiveCardsCount(deckId: Long): Flow<Int>
+
+    @Query("SELECT * FROM decks WHERE id IN (SELECT DISTINCT deckId FROM cards WHERE isActive = 0)")
+    suspend fun getDecksWithInactiveCards(): List<com.jb.leitnerbox.core.data.local.entity.DeckEntity>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertCard(card: CardEntity): Long

@@ -96,9 +96,24 @@ fun BackupScreen(
             onDismissRequest = csvImportViewModel::onImportCancelled,
             title = { Text(stringResource(R.string.csv_import_title)) },
             text = {
+                val isMerging = csvImportUiState.mergingDeckNames.isNotEmpty()
+                val totalCards = csvImportUiState.pendingCards?.size ?: 0
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(stringResource(R.string.csv_import_confirm))
-                    if (csvImportUiState.mergingDeckNames.isNotEmpty()) {
+                    Text(
+                        if (isMerging) {
+                            stringResource(
+                                R.string.csv_import_confirm,
+                                totalCards,
+                                csvImportUiState.mergingCardsCount
+                            )
+                        } else {
+                            stringResource(
+                                R.string.csv_import_confirm_generic,
+                                totalCards
+                            )
+                        }
+                    )
+                    if (isMerging) {
                         Text(
                             text = stringResource(
                                 R.string.csv_import_merging_message,
@@ -131,7 +146,14 @@ fun BackupScreen(
             title = { Text(stringResource(R.string.csv_import_success_title)) },
             text = {
                 Column {
-                    Text(stringResource(R.string.csv_import_success, result.importedCount))
+                    Text(
+                        stringResource(
+                            R.string.csv_import_success,
+                            result.importedCount,
+                            result.deckCount,
+                            result.inactiveCount
+                        )
+                    )
                     if (result.ignoredLines.isNotEmpty()) {
                         Spacer(Modifier.height(8.dp))
                         Text(

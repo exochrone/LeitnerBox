@@ -12,6 +12,7 @@ object AppSettingsSerializer : Serializer<AppSettingsProto> {
         .setNotificationHour(20)
         .setNotificationMinute(0)
         .setTheme(0) // SYSTEM
+        .setNewCardsPerDay(25)
         .build()
 
     override suspend fun readFrom(input: InputStream): AppSettingsProto {

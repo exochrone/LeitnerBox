@@ -15,7 +15,7 @@ import com.jb.leitnerbox.core.data.local.entity.SessionEntity
 
 @Database(
     entities = [DeckEntity::class, CardEntity::class, SessionEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(RoomConverters::class)
@@ -26,6 +26,18 @@ abstract class LeitnerDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "leitner_db"
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Buffer de cartes inactives
+                database.execSQL(
+                    "ALTER TABLE cards ADD COLUMN importOrder INTEGER NOT NULL DEFAULT 0"
+                )
+                database.execSQL(
+                    "ALTER TABLE cards ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1"
+                )
+            }
+        }
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
