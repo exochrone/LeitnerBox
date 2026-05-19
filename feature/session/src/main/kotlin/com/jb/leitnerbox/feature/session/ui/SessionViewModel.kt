@@ -69,6 +69,10 @@ class SessionViewModel @Inject constructor(
 
     fun onFlipCard() {
         _uiState.update { it.copy(isFlipped = !it.isFlipped) }
+        val state = _uiState.value
+        if (state.isTextToSpeechEnabled && state.isFlipped) {
+            state.currentCard?.let { onSpeakRequest(it.verso) }
+        }
     }
 
     fun onInputChanged(text: String) {
@@ -87,6 +91,10 @@ class SessionViewModel @Inject constructor(
                 checkResult = result,
                 isFlipped = true
             )
+        }
+
+        if (state.isTextToSpeechEnabled) {
+            onSpeakRequest(card.verso)
         }
         
         // On déclenche l'évaluation métier
@@ -161,6 +169,18 @@ class SessionViewModel @Inject constructor(
         }
     }
 
+    fun toggleTextToSpeech() {
+        _uiState.update { it.copy(isTextToSpeechEnabled = !it.isTextToSpeechEnabled) }
+        val state = _uiState.value
+        if (state.isTextToSpeechEnabled) {
+            val currentCard = state.currentCard ?: return
+            val textToSpeak = if (state.isFlipped) currentCard.verso else currentCard.recto
+            onSpeakRequest(textToSpeak)
+        } else {
+            onSpeakRequest("") // Stop audio
+        }
+    }
+
     private fun moveToNextCard() {
         val state = _uiState.value
         val nextIndex = state.currentIndex + 1
@@ -182,6 +202,9 @@ class SessionViewModel @Inject constructor(
                     inputValidated = false,
                     checkResult = null
                 )
+            }
+            if (_uiState.value.isTextToSpeechEnabled) {
+                onSpeakRequest(nextCard.recto)
             }
         }
     }

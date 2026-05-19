@@ -46,6 +46,10 @@ class ExtraSessionViewModel @Inject constructor(
 
     fun onFlipCard() {
         _uiState.update { it.copy(isFlipped = true) }
+        val state = _uiState.value
+        if (state.isTextToSpeechEnabled && state.isFlipped) {
+            state.currentCard?.let { onSpeakRequest(it.verso) }
+        }
     }
 
     fun onEvaluate(isCorrect: Boolean) {
@@ -76,6 +80,10 @@ class ExtraSessionViewModel @Inject constructor(
                 successCount   = if (isCorrect) it.successCount + 1 else it.successCount
             )
         }
+
+        if (state.isTextToSpeechEnabled) {
+            onSpeakRequest(card.verso)
+        }
     }
 
     fun onContinue() {
@@ -87,6 +95,24 @@ class ExtraSessionViewModel @Inject constructor(
             )
         }
         moveToNextCard()
+    }
+
+    fun onSpeakRequest(text: String) {
+        viewModelScope.launch {
+            _events.send(ExtraSessionEvent.SpeakText(text))
+        }
+    }
+
+    fun toggleTextToSpeech() {
+        _uiState.update { it.copy(isTextToSpeechEnabled = !it.isTextToSpeechEnabled) }
+        val state = _uiState.value
+        if (state.isTextToSpeechEnabled) {
+            val currentCard = state.currentCard ?: return
+            val textToSpeak = if (state.isFlipped) currentCard.verso else currentCard.recto
+            onSpeakRequest(textToSpeak)
+        } else {
+            onSpeakRequest("") // Stop audio
+        }
     }
 
     private fun moveToNextCard() {
@@ -111,6 +137,7 @@ class ExtraSessionViewModel @Inject constructor(
                 _events.send(ExtraSessionEvent.SessionFinished)
             }
         } else {
+            val nextCard = state.cards[nextIndex]
             _uiState.update {
                 it.copy(
                     currentIndex   = nextIndex,
@@ -119,6 +146,9 @@ class ExtraSessionViewModel @Inject constructor(
                     checkResult    = null,
                     userInput      = ""
                 )
+            }
+            if (_uiState.value.isTextToSpeechEnabled) {
+                onSpeakRequest(nextCard.recto)
             }
         }
     }
@@ -131,4 +161,5 @@ class ExtraSessionViewModel @Inject constructor(
 
 sealed class ExtraSessionEvent {
     data object SessionFinished : ExtraSessionEvent()
+    data class SpeakText(val text: String) : ExtraSessionEvent()
 }

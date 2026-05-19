@@ -54,6 +54,7 @@ fun SessionScreen(
             onInputValidated = viewModel::onInputValidated,
             onContinue = viewModel::onContinue,
             onSpeak = viewModel::onSpeakRequest,
+            onToggleTts = viewModel::toggleTextToSpeech,
             onBackClick = onBackClick
         )
 

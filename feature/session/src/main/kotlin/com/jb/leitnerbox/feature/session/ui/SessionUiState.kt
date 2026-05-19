@@ -16,6 +16,7 @@ data class SessionUiState(
     val masteredThisSession: Int = 0,
     val currentDeckName: String = "",
     val isMasteredTransition: Boolean = false,
+    val isTextToSpeechEnabled: Boolean = false,
     val userInput: String = "",
     val inputValidated: Boolean = false,
     val checkResult: AnswerCheckResult? = null

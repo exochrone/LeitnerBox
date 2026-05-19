@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.VolumeUp
@@ -40,6 +41,7 @@ fun SessionContent(
     onInputValidated: () -> Unit,
     onContinue: () -> Unit,
     onSpeak: (String) -> Unit,
+    onToggleTts: () -> Unit,
     onBackClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -52,6 +54,15 @@ fun SessionContent(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onToggleTts) {
+                        Icon(
+                            imageVector = if (uiState.isTextToSpeechEnabled) Icons.Default.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
+                            tint = if (uiState.isTextToSpeechEnabled) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+                            contentDescription = if (uiState.isTextToSpeechEnabled) "Désactiver le TTS" else "Activer le TTS"
                         )
                     }
                 }

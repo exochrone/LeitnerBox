@@ -4,12 +4,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jb.leitnerbox.core.ui.components.TextToSpeechHelper
 import com.jb.leitnerbox.feature.session.ui.SessionContent
 import com.jb.leitnerbox.feature.session.ui.SessionUiState
 
@@ -20,11 +24,20 @@ fun ExtraSessionScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val ttsHelper = remember { TextToSpeechHelper(context) }
+
+    DisposableEffect(ttsHelper) {
+        onDispose {
+            ttsHelper.shutdown()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 is ExtraSessionEvent.SessionFinished -> onSessionFinished()
+                is ExtraSessionEvent.SpeakText -> ttsHelper.speak(event.text)
             }
         }
     }
@@ -46,7 +59,8 @@ fun ExtraSessionScreen(
             userInput = uiState.userInput,
             inputValidated = uiState.inputValidated,
             checkResult = uiState.checkResult,
-            isChallenge = false // Les sessions extraordinaires n'affichent pas le mode challenge
+            isChallenge = false, // Les sessions extraordinaires n'affichent pas le mode challenge
+            isTextToSpeechEnabled = uiState.isTextToSpeechEnabled
         )
 
         SessionContent(
@@ -56,6 +70,8 @@ fun ExtraSessionScreen(
             onInputChanged = viewModel::onInputChanged,
             onInputValidated = viewModel::onInputValidated,
             onContinue = viewModel::onContinue,
+            onSpeak = viewModel::onSpeakRequest,
+            onToggleTts = viewModel::toggleTextToSpeech,
             onBackClick = onBackClick
         )
     }

@@ -18,6 +18,10 @@ class TextToSpeechHelper(context: Context) {
     }
 
     fun speak(text: String) {
+        if (text.isBlank()) {
+            tts?.stop()
+            return
+        }
         if (isInitialized) {
             tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
         }
