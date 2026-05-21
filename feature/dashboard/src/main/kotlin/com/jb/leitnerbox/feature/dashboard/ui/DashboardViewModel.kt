@@ -17,47 +17,40 @@ class DashboardViewModel @Inject constructor(
     private val activateDailyCards: ActivateDailyCardsUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(DashboardUiState())
-    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+    private val _challengeDialog = MutableStateFlow(false)
+
+    val uiState: StateFlow<DashboardUiState> = combine(
+        getDailySessionPlan(),
+        getDashboardStats(),
+        _challengeDialog
+    ) { plan, stats, showDialog ->
+        DashboardUiState(
+            sessionPlan             = plan,
+            stats                   = stats,
+            totalDecksCount         = stats.deckCount,
+            masteredCardCount       = stats.masteredCards,
+            isLoading               = false,
+            showChallengeWarningDialog = showDialog
+        )
+    }.stateIn(
+        scope   = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = DashboardUiState(isLoading = true)
+    )
 
     init {
-        triggerCardActivation()
-
-        combine(
-            getDailySessionPlan(),
-            getDashboardStats()
-        ) { plan, stats ->
-            _uiState.update {
-                it.copy(
-                    sessionPlan       = plan,
-                    stats             = stats,
-                    totalDecksCount   = stats.deckCount,
-                    masteredCardCount = stats.masteredCards,
-                    isLoading         = false
-                )
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    fun refreshDashboard() {
-        triggerCardActivation()
-    }
-
-    private fun triggerCardActivation() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
             activateDailyCards()
-            _uiState.update { it.copy(isLoading = false) }
         }
     }
 
     fun onChallengeCardClicked() {
-        if (_uiState.value.masteredCardCount < 2) {
-            _uiState.update { it.copy(showChallengeWarningDialog = true) }
+        if (uiState.value.masteredCardCount < 2) {
+            _challengeDialog.value = true
         }
     }
 
     fun dismissChallengeDialog() {
-        _uiState.update { it.copy(showChallengeWarningDialog = false) }
+        _challengeDialog.value = false
     }
 }

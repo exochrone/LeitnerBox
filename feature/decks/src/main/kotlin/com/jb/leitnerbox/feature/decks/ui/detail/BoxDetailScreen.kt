@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.components.MathText
 import com.jb.leitnerbox.feature.decks.R
@@ -31,6 +30,9 @@ fun BoxDetailScreen(
     val cards by viewModel.cards.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    
+    val deletedMessage = stringResource(R.string.deck_card_deleted)
+    val cancelLabel = stringResource(R.string.cancel)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -46,7 +48,10 @@ fun BoxDetailScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 }
             )
@@ -59,7 +64,7 @@ fun BoxDetailScreen(
                     .fillMaxSize(),
                 contentAlignment = androidx.compose.ui.Alignment.Center
             ) {
-                Text("Aucune carte dans cette boîte")
+                Text(stringResource(R.string.deck_box_empty))
             }
         } else {
             LazyColumn(modifier = Modifier.padding(padding)) {
@@ -93,8 +98,9 @@ fun BoxDetailScreen(
                             }
                         },
                         supportingContent = {
+                            val needsInputLabel = if (card.needsInput) stringResource(R.string.yes) else stringResource(R.string.no)
                             Text(
-                                text = "Saisie requise : ${if (card.needsInput) "Oui" else "Non"}",
+                                text = stringResource(R.string.deck_card_needs_input, needsInputLabel),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -108,8 +114,8 @@ fun BoxDetailScreen(
                                         snackbarHostState.currentSnackbarData?.dismiss()
                                     }
                                     val result = snackbarHostState.showSnackbar(
-                                        message = "Carte supprimée",
-                                        actionLabel = "Annuler",
+                                        message = deletedMessage,
+                                        actionLabel = cancelLabel,
                                         duration = SnackbarDuration.Indefinite
                                     )
                                     timerJob.cancel()
@@ -118,7 +124,10 @@ fun BoxDetailScreen(
                                     }
                                 }
                             }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Supprimer")
+                                Icon(
+                                    imageVector = Icons.Default.Delete, 
+                                    contentDescription = stringResource(R.string.delete)
+                                )
                             }
                         },
                         modifier = Modifier

@@ -34,7 +34,10 @@
     <string name="box_interval_hint">Nombre de jours</string>
     <string name="days">jours</string>
     <string name="deck_detail_buffer_title">Cartes en réserve</string>
-    <string name="deck_detail_buffer_count">%1$d cartes inactives</string>
+    <plurals name="deck_detail_buffer_count">
+        <item quantity="one">%1$d carte inactive</item>
+        <item quantity="other">%1$d cartes inactives</item>
+    </plurals>
 
     <string name="deck_activate_cards_title">Activer des cartes</string>
     <string name="deck_activate_cards_message">Combien de cartes voulez-vous activer maintenant ?</string>
@@ -61,6 +64,9 @@
     <string name="deck_rename_title">Renommer le deck</string>
     <string name="deck_rename_label">Nouveau nom</string>
     <string name="deck_rename_confirm">Confirmer</string>
+    <string name="deck_card_deleted">Carte supprimée</string>
+    <string name="deck_card_needs_input">Saisie requise : %1$s</string>
+    <string name="delete">Supprimer</string>
 
     <plurals name="deck_count">
         <item quantity="one">%1$d deck</item>

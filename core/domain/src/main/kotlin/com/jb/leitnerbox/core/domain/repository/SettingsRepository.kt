@@ -23,6 +23,4 @@ interface SettingsRepository {
 
     suspend fun updateCardsActivatedToday(count: Int)
     suspend fun updateLastActivationDate(dateIso: String)
-
-    fun getBufferSize(): Flow<Int> = getNewCardsPerDay()
 }

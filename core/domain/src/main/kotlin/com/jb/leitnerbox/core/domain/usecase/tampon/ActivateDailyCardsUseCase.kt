@@ -1,5 +1,6 @@
 package com.jb.leitnerbox.core.domain.usecase.tampon
 
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import java.time.LocalDate
@@ -23,7 +24,6 @@ class ActivateDailyCardsUseCase(
         val isNewDay = lastActivationDate == null || today.isAfter(lastActivationDate)
         if (isNewDay) {
             settingsRepository.updateLastActivationDate(today.toString())
-            // On ne reset pas immédiatement en base, on le fera à la fin avec la valeur finale
         }
 
         var activatedToday = if (isNewDay) 0 else settings.cardsActivatedToday
@@ -31,31 +31,39 @@ class ActivateDailyCardsUseCase(
 
         // 2. Vérification du quota journalier
         if (activatedToday >= maxDaily) return
-        var quotaRemaining = maxDaily - activatedToday
+        val quota = maxDaily - activatedToday
 
-        // 3. Boucle d'activation distribuée carte par carte
-        while (quotaRemaining > 0) {
-            val deckIds = cardRepository.getDeckIdsWithInactiveCards()
-            if (deckIds.isEmpty()) break // Plus aucune carte inactive dans l'application
+        // 3. Récupération des decks ayant des cartes inactives
+        val deckIds = cardRepository.getDeckIdsWithInactiveCards()
+        if (deckIds.isEmpty()) return
 
-            // Sélection aléatoire du deck (RG 2.4)
-            val randomDeckId = deckIds[Random.nextInt(deckIds.size)]
+        val cardsToActivate = mutableListOf<Card>()
+        val activeDeckIds = deckIds.toMutableList()
+
+        // 4. Boucle d'activation batchée
+        while (cardsToActivate.size < quota && activeDeckIds.isNotEmpty()) {
+            val randomIndex = Random.nextInt(activeDeckIds.size)
+            val randomDeckId = activeDeckIds[randomIndex]
+            
             val targetCard = cardRepository.getOldestInactiveCardForDeck(randomDeckId)
 
             if (targetCard != null) {
-                // Activation de la carte cible
-                cardRepository.updateCard(
+                cardsToActivate.add(
                     targetCard.copy(
                         isActive = true,
                         nextReviewDate = Instant.now()
                     )
                 )
-                activatedToday++
-                quotaRemaining--
+            } else {
+                // Ce deck n'a plus de cartes inactives
+                activeDeckIds.removeAt(randomIndex)
             }
         }
 
-        // 4. Persister le nouveau compteur
-        settingsRepository.updateCardsActivatedToday(activatedToday)
+        // 5. Exécution des mises à jour en batch
+        if (cardsToActivate.isNotEmpty()) {
+            cardRepository.updateCards(cardsToActivate)
+            settingsRepository.updateCardsActivatedToday(activatedToday + cardsToActivate.size)
+        }
     }
 }
