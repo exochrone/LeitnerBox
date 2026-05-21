@@ -18,25 +18,37 @@ class DashboardViewModel @Inject constructor(
     private val activateBufferedCards: ActivateAllDecksCardsUseCase
 ) : ViewModel() {
 
+    private val _uiState = MutableStateFlow(DashboardUiState())
+    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+
     init {
         viewModelScope.launch(Dispatchers.Default) {
             activateBufferedCards()
         }
+
+        combine(
+            getDailySessionPlan(),
+            getDashboardStats()
+        ) { plan, stats ->
+            _uiState.update {
+                it.copy(
+                    sessionPlan       = plan,
+                    stats             = stats,
+                    totalDecksCount   = stats.deckCount,
+                    masteredCardCount = stats.masteredCards,
+                    isLoading         = false
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
-    val uiState: StateFlow<DashboardUiState> = combine(
-        getDailySessionPlan(),
-        getDashboardStats().flowOn(Dispatchers.Default)
-    ) { plan, stats ->
-        DashboardUiState(
-            sessionPlan       = plan,
-            stats             = stats,
-            masteredCardCount = stats.masteredCards,
-            isLoading         = false
-        )
-    }.stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
-        initialValue = DashboardUiState()
-    )
+    fun onChallengeCardClicked() {
+        if (_uiState.value.masteredCardCount < 2) {
+            _uiState.update { it.copy(showChallengeWarningDialog = true) }
+        }
+    }
+
+    fun dismissChallengeDialog() {
+        _uiState.update { it.copy(showChallengeWarningDialog = false) }
+    }
 }

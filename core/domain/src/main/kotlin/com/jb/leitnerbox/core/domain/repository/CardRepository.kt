@@ -9,7 +9,9 @@ interface CardRepository {
     fun getMasteredCards(): Flow<List<Card>>
     fun getCardById(id: Long): Flow<Card?>
     fun getCardsToReview(deckId: Long): Flow<List<Card>>
+    fun countGlobalActiveCardsInBoxOne(): Flow<Int>
     fun countActiveCardsInBoxOne(deckId: Long): Flow<Int>
+    suspend fun getGlobalOldestInactiveCards(limit: Int): List<Card>
     suspend fun getOldestInactiveCards(deckId: Long, limit: Int): List<Card>
     fun observeInactiveCardsCount(deckId: Long): Flow<Int>
     suspend fun getDecksWithInactiveCards(): List<com.jb.leitnerbox.core.domain.model.Deck>

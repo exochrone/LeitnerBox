@@ -4,7 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,13 +22,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.DashboardGlobalStats
+import com.jb.leitnerbox.core.domain.util.DeckLocalizationUtils
 import com.jb.leitnerbox.feature.dashboard.R
+import com.jb.leitnerbox.feature.dashboard.ui.components.MenuActionCard
 
 @Composable
 internal fun DashboardContent(
     uiState: DashboardUiState,
     onNavigateToSessionSelection: () -> Unit,
     onNavigateToDecks: () -> Unit,
+    onNavigateToHistory: () -> Unit,
+    onNavigateToChallenge: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onChallengeCardTrigger: () -> Unit,
+    onDismissDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (uiState.isLoading) {
@@ -33,12 +45,25 @@ internal fun DashboardContent(
         return
     }
 
+    if (uiState.showChallengeWarningDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissDialog,
+            title = { Text(text = "Challenge") },
+            text = { Text(text = "Pas assez de cartes maîtrisées pour lancer un challenge.") },
+            confirmButton = {
+                TextButton(onClick = onDismissDialog) {
+                    Text(text = "OK")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Bloc statistiques
         uiState.stats?.let { StatsBlock(stats = it) }
@@ -47,23 +72,48 @@ internal fun DashboardContent(
         if (uiState.sessionPlan.items.isNotEmpty()) {
             val cardCount  = uiState.sessionPlan.items.sumOf { it.cardCount }
             val deckCount  = uiState.sessionPlan.items.map { it.deck.id }.distinct().size
+            val deckWord   = DeckLocalizationUtils.getDeckLabel(deckCount)
             ActionCard(
                 icon     = ImageVector.vectorResource(R.drawable.ic_cards_stack),
                 title    = stringResource(R.string.dashboard_cards_to_review_count, cardCount),
-                subtitle = stringResource(R.string.dashboard_decks_distribution, deckCount),
+                subtitle = "réparties dans $deckCount $deckWord",
                 onClick  = onNavigateToSessionSelection
             )
         }
 
-        // Carte decks — toujours visible
-        val deckCount = uiState.stats?.deckCount ?: 0
-        ActionCard(
-            icon    = ImageVector.vectorResource(R.drawable.ic_stacks),
-            title   = if (deckCount == 0)
-                stringResource(R.string.dashboard_no_decks)
-            else
-                stringResource(R.string.dashboard_deck_count, deckCount),
+        // 1. Carte principale "X deck(s)"
+        val deckWord = DeckLocalizationUtils.getDeckLabel(uiState.totalDecksCount)
+        MenuActionCard(
+            title = "${uiState.totalDecksCount} $deckWord",
+            icon = ImageVector.vectorResource(R.drawable.ic_stacks),
             onClick = onNavigateToDecks
+        )
+
+        // 2. Carte d'action "Historique"
+        MenuActionCard(
+            title = "Historique",
+            subtitle = "Consulter les sessions de révision passées",
+            icon = Icons.Default.History,
+            onClick = onNavigateToHistory
+        )
+
+        // 3. Carte d'action "Challenge"
+        val isChallengeAvailable = uiState.masteredCardCount >= 2
+        MenuActionCard(
+            title = "Challenge",
+            subtitle = "Réviser les cartes maîtrisées",
+            icon = Icons.Default.WorkspacePremium,
+            isIconMuted = !isChallengeAvailable,
+            onClick = {
+                if (isChallengeAvailable) onNavigateToChallenge() else onChallengeCardTrigger()
+            }
+        )
+
+        // 4. Carte d'action "Paramètres"
+        MenuActionCard(
+            title = "Paramètres",
+            icon = Icons.Default.Settings,
+            onClick = onNavigateToSettings
         )
     }
 }

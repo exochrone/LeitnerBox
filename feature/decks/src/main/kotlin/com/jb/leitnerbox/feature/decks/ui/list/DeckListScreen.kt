@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
+import com.jb.leitnerbox.core.domain.util.DeckLocalizationUtils
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import com.jb.leitnerbox.feature.decks.R
 import kotlinx.coroutines.delay
@@ -66,7 +67,10 @@ fun DeckListScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.deck_list_title, decks.size)) },
+                title = { 
+                    val deckWord = DeckLocalizationUtils.getDeckLabel(decks.size)
+                    Text("${decks.size} $deckWord") 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(

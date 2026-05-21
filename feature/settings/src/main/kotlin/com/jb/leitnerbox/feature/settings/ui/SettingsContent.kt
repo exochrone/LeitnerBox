@@ -213,7 +213,7 @@ private fun NewCardsPerDaySection(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "Activation journalière",
+            text = "Activation quotidienne",
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -235,7 +235,7 @@ private fun NewCardsPerDaySection(
             singleLine = true
         )
         Text(
-            text = "Nombre de nouvelles cartes activées automatiquement chaque jour dans chaque deck.",
+            text = "Nombre de nouvelles cartes activées automatiquement chaque jour.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp)

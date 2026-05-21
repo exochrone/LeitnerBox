@@ -7,6 +7,8 @@ import java.time.Instant
 data class DashboardUiState(
     val sessionPlan: SessionPlan = SessionPlan(Instant.now(), emptyList()),
     val stats: DashboardGlobalStats? = null,
+    val totalDecksCount: Int = 0,
     val masteredCardCount: Int = 0,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val showChallengeWarningDialog: Boolean = false
 )

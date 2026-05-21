@@ -301,9 +301,8 @@ object DomainModule {
     @Provides
     @Singleton
     fun provideActivateAllDecksCardsUseCase(
-        cardRepository: CardRepository,
         activateCardsUseCase: ActivateBufferedCardsUseCase
-    ): ActivateAllDecksCardsUseCase = ActivateAllDecksCardsUseCase(cardRepository, activateCardsUseCase)
+    ): ActivateAllDecksCardsUseCase = ActivateAllDecksCardsUseCase(activateCardsUseCase)
 
     @Provides
     @Singleton

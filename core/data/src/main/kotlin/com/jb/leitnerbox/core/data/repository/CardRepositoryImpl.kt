@@ -39,8 +39,16 @@ class CardRepositoryImpl(
         }
     }
 
+    override fun countGlobalActiveCardsInBoxOne(): Flow<Int> {
+        return dao.countGlobalActiveCardsInBoxOne()
+    }
+
     override fun countActiveCardsInBoxOne(deckId: Long): Flow<Int> {
         return dao.countActiveCardsInBoxOne(deckId)
+    }
+
+    override suspend fun getGlobalOldestInactiveCards(limit: Int): List<Card> {
+        return dao.getGlobalOldestInactiveCards(limit).map { it.toDomain() }
     }
 
     override suspend fun getOldestInactiveCards(deckId: Long, limit: Int): List<Card> {

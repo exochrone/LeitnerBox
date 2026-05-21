@@ -11,17 +11,24 @@ class ActivateBufferedCardsUseCase(
     private val settingsRepository: SettingsRepository,
     private val normalizer: AnswerNormalizer
 ) {
-    suspend operator fun invoke(deckId: Long) {
-        val bufferSize = settingsRepository.getBufferSize().first() // ex: 20
-        val activeCount = cardRepository.countActiveCardsInBoxOne(deckId).first()
+    suspend operator fun invoke() {
+        // 1. Récupérer la taille limite du tampon global (depuis le Proto DataStore)
+        val globalBufferSize = settingsRepository.getBufferSize().first()
         
-        if (activeCount >= bufferSize) return
+        // 2. Récupérer le total actuel de cartes actives en Boîte 1
+        val currentGlobalActiveCount = cardRepository.countGlobalActiveCardsInBoxOne().first()
         
-        val quota = bufferSize - activeCount
-        val inactiveCards = cardRepository.getOldestInactiveCards(deckId, quota)
+        // 3. Sortie précoce si le plafond global est atteint ou dépassé
+        if (currentGlobalActiveCount >= globalBufferSize) return
         
+        // 4. Calcul du quota disponible
+        val quota = globalBufferSize - currentGlobalActiveCount
+        
+        // 5. Extraction chronologique inter-decks
+        val inactiveCards = cardRepository.getGlobalOldestInactiveCards(quota)
         if (inactiveCards.isEmpty()) return
 
+        // 6. Activation et normalisation à la volée
         val now = Instant.now()
         val activatedCards = inactiveCards.map { card ->
             card.copy(
@@ -31,6 +38,7 @@ class ActivateBufferedCardsUseCase(
                 answerNormalized = normalizer.normalize(card.verso)
             )
         }
+
         cardRepository.updateCards(activatedCards)
     }
 }

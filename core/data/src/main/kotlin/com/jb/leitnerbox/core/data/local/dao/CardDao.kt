@@ -23,11 +23,17 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE id = :id")
     fun getCardById(id: Long): Flow<CardEntity?>
 
+    @Query("SELECT COUNT(*) FROM cards WHERE box = 1 AND isActive = 1 AND isLearned = 0")
+    fun countGlobalActiveCardsInBoxOne(): Flow<Int>
+
     @Query("SELECT COUNT(*) FROM cards WHERE deckId = :deckId AND box = 1 AND isActive = 1 AND isLearned = 0")
     fun countActiveCardsInBoxOne(deckId: Long): Flow<Int>
 
     @Query("SELECT * FROM cards WHERE deckId = :deckId AND isActive = 1 AND (nextReviewDate IS NULL OR nextReviewDate <= :now)")
     fun getCardsToReview(deckId: Long, now: Long): Flow<List<CardEntity>>
+
+    @Query("SELECT * FROM cards WHERE isActive = 0 ORDER BY id ASC LIMIT :limit")
+    suspend fun getGlobalOldestInactiveCards(limit: Int): List<CardEntity>
 
     @Query("""
         SELECT * FROM cards 
