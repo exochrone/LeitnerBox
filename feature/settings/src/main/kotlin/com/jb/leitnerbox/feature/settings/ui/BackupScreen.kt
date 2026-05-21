@@ -31,7 +31,7 @@ fun BackupScreen(
     csvImportViewModel: CsvImportViewModel = hiltViewModel(),
     onNavigateToCsvExport: () -> Unit,
     onBackClick: () -> Unit,
-    onNavigateToDecks: () -> Unit,
+    onImportSuccess: () -> Unit,
     onRestoreSuccess: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -141,7 +141,7 @@ fun BackupScreen(
         AlertDialog(
             onDismissRequest = {
                 csvImportViewModel.onResultDismissed()
-                if (result.importedCount > 0) onNavigateToDecks()
+                if (result.importedCount > 0) onImportSuccess()
             },
             title = { Text(stringResource(R.string.csv_import_success_title)) },
             text = {
@@ -171,7 +171,7 @@ fun BackupScreen(
             confirmButton = {
                 TextButton(onClick = {
                     csvImportViewModel.onResultDismissed()
-                    if (result.importedCount > 0) onNavigateToDecks()
+                    if (result.importedCount > 0) onImportSuccess()
                 }) {
                     Text(stringResource(R.string.ok))
                 }

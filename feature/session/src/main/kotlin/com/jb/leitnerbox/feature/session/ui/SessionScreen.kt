@@ -40,7 +40,6 @@ fun SessionScreen(
                 is SessionUiEvent.SessionFinished -> onSessionFinished()
                 is SessionUiEvent.CardMastered -> showCelebration = CelebrationType.CARD_MASTERED
                 is SessionUiEvent.SpeakText -> ttsHelper.speak(event.text)
-                is SessionUiEvent.NavigateBack -> onBackClick()
             }
         }
     }

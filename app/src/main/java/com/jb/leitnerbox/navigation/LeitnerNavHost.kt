@@ -276,9 +276,9 @@ fun LeitnerNavHost(
                     navController.navigate(Screen.CsvExport.route)
                 },
                 onBackClick = { navController.popBackStack() },
-                onNavigateToDecks = {
-                    navController.navigate(Screen.Decks.route) {
-                        popUpTo(Screen.Dashboard.route)
+                onImportSuccess = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(0) { inclusive = true }
                     }
                 },
                 onRestoreSuccess = {

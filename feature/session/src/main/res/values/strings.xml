@@ -43,4 +43,7 @@
     <string name="session_result_finish">Terminer</string>
 
     <string name="session_finish">Terminer</string>
+    <string name="session_tts_speak">Lire à voix haute</string>
+    <string name="session_tts_disable">Désactiver le TTS</string>
+    <string name="session_tts_enable">Activer le TTS</string>
 </resources>

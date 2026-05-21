@@ -20,7 +20,6 @@ import com.jb.leitnerbox.core.domain.usecase.importexport.*
 import com.jb.leitnerbox.core.domain.usecase.session.*
 import com.jb.leitnerbox.core.domain.usecase.settings.*
 import com.jb.leitnerbox.core.domain.usecase.stats.*
-import com.jb.leitnerbox.core.domain.usecase.tampon.ActivateBufferedCardsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -250,10 +249,9 @@ object DomainModule {
     fun provideImportCsvUseCase(
         cardRepository: CardRepository,
         deckRepository: DeckRepository,
-        settingsRepository: SettingsRepository,
         parser: CsvParser,
         answerNormalizer: AnswerNormalizer
-    ): ImportCsvUseCase = ImportCsvUseCase(cardRepository, deckRepository, settingsRepository, parser, answerNormalizer)
+    ): ImportCsvUseCase = ImportCsvUseCase(cardRepository, deckRepository, parser, answerNormalizer)
 
     @Provides
     @Singleton
@@ -293,24 +291,11 @@ object DomainModule {
 
     @Provides
     @Singleton
-    fun provideActivateInactiveCardsUseCase(
+    fun provideActivateDailyCardsUseCase(
         cardRepository: CardRepository,
         settingsRepository: SettingsRepository
-    ): ActivateInactiveCardsUseCase = ActivateInactiveCardsUseCase(cardRepository, settingsRepository)
-
-    @Provides
-    @Singleton
-    fun provideActivateAllDecksCardsUseCase(
-        activateCardsUseCase: ActivateBufferedCardsUseCase
-    ): ActivateAllDecksCardsUseCase = ActivateAllDecksCardsUseCase(activateCardsUseCase)
-
-    @Provides
-    @Singleton
-    fun provideActivateBufferedCardsUseCase(
-        cardRepository: CardRepository,
-        settingsRepository: SettingsRepository,
-        answerNormalizer: AnswerNormalizer
-    ): ActivateBufferedCardsUseCase = ActivateBufferedCardsUseCase(cardRepository, settingsRepository, answerNormalizer)
+    ): com.jb.leitnerbox.core.domain.usecase.tampon.ActivateDailyCardsUseCase = 
+        com.jb.leitnerbox.core.domain.usecase.tampon.ActivateDailyCardsUseCase(cardRepository, settingsRepository)
 
     @Provides
     @Singleton

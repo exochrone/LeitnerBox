@@ -103,7 +103,7 @@ fun DeckDetailScreen(
             TopAppBar(
                 title = { 
                     Text(
-                        text = uiState.deck?.name ?: "Détails",
+                        text = uiState.deck?.name ?: stringResource(R.string.deck_detail_title),
                         color = deckColor,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -115,7 +115,7 @@ fun DeckDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Retour",
+                            contentDescription = stringResource(R.string.back),
                             tint = deckColor
                         )
                     }
@@ -141,7 +141,7 @@ fun DeckDetailScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Supprimer le deck",
+                            contentDescription = stringResource(R.string.deck_delete_cd),
                             tint = deckColor
                         )
                     }
@@ -156,7 +156,10 @@ fun DeckDetailScreen(
                     containerColor = deckColor,
                     contentColor = summaryTextColor
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Ajouter une carte")
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.deck_add_card_cd)
+                    )
                 }
             }
         }
@@ -174,8 +177,8 @@ fun DeckDetailScreen(
             uiState.deck?.let { currentDeck ->
                 if (uiState.cards.isEmpty()) {
                     EmptyState(
-                        message = "Ce deck n'a pas encore de cartes.",
-                        actionText = "Ajouter une carte",
+                        message = stringResource(R.string.deck_empty_message),
+                        actionText = stringResource(R.string.deck_add_card_button),
                         onActionClick = { onAddCardClick(currentDeck.id) },
                         modifier = Modifier.padding(padding)
                     )
@@ -197,7 +200,7 @@ fun DeckDetailScreen(
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
-                                        text = "${uiState.cards.size} cartes",
+                                        text = stringResource(R.string.deck_card_count_plural, uiState.cards.size),
                                         style = MaterialTheme.typography.titleMedium,
                                         color = summaryTextColor
                                     )
@@ -250,14 +253,14 @@ fun DeckDetailScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            text = "Boîte $boxNumber",
+                                            text = stringResource(R.string.deck_box_label, boxNumber),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
                                             color = deckColor
                                         )
                                         if (cardsInBox > 0) {
                                             Text(
-                                                text = "$cardsInBox cartes",
+                                                text = stringResource(R.string.deck_card_count_plural, cardsInBox),
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = deckColor
@@ -272,12 +275,16 @@ fun DeckDetailScreen(
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Text(
-                                            text = if (cardsInBox > 0) "Prochaine session : $dateLabel" else "Vide",
+                                            text = if (cardsInBox > 0) {
+                                                stringResource(R.string.deck_next_session_label, dateLabel)
+                                            } else {
+                                                stringResource(R.string.deck_box_empty)
+                                            },
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.Black
                                         )
                                         Text(
-                                            text = "Tous les $interval j",
+                                            text = stringResource(R.string.deck_box_interval, interval),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = Color.Black,
                                             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
@@ -303,12 +310,12 @@ fun RenameDeckDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Renommer le deck") },
+        title = { Text(stringResource(R.string.deck_rename_title)) },
         text = {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Nouveau nom") },
+                label = { Text(stringResource(R.string.deck_rename_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -318,12 +325,12 @@ fun RenameDeckDialog(
                 onClick = { onConfirm(text) },
                 enabled = text.isNotBlank()
             ) {
-                Text("Confirmer")
+                Text(stringResource(R.string.deck_rename_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Annuler")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -374,10 +381,10 @@ fun ActivateCardsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Activer des cartes") },
+        title = { Text(stringResource(R.string.deck_activate_cards_title)) },
         text = {
             Column {
-                Text("Combien de cartes voulez-vous activer maintenant ?")
+                Text(stringResource(R.string.deck_activate_cards_message))
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
                     value = text,
@@ -385,11 +392,11 @@ fun ActivateCardsDialog(
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                         keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
                     ),
-                    label = { Text("Nombre de cartes") },
+                    label = { Text(stringResource(R.string.deck_activate_cards_label)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "Maximum : $inactiveCount",
+                    text = stringResource(R.string.deck_activate_cards_max, inactiveCount),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -401,12 +408,12 @@ fun ActivateCardsDialog(
                 onClick = { onConfirm(count.coerceIn(1, inactiveCount)) },
                 enabled = count > 0
             ) {
-                Text("Activer")
+                Text(stringResource(R.string.activate))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Annuler")
+                Text(stringResource(R.string.cancel))
             }
         }
     )

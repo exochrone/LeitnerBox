@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.usecase.dashboard.GetDashboardStatsUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.GetDailySessionPlanUseCase
-import com.jb.leitnerbox.core.domain.usecase.card.ActivateAllDecksCardsUseCase
+import com.jb.leitnerbox.core.domain.usecase.tampon.ActivateDailyCardsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,16 +14,14 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val getDailySessionPlan: GetDailySessionPlanUseCase,
     private val getDashboardStats: GetDashboardStatsUseCase,
-    private val activateBufferedCards: ActivateAllDecksCardsUseCase
+    private val activateDailyCards: ActivateDailyCardsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
-            activateBufferedCards()
-        }
+        triggerCardActivation()
 
         combine(
             getDailySessionPlan(),
@@ -40,6 +37,18 @@ class DashboardViewModel @Inject constructor(
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun refreshDashboard() {
+        triggerCardActivation()
+    }
+
+    private fun triggerCardActivation() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            activateDailyCards()
+            _uiState.update { it.copy(isLoading = false) }
+        }
     }
 
     fun onChallengeCardClicked() {

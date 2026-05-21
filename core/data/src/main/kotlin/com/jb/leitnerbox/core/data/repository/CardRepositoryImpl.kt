@@ -51,6 +51,14 @@ class CardRepositoryImpl(
         return dao.getGlobalOldestInactiveCards(limit).map { it.toDomain() }
     }
 
+    override suspend fun getDeckIdsWithInactiveCards(): List<Long> {
+        return dao.getDeckIdsWithInactiveCards()
+    }
+
+    override suspend fun getOldestInactiveCardForDeck(deckId: Long): Card? {
+        return dao.getOldestInactiveCardForDeck(deckId)?.toDomain()
+    }
+
     override suspend fun getOldestInactiveCards(deckId: Long, limit: Int): List<Card> {
         return dao.getOldestInactiveCards(deckId, limit).map { it.toDomain() }
     }

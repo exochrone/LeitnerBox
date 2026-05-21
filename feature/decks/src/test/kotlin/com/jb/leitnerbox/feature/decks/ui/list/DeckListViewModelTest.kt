@@ -18,6 +18,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -86,7 +87,7 @@ class DeckListViewModelTest {
     }
 
     @Test
-    fun `decks should emit list from repository`() {
+    fun `decks should emit list from repository`() = runTest {
         // Given
         val mockDecks = listOf(
             DeckWithCardCount(Deck(id = 1, name = "Deck 1"), 0, 0),
@@ -107,9 +108,11 @@ class DeckListViewModelTest {
         )
 
         // Then
+        val collectJob = launch(UnconfinedTestDispatcher()) { viewModel.decks.collect {} }
         assertEquals(2, viewModel.decks.value.size)
         assertEquals("Deck 1", viewModel.decks.value[0].deck.name)
         assertEquals("Deck 2", viewModel.decks.value[1].deck.name)
+        collectJob.cancel()
     }
 
     @Test
@@ -148,14 +151,14 @@ class DeckListViewModelTest {
     fun `undoDelete avec deck sans cartes ne plante pas`() = runTest {
         coEvery { getCardsUseCase(deckId) } returns flowOf(emptyList())
         coEvery { restoreDeckUseCase(deck) } returns Result.success(deckId)
-        coEvery { insertCardsUseCase(emptyList()) } returns Unit
+        coEvery { insertCardsUseCase(any()) } returns Unit
         coEvery { deleteDeckUseCase(deck) } returns Unit
 
         viewModel.deleteDeck(deck)
         viewModel.undoDelete(deck)
 
         coVerify { restoreDeckUseCase(deck) }
-        coVerify { insertCardsUseCase(emptyList()) }
+        coVerify(exactly = 0) { insertCardsUseCase(any()) }
     }
 
     @Test
@@ -171,8 +174,7 @@ class DeckListViewModelTest {
 
         // Une deuxième annulation ne devrait rien insérer (car deletedDeckCards est vidé)
         viewModel.undoDelete(deck)
-        coVerify(exactly = 0) { insertCardsUseCase(cards) }
-        coVerify { insertCardsUseCase(emptyList()) }
+        coVerify(exactly = 0) { insertCardsUseCase(any()) }
     }
 
     @Test
@@ -182,7 +184,8 @@ class DeckListViewModelTest {
         coEvery { getCardsUseCase(deck.id) } returns flowOf(cards1)
         coEvery { getCardsUseCase(deck2.id) } returns flowOf(cards2)
         coEvery { deleteDeckUseCase(any()) } returns Unit
-        coEvery { addDeckUseCase(any()) } returns Unit
+        coEvery { restoreDeckUseCase(any()) } returns Result.success(1L)
+        coEvery { addDeckUseCase(any()) } returns Result.success(1L)
         coEvery { insertCardsUseCase(any()) } returns Unit
 
         viewModel.deleteDeck(deck)

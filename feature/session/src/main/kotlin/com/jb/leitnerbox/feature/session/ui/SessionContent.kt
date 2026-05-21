@@ -62,7 +62,11 @@ fun SessionContent(
                         Icon(
                             imageVector = if (uiState.isTextToSpeechEnabled) Icons.Default.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
                             tint = if (uiState.isTextToSpeechEnabled) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-                            contentDescription = if (uiState.isTextToSpeechEnabled) "Désactiver le TTS" else "Activer le TTS"
+                            contentDescription = if (uiState.isTextToSpeechEnabled) {
+                                stringResource(R.string.session_tts_disable)
+                            } else {
+                                stringResource(R.string.session_tts_enable)
+                            }
                         )
                     }
                 }
@@ -134,7 +138,7 @@ fun SessionContent(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.VolumeUp,
-                                            contentDescription = "Lire à voix haute"
+                                            contentDescription = stringResource(R.string.session_tts_speak)
                                         )
                                     }
                                 }

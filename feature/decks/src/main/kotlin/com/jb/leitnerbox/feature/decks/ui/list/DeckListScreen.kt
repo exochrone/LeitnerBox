@@ -9,11 +9,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.domain.util.DeckLocalizationUtils
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import com.jb.leitnerbox.feature.decks.R
 import kotlinx.coroutines.delay
@@ -33,6 +33,9 @@ fun DeckListScreen(
 ) {
     val decks by viewModel.decks.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    val deletedMessage = stringResource(R.string.deck_deleted_message)
+    val cancelLabel = stringResource(R.string.cancel)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -48,8 +51,8 @@ fun DeckListScreen(
             }
 
             val result = snackbarHostState.showSnackbar(
-                message = "Deck supprimé",
-                actionLabel = "Annuler",
+                message = deletedMessage,
+                actionLabel = cancelLabel,
                 duration = SnackbarDuration.Indefinite
             )
 
@@ -68,14 +71,18 @@ fun DeckListScreen(
         topBar = {
             TopAppBar(
                 title = { 
-                    val deckWord = DeckLocalizationUtils.getDeckLabel(decks.size)
-                    Text("${decks.size} $deckWord") 
+                    val title = if (decks.isEmpty()) {
+                        stringResource(R.string.deck_list_title_empty)
+                    } else {
+                        pluralStringResource(R.plurals.deck_count, decks.size, decks.size)
+                    }
+                    Text(title)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Retour"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -83,14 +90,17 @@ fun DeckListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddDeckClick) {
-                Icon(Icons.Default.Add, contentDescription = "Ajouter un deck")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.deck_list_add_deck)
+                )
             }
         }
     ) { padding ->
         if (decks.isEmpty()) {
             EmptyState(
-                message = "Créez votre premier deck pour commencer à apprendre !",
-                actionText = "Créer un deck",
+                message = stringResource(R.string.deck_list_empty_message),
+                actionText = stringResource(R.string.deck_list_empty_button),
                 onActionClick = onAddDeckClick,
                 modifier = Modifier.padding(padding)
             )

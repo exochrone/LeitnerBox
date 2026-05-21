@@ -8,13 +8,10 @@ import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import com.jb.leitnerbox.core.domain.utils.AnswerNormalizer
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
 import kotlinx.coroutines.flow.first
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 class ImportCsvUseCase(
     private val cardRepository: CardRepository,
     private val deckRepository: DeckRepository,
-    private val settingsRepository: SettingsRepository,
     private val parser: CsvParser,
     private val normalizer: AnswerNormalizer
 ) {
@@ -47,28 +44,12 @@ class ImportCsvUseCase(
      * Étape 2 : effectuer l'import après confirmation de l'utilisateur.
      */
     suspend fun import(cards: List<ParsedCsvCard>): CsvImportResult {
-        val now = Instant.now()
         val nowMs = System.currentTimeMillis()
         val ignoredLines = mutableListOf<Int>()
         
-        // 1. Extraction unique des configurations globales (Évite les appels répétés en boucle)
-        val maxQuota = settingsRepository.getNewCardsPerDay().first()
-        val allCardsInDb = cardRepository.getAllCards().first()
-        
-        // Calcul du tampon restant pour aujourd'hui
-        // On considère comme "activée aujourd'hui" une carte active dont le prochain examen est aujourd'hui (nouvelle)
-        // ou qui a été révisée aujourd'hui.
-        val startOfToday = now.truncatedTo(ChronoUnit.DAYS)
-        val cardsActivatedToday = allCardsInDb.count { card ->
-            card.isActive && (
-                (card.lastReviewDate == null && card.nextReviewDate != null && !card.nextReviewDate.isBefore(startOfToday)) ||
-                (card.lastReviewDate != null && !card.lastReviewDate.isBefore(startOfToday))
-            )
-        }
-        val remainingQuota = (maxQuota - cardsActivatedToday).coerceAtLeast(0)
-
         // Indexation des ressources existantes pour accélération O(1)
         var currentDecksMap = deckRepository.getDecks().first().associateBy { it.name }
+        val allCardsInDb = cardRepository.getAllCards().first()
         val allCardsByDeck = allCardsInDb.groupBy { it.deckId }
         
         val cardsToInsert = mutableListOf<Card>()
@@ -126,16 +107,11 @@ class ImportCsvUseCase(
             }
         }
 
-        // 2. Mélange et activation selon le quota restant
-        val shuffledCards = cardsToInsert.shuffled()
-        val inactiveCount = (shuffledCards.size - remainingQuota).coerceAtLeast(0)
-        
-        val finalCardsToInsert = shuffledCards.mapIndexed { index, card ->
-            val isActive = index < remainingQuota
-            
+        // 2. Toutes les cartes sont importées en statut inactif (RG 1.1)
+        val finalCardsToInsert = cardsToInsert.mapIndexed { index, card ->
             card.copy(
-                isActive       = isActive,
-                nextReviewDate = if (isActive) now else null,
+                isActive       = false,
+                nextReviewDate = null,
                 importOrder    = nowMs + index
             )
         }
@@ -143,9 +119,9 @@ class ImportCsvUseCase(
         cardRepository.insertCards(finalCardsToInsert)
 
         return CsvImportResult(
-            importedCount = shuffledCards.size,
+            importedCount = finalCardsToInsert.size,
             deckCount     = groupedCards.size,
-            inactiveCount = inactiveCount,
+            inactiveCount = finalCardsToInsert.size,
             ignoredLines  = ignoredLines
         )
     }

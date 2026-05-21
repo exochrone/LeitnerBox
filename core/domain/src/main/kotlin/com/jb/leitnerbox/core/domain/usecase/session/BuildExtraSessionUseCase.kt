@@ -10,6 +10,6 @@ class BuildExtraSessionUseCase(
     suspend operator fun invoke(deckId: Long): List<Card> =
         cardRepository.getCardsByDeckId(deckId)
             .first()
-            .filter { !it.isLearned }
+            .filter { it.isActive && !it.isLearned }
             .shuffled()
 }

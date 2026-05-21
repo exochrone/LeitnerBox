@@ -35,6 +35,12 @@ interface CardDao {
     @Query("SELECT * FROM cards WHERE isActive = 0 ORDER BY id ASC LIMIT :limit")
     suspend fun getGlobalOldestInactiveCards(limit: Int): List<CardEntity>
 
+    @Query("SELECT DISTINCT deckId FROM cards WHERE isActive = 0")
+    suspend fun getDeckIdsWithInactiveCards(): List<Long>
+
+    @Query("SELECT * FROM cards WHERE deckId = :deckId AND isActive = 0 ORDER BY id ASC LIMIT 1")
+    suspend fun getOldestInactiveCardForDeck(deckId: Long): CardEntity?
+
     @Query("""
         SELECT * FROM cards 
         WHERE deckId = :deckId AND isActive = 0 

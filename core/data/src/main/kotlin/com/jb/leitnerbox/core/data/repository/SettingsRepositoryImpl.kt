@@ -3,6 +3,7 @@ package com.jb.leitnerbox.core.data.repository
 import androidx.datastore.core.DataStore
 import com.jb.leitnerbox.core.data.AppSettingsProto
 import com.jb.leitnerbox.core.domain.model.AppTheme
+import com.jb.leitnerbox.core.domain.model.AppSettings
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -12,6 +13,21 @@ import kotlinx.coroutines.flow.map
 class SettingsRepositoryImpl(
     private val dataStore: DataStore<AppSettingsProto>
 ) : SettingsRepository {
+
+    override val settings: Flow<AppSettings> = dataStore.data.map { proto ->
+        AppSettings(
+            excludedDays = proto.excludedDaysList.map { DayOfWeek.of(it) }.toSet(),
+            notificationTime = LocalTime.of(proto.notificationHour, proto.notificationMinute),
+            theme = when (proto.theme) {
+                1 -> AppTheme.LIGHT
+                2 -> AppTheme.DARK
+                else -> AppTheme.SYSTEM
+            },
+            maxDailyNewCards = if (proto.newCardsPerDay == 0) 25 else proto.newCardsPerDay,
+            cardsActivatedToday = proto.cardsActivatedToday,
+            lastActivationDateIso = proto.lastActivationDateIso.takeIf { it.isNotEmpty() }
+        )
+    }
 
     override fun getExcludedDays(): Flow<Set<DayOfWeek>> {
         return dataStore.data.map { proto ->
@@ -77,6 +93,22 @@ class SettingsRepositoryImpl(
         dataStore.updateData { currentSettings ->
             currentSettings.toBuilder()
                 .setNewCardsPerDay(count)
+                .build()
+        }
+    }
+
+    override suspend fun updateCardsActivatedToday(count: Int) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.toBuilder()
+                .setCardsActivatedToday(count)
+                .build()
+        }
+    }
+
+    override suspend fun updateLastActivationDate(dateIso: String) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.toBuilder()
+                .setLastActivationDateIso(dateIso)
                 .build()
         }
     }

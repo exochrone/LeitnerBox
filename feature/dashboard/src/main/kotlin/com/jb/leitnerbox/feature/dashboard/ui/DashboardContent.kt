@@ -16,13 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.DashboardGlobalStats
-import com.jb.leitnerbox.core.domain.util.DeckLocalizationUtils
 import com.jb.leitnerbox.feature.dashboard.R
 import com.jb.leitnerbox.feature.dashboard.ui.components.MenuActionCard
 
@@ -48,11 +48,11 @@ internal fun DashboardContent(
     if (uiState.showChallengeWarningDialog) {
         AlertDialog(
             onDismissRequest = onDismissDialog,
-            title = { Text(text = "Challenge") },
-            text = { Text(text = "Pas assez de cartes maîtrisées pour lancer un challenge.") },
+            title = { Text(text = stringResource(R.string.challenge_title)) },
+            text = { Text(text = stringResource(R.string.challenge_requirement_error)) },
             confirmButton = {
                 TextButton(onClick = onDismissDialog) {
-                    Text(text = "OK")
+                    Text(text = stringResource(R.string.ok))
                 }
             }
         )
@@ -72,27 +72,25 @@ internal fun DashboardContent(
         if (uiState.sessionPlan.items.isNotEmpty()) {
             val cardCount  = uiState.sessionPlan.items.sumOf { it.cardCount }
             val deckCount  = uiState.sessionPlan.items.map { it.deck.id }.distinct().size
-            val deckWord   = DeckLocalizationUtils.getDeckLabel(deckCount)
             ActionCard(
                 icon     = ImageVector.vectorResource(R.drawable.ic_cards_stack),
                 title    = stringResource(R.string.dashboard_cards_to_review_count, cardCount),
-                subtitle = "réparties dans $deckCount $deckWord",
+                subtitle = pluralStringResource(R.plurals.dashboard_decks_distribution, deckCount, deckCount),
                 onClick  = onNavigateToSessionSelection
             )
         }
 
         // 1. Carte principale "X deck(s)"
-        val deckWord = DeckLocalizationUtils.getDeckLabel(uiState.totalDecksCount)
         MenuActionCard(
-            title = "${uiState.totalDecksCount} $deckWord",
+            title = pluralStringResource(R.plurals.deck_count, uiState.totalDecksCount, uiState.totalDecksCount),
             icon = ImageVector.vectorResource(R.drawable.ic_stacks),
             onClick = onNavigateToDecks
         )
 
         // 2. Carte d'action "Historique"
         MenuActionCard(
-            title = "Historique",
-            subtitle = "Consulter les sessions de révision passées",
+            title = stringResource(R.string.menu_history),
+            subtitle = stringResource(R.string.history_subtitle),
             icon = Icons.Default.History,
             onClick = onNavigateToHistory
         )
@@ -100,8 +98,8 @@ internal fun DashboardContent(
         // 3. Carte d'action "Challenge"
         val isChallengeAvailable = uiState.masteredCardCount >= 2
         MenuActionCard(
-            title = "Challenge",
-            subtitle = "Réviser les cartes maîtrisées",
+            title = stringResource(R.string.menu_challenge),
+            subtitle = stringResource(R.string.challenge_subtitle),
             icon = Icons.Default.WorkspacePremium,
             isIconMuted = !isChallengeAvailable,
             onClick = {
@@ -111,7 +109,7 @@ internal fun DashboardContent(
 
         // 4. Carte d'action "Paramètres"
         MenuActionCard(
-            title = "Paramètres",
+            title = stringResource(R.string.menu_settings),
             icon = Icons.Default.Settings,
             onClick = onNavigateToSettings
         )

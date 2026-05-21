@@ -15,7 +15,7 @@ class BuildSessionUseCase(
             .flatMap { item ->
                 cardRepository.getCardsByDeckId(item.deck.id)
                     .first()
-                    .filter { card -> card.box == item.boxNumber && !card.isLearned }
+                    .filter { card -> card.box == item.boxNumber && !card.isLearned && card.isActive }
             }
             .shuffled()
     }
