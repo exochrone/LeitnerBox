@@ -1,16 +1,20 @@
 package com.jb.leitnerbox.feature.session.ui.result
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
+import com.jb.leitnerbox.core.domain.usecase.card.ActivateAllDecksCardsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SessionResultViewModel @Inject constructor(
-    private val sessionStateHolder: SessionStateHolder
+    private val sessionStateHolder: SessionStateHolder,
+    private val activateBufferedCards: ActivateAllDecksCardsUseCase
 ) : ViewModel() {
 
     private val _showCelebration = MutableStateFlow(false)
@@ -19,6 +23,11 @@ class SessionResultViewModel @Inject constructor(
     init {
         if (successRate >= 60) {
             _showCelebration.value = true
+        }
+        
+        // Déclenchement automatique de l'activation du tampon à la fin d'une session
+        viewModelScope.launch {
+            activateBufferedCards()
         }
     }
 

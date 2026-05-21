@@ -39,8 +39,12 @@ class CardRepositoryImpl(
         }
     }
 
-    override suspend fun getInactiveCards(deckId: Long, limit: Int): List<Card> {
-        return dao.getInactiveCards(deckId, limit).map { it.toDomain() }
+    override fun countActiveCardsInBoxOne(deckId: Long): Flow<Int> {
+        return dao.countActiveCardsInBoxOne(deckId)
+    }
+
+    override suspend fun getOldestInactiveCards(deckId: Long, limit: Int): List<Card> {
+        return dao.getOldestInactiveCards(deckId, limit).map { it.toDomain() }
     }
 
     override fun observeInactiveCardsCount(deckId: Long): Flow<Int> {
@@ -69,6 +73,10 @@ class CardRepositoryImpl(
 
     override suspend fun updateCard(card: Card) {
         dao.updateCard(CardEntity.fromDomain(card))
+    }
+
+    override suspend fun updateCards(cards: List<Card>) {
+        dao.updateCards(cards.map { CardEntity.fromDomain(it) })
     }
 
     override suspend fun deleteCard(card: Card) {

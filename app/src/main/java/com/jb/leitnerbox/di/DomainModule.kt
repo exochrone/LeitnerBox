@@ -20,6 +20,7 @@ import com.jb.leitnerbox.core.domain.usecase.importexport.*
 import com.jb.leitnerbox.core.domain.usecase.session.*
 import com.jb.leitnerbox.core.domain.usecase.settings.*
 import com.jb.leitnerbox.core.domain.usecase.stats.*
+import com.jb.leitnerbox.core.domain.usecase.tampon.ActivateBufferedCardsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -301,8 +302,16 @@ object DomainModule {
     @Singleton
     fun provideActivateAllDecksCardsUseCase(
         cardRepository: CardRepository,
-        activateCardsUseCase: ActivateInactiveCardsUseCase
+        activateCardsUseCase: ActivateBufferedCardsUseCase
     ): ActivateAllDecksCardsUseCase = ActivateAllDecksCardsUseCase(cardRepository, activateCardsUseCase)
+
+    @Provides
+    @Singleton
+    fun provideActivateBufferedCardsUseCase(
+        cardRepository: CardRepository,
+        settingsRepository: SettingsRepository,
+        answerNormalizer: AnswerNormalizer
+    ): ActivateBufferedCardsUseCase = ActivateBufferedCardsUseCase(cardRepository, settingsRepository, answerNormalizer)
 
     @Provides
     @Singleton

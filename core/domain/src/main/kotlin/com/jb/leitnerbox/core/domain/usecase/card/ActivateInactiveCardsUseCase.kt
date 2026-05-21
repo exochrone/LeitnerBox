@@ -18,7 +18,7 @@ class ActivateInactiveCardsUseCase(
         count: Int? = null
     ): Int {  // retourne le nombre de cartes effectivement activées
         val quota = count ?: settingsRepository.getNewCardsPerDay().first()
-        val inactiveCards = cardRepository.getInactiveCards(deckId, limit = quota)
+        val inactiveCards = cardRepository.getOldestInactiveCards(deckId, limit = quota)
         val now = Instant.now()
 
         inactiveCards.forEach { card ->

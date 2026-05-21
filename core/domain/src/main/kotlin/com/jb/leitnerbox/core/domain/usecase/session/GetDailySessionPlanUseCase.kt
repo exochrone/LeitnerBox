@@ -26,7 +26,7 @@ class GetDailySessionPlanUseCase(
             val flows = decks.map { deck ->
                 cardRepository.getCardsByDeckId(deck.id).map { cards ->
                     val cardsDueToday = cards.filter { card ->
-                        if (card.isLearned) return@filter false
+                        if (card.isLearned || !card.isActive) return@filter false
 
                         val nextReview = card.nextReviewDate?.atZone(ZoneId.systemDefault())?.toLocalDate()
                         nextReview != null && (nextReview.isBefore(today) || nextReview.isEqual(today))

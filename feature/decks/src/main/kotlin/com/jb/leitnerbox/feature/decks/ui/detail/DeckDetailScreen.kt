@@ -347,13 +347,13 @@ fun CartesEnReserveCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Cartes en réserve",
+                text = stringResource(R.string.deck_detail_buffer_title),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = deckColor
             )
             Text(
-                text = "$count cartes inactives",
+                text = stringResource(R.string.deck_detail_buffer_count, count),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

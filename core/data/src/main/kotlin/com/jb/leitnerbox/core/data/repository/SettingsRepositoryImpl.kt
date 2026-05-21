@@ -80,4 +80,6 @@ class SettingsRepositoryImpl(
                 .build()
         }
     }
+
+    override fun getBufferSize(): Flow<Int> = getNewCardsPerDay()
 }

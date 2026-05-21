@@ -17,7 +17,7 @@ class CardMigrationHelper(
     suspend fun repopulateNormalizedFields() {
         cardDao.getAllCards()
             .first()
-            .filter { it.rectoNormalized.isEmpty() || it.answerNormalized.isEmpty() }
+            .filter { it.isActive && (it.rectoNormalized.isEmpty() || it.answerNormalized.isEmpty()) }
             .forEach { entity ->
                 val updated = entity.copy(
                     rectoNormalized  = answerNormalizer.normalize(entity.recto),

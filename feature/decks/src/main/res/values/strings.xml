@@ -33,4 +33,6 @@
     <string name="box_interval_label">Délai</string>
     <string name="box_interval_hint">Nombre de jours</string>
     <string name="days">jours</string>
+    <string name="deck_detail_buffer_title">Cartes en réserve (tampon)</string>
+    <string name="deck_detail_buffer_count">%1$d cartes inactives</string>
 </resources>

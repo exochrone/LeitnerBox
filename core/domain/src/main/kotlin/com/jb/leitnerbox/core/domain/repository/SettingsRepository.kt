@@ -17,4 +17,6 @@ interface SettingsRepository {
 
     fun getNewCardsPerDay(): Flow<Int>
     suspend fun setNewCardsPerDay(count: Int)
+
+    fun getBufferSize(): Flow<Int> = getNewCardsPerDay()
 }
