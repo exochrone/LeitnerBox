@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.PresentationOrder
 import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import com.jb.leitnerbox.core.ui.components.ColorPickerDialog
-import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
 import com.jb.leitnerbox.core.ui.utils.ColorUtils
 import com.jb.leitnerbox.feature.decks.R
 
@@ -220,7 +220,7 @@ private fun StepOne(
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val color = if (uiState.color == DEFAULT_DECK_COLOR) 
+            val color = if (uiState.color == Deck.DEFAULT_COLOR) 
                 MaterialTheme.colorScheme.onSurface 
             else 
                 ColorUtils.fromHex(uiState.color)
@@ -234,7 +234,7 @@ private fun StepOne(
             )
             Spacer(Modifier.width(16.dp))
             Text(
-                text = if (uiState.color == DEFAULT_DECK_COLOR) 
+                text = if (uiState.color == Deck.DEFAULT_COLOR)
                     stringResource(R.string.deck_color_default) 
                 else 
                     stringResource(R.string.deck_color_custom),

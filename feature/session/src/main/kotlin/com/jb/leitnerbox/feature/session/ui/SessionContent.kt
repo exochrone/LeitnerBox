@@ -129,19 +129,7 @@ fun SessionContent(
                                 modifier = Modifier.fillMaxSize(),
                                 rectoLabel = uiState.currentDeckName,
                                 rectoSubLabel = stringResource(R.string.box_number, card.box),
-                                versoLabel = stringResource(R.string.session_answer_label),
-                                actions = {
-                                    IconButton(
-                                        onClick = {
-                                            onSpeak(if (uiState.isFlipped) card.verso else card.recto)
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.VolumeUp,
-                                            contentDescription = stringResource(R.string.session_tts_speak)
-                                        )
-                                    }
-                                }
+                                versoLabel = stringResource(R.string.session_answer_label)
                             )
                         }
                     }

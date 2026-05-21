@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.ui.R
-import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
+import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.theme.DeckColorPalette
 import com.jb.leitnerbox.core.ui.utils.ColorUtils
 
@@ -39,12 +39,12 @@ fun ColorPickerDialog(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 // Option "Par défaut" — cercle bicolore clair/sombre
-                val isDefaultSelected = currentColorHex == DEFAULT_DECK_COLOR
+                val isDefaultSelected = currentColorHex == Deck.DEFAULT_COLOR
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .clickable { onColorSelected(DEFAULT_DECK_COLOR) }
+                        .clickable { onColorSelected(Deck.DEFAULT_COLOR) }
                         .then(
                             if (isDefaultSelected) Modifier.border(
                                 width = 3.dp,

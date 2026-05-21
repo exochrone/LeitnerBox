@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.jb.leitnerbox.core.domain.model.Deck
-import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
 
 object ColorUtils {
     /**
@@ -35,6 +34,6 @@ object ColorUtils {
  */
 @Composable
 fun Deck.resolveColor(): Color = when (color) {
-    DEFAULT_DECK_COLOR -> MaterialTheme.colorScheme.onSurface
+    Deck.DEFAULT_COLOR -> MaterialTheme.colorScheme.onSurface
     else -> ColorUtils.fromHex(color)
 }

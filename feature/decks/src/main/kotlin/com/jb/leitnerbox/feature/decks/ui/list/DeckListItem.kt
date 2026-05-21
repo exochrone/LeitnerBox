@@ -24,9 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.theme.DefaultDeckColorDark
 import com.jb.leitnerbox.core.ui.theme.LeitnerTrophyGold
-import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
 import com.jb.leitnerbox.core.ui.utils.LeitnerColorUtils
 import com.jb.leitnerbox.core.ui.utils.resolveColor
 import com.jb.leitnerbox.feature.decks.R
@@ -122,7 +122,7 @@ private fun LeitnerBoxesRow(
 
         Spacer(Modifier.width(12.dp))
 
-        val boxDarkColor = if (item.deck.color == DEFAULT_DECK_COLOR)
+        val boxDarkColor = if (item.deck.color == Deck.DEFAULT_COLOR)
             DefaultDeckColorDark
         else
             deckColor

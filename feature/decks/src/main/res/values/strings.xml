@@ -45,7 +45,7 @@
 
     <string name="deck_list_title_empty">Decks</string>
     <string name="deck_list_add_deck">Ajouter un deck</string>
-    <string name="deck_list_empty_message">Créez votre premier deck pour commencer à apprendre !</string>
+    <string name="deck_list_empty_message">Créez votre premier deck pour commencer.</string>
     <string name="deck_list_empty_button">Créer un deck</string>
     <string name="deck_deleted_message">Deck supprimé</string>
     <string name="deck_detail_title">Détails</string>

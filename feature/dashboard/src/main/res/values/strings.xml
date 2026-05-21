@@ -9,7 +9,7 @@
     <string name="dashboard_no_decks">Aucun deck</string>
 
     <plurals name="dashboard_decks_distribution">
-        <item quantity="one">répartie dans %1$d deck</item>
+        <item quantity="one">réparties dans %1$d deck</item>
         <item quantity="other">réparties dans %1$d decks</item>
     </plurals>
 
@@ -26,7 +26,7 @@
     <string name="challenge_title">Challenge</string>
     <string name="challenge_requirement_error">Pas assez de cartes maîtrisées pour lancer un challenge.</string>
     <string name="ok">OK</string>
-    <string name="history_subtitle">Consulter les sessions de révision passées</string>
+    <string name="history_subtitle">Liste des sessions de révision</string>
     <string name="challenge_subtitle">Réviser les cartes maîtrisées</string>
 
     <string name="stats_streak">Streak</string>

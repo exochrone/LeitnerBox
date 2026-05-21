@@ -20,7 +20,7 @@ data class DeckEditUiState(
     val nameError: Boolean = false,
     val presentationOrder: PresentationOrder = PresentationOrder.BY_BOX,
     val wrongAnswerRule: WrongAnswerRule = WrongAnswerRule.PREVIOUS_BOX,
-    val color: String = "default",
+    val color: String = Deck.DEFAULT_COLOR,
     val boxCount: Int = 5,
     val intervals: List<String> = listOf("1", "3", "5", "7", "14"),
     val isLoading: Boolean = false,

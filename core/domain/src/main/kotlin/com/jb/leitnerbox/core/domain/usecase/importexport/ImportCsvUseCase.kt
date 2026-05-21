@@ -64,7 +64,7 @@ class ImportCsvUseCase(
                     intervals         = listOf(1, 3, 5, 7, 14),
                     wrongAnswerRule   = WrongAnswerRule.BACK_TO_BOX_ONE,
                     presentationOrder = PresentationOrder.RANDOM,
-                    color             = "default"
+                    color             = Deck.AVAILABLE_COLORS.random()
                 )
                 val id = deckRepository.insertDeck(newDeck)
                 deck = newDeck.copy(id = id)

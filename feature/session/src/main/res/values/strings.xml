@@ -37,9 +37,9 @@
     <string name="session_result_reviewed_cards">Cartes révisées</string>
     <string name="session_result_correct_answers">Bonnes réponses</string>
     <string name="session_result_newly_mastered">Maîtrisées</string>
-    <string name="session_result_advanced">Ont avancé d\'une boîte</string>
-    <string name="session_result_stayed">Restent dans leur boîte</string>
-    <string name="session_result_retreated">Ont reculé d\'une boîte</string>
+    <string name="session_result_advanced">Cartes qui avancent</string>
+    <string name="session_result_stayed">Cartes qui stagnent</string>
+    <string name="session_result_retreated">Cartes qui reculent</string>
     <string name="session_result_finish">Terminer</string>
 
     <string name="session_finish">Terminer</string>

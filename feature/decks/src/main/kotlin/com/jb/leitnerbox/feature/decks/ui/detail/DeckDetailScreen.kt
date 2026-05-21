@@ -25,7 +25,6 @@ import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.components.ColorPickerDialog
 import com.jb.leitnerbox.core.ui.components.DeckProgressBar
 import com.jb.leitnerbox.core.ui.components.EmptyState
-import com.jb.leitnerbox.core.ui.theme.DEFAULT_DECK_COLOR
 import com.jb.leitnerbox.core.ui.theme.DefaultDeckColorDark
 import com.jb.leitnerbox.core.ui.utils.LeitnerColorUtils
 import com.jb.leitnerbox.core.ui.utils.resolveColor
@@ -52,7 +51,7 @@ fun DeckDetailScreen(
     val boxCount = uiState.deck?.intervals?.size ?: 5
     val summaryTextColor = MaterialTheme.colorScheme.surface
     
-    val boxDarkColor = if (uiState.deck?.color == DEFAULT_DECK_COLOR)
+    val boxDarkColor = if (uiState.deck?.color == Deck.DEFAULT_COLOR)
         DefaultDeckColorDark
     else
         deckColor
@@ -65,7 +64,7 @@ fun DeckDetailScreen(
 
     if (showColorPicker) {
         ColorPickerDialog(
-            currentColorHex = uiState.deck?.color ?: DEFAULT_DECK_COLOR,
+            currentColorHex = uiState.deck?.color ?: Deck.DEFAULT_COLOR,
             onColorSelected = { hex ->
                 viewModel.onColorSelected(hex)
                 showColorPicker = false
