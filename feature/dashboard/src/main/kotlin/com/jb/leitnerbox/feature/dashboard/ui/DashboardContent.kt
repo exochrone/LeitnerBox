@@ -38,7 +38,7 @@ internal fun DashboardContent(
     onDismissDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (uiState.isLoading) {
+    if (uiState.stats == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }

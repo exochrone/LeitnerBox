@@ -9,6 +9,5 @@ data class DashboardUiState(
     val stats: DashboardGlobalStats? = null,
     val totalDecksCount: Int = 0,
     val masteredCardCount: Int = 0,
-    val isLoading: Boolean = true,
     val showChallengeWarningDialog: Boolean = false
 )

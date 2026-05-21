@@ -29,13 +29,12 @@ class DashboardViewModel @Inject constructor(
             stats                   = stats,
             totalDecksCount         = stats.deckCount,
             masteredCardCount       = stats.masteredCards,
-            isLoading               = false,
             showChallengeWarningDialog = showDialog
         )
     }.stateIn(
         scope   = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = DashboardUiState(isLoading = true)
+        initialValue = DashboardUiState()
     )
 
     init {

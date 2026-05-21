@@ -26,7 +26,7 @@ class ActivateDailyCardsUseCase(
             settingsRepository.updateLastActivationDate(today.toString())
         }
 
-        var activatedToday = if (isNewDay) 0 else settings.cardsActivatedToday
+        val activatedToday = if (isNewDay) 0 else settings.cardsActivatedToday
         val maxDaily = settings.maxDailyNewCards
 
         // 2. Vérification du quota journalier
@@ -39,15 +39,21 @@ class ActivateDailyCardsUseCase(
 
         val cardsToActivate = mutableListOf<Card>()
         val activeDeckIds = deckIds.toMutableList()
+        val selectedCardIds = mutableSetOf<Long>()
 
-        // 4. Boucle d'activation batchée
+        // 4. Boucle d'activation distribuée carte par carte (batchée)
         while (cardsToActivate.size < quota && activeDeckIds.isNotEmpty()) {
             val randomIndex = Random.nextInt(activeDeckIds.size)
             val randomDeckId = activeDeckIds[randomIndex]
             
-            val targetCard = cardRepository.getOldestInactiveCardForDeck(randomDeckId)
+            // On récupère plusieurs candidats pour éviter les requêtes N+1 si possible,
+            // ou on filtre par rapport à ce qu'on a déjà choisi.
+            val candidates = cardRepository.getOldestInactiveCards(randomDeckId, quota)
+                .filter { it.id !in selectedCardIds }
 
-            if (targetCard != null) {
+            if (candidates.isNotEmpty()) {
+                val targetCard = candidates.first()
+                selectedCardIds.add(targetCard.id)
                 cardsToActivate.add(
                     targetCard.copy(
                         isActive = true,
@@ -55,7 +61,7 @@ class ActivateDailyCardsUseCase(
                     )
                 )
             } else {
-                // Ce deck n'a plus de cartes inactives
+                // Ce deck n'a plus de cartes inactives non sélectionnées
                 activeDeckIds.removeAt(randomIndex)
             }
         }
