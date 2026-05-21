@@ -32,6 +32,7 @@ fun MathText(
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
     color: Color = LocalContentColor.current,
+    textAlign: TextAlign = TextAlign.Center,
     onRendered: () -> Unit = {}
 ) {
     if (!LatexDetector.containsLatex(text)) {
@@ -41,7 +42,7 @@ fun MathText(
             text     = text,
             style    = style,
             color    = color,
-            textAlign = TextAlign.Center,
+            textAlign = textAlign,
             modifier = modifier
         )
         return
@@ -100,9 +101,17 @@ fun MathText(
                 .replace("\\", "\\\\")
                 .replace("`", "\\`")
 
+            val htmlTextAlign = when (textAlign) {
+                TextAlign.Start -> "left"
+                TextAlign.End -> "right"
+                TextAlign.Justify -> "justify"
+                else -> "center"
+            }
+
             val html = template
                 .replace("{{FONT_SIZE}}", fontSizeSp.toString())
                 .replace("{{TEXT_COLOR}}", textColorHex)
+                .replace("{{TEXT_ALIGN}}", htmlTextAlign)
                 .replace("{{LATEX_CONTENT}}", escapedContent)
 
             webView.loadDataWithBaseURL(

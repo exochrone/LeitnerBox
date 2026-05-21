@@ -25,7 +25,13 @@ class BoxDetailViewModel @Inject constructor(
     val boxNumber = boxIndex + 1
 
     val cards: StateFlow<List<Card>> = getCardsUseCase(deckId)
-        .map { list -> list.filter { it.box == boxNumber } }
+        .map { list ->
+            if (boxNumber == 0) {
+                list.filter { !it.isActive }
+            } else {
+                list.filter { it.box == boxNumber && it.isActive }
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,

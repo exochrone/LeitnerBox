@@ -8,7 +8,6 @@ import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.repository.SettingsRepository
 import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.*
-import com.jb.leitnerbox.core.domain.usecase.tampon.ActivateDailyCardsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -24,7 +23,7 @@ class DeckDetailViewModel @Inject constructor(
     private val deleteDeckUseCase: DeleteDeckUseCase,
     private val updateDeckUseCase: UpdateDeckUseCase,
     private val updateDeckColorUseCase: UpdateDeckColorUseCase,
-    private val activateDailyCardsUseCase: ActivateDailyCardsUseCase,
+    private val activateManualCardsUseCase: com.jb.leitnerbox.core.domain.usecase.tampon.ActivateManualCardsUseCase,
     private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -88,7 +87,7 @@ class DeckDetailViewModel @Inject constructor(
 
     fun activateCards(count: Int) {
         viewModelScope.launch {
-            activateDailyCardsUseCase()
+            activateManualCardsUseCase(deckId, count)
         }
     }
 }

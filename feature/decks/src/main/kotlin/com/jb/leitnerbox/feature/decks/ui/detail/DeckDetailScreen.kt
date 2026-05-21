@@ -55,12 +55,6 @@ fun DeckDetailScreen(
         DefaultDeckColorDark
     else
         deckColor
-        
-    val couleur2 = LeitnerColorUtils.boxColor(
-        boxIndex = 1,
-        totalBoxes = boxCount,
-        darkColor = boxDarkColor
-    )
 
     if (showColorPicker) {
         ColorPickerDialog(
@@ -206,7 +200,11 @@ fun DeckDetailScreen(
                                     Spacer(Modifier.height(8.dp))
                                     DeckProgressBar(
                                         progress = uiState.progress,
-                                        color = couleur2,
+                                        color = LeitnerColorUtils.boxColor(
+                                            boxIndex = 1,
+                                            totalBoxes = boxCount,
+                                            darkColor = boxDarkColor
+                                        ),
                                         labelColor = summaryTextColor
                                     )
                                 }
@@ -218,15 +216,16 @@ fun DeckDetailScreen(
                                 CartesEnReserveCard(
                                     count = uiState.inactiveCardCount,
                                     deckColor = deckColor,
-                                    onClick = { showActivateDialog = true }
+                                    onClick = { uiState.deck?.id?.let { onBoxClick(it, -1) } },
+                                    onActivateClick = { showActivateDialog = true }
                                 )
                             }
                         }
 
                         itemsIndexed(currentDeck.intervals) { index, interval ->
                             val boxNumber = index + 1
-                            val cardsInBox = uiState.cards.count { it.box == boxNumber }
-                            val firstCardNextReview = uiState.cards.filter { it.box == boxNumber }
+                            val cardsInBox = uiState.cards.count { it.box == boxNumber && it.isActive }
+                            val firstCardNextReview = uiState.cards.filter { it.box == boxNumber && it.isActive }
                                 .mapNotNull { it.nextReviewDate }
                                 .minOrNull()
                             
@@ -235,13 +234,19 @@ fun DeckDetailScreen(
                                 DeckDateFormatter.format(firstCardNextReview, locale)
                             }
 
+                            val boxColor = LeitnerColorUtils.boxColor(
+                                boxIndex = index,
+                                totalBoxes = boxCount,
+                                darkColor = boxDarkColor
+                            )
+
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 4.dp)
                                     .clickable { onBoxClick(currentDeck.id, index) },
                                 colors = CardDefaults.cardColors(
-                                    containerColor = couleur2
+                                    containerColor = boxColor
                                 ),
                                 shape = MaterialTheme.shapes.medium
                             ) {
@@ -255,14 +260,14 @@ fun DeckDetailScreen(
                                             text = stringResource(R.string.deck_box_label, boxNumber),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = deckColor
+                                            color = if (index >= boxCount / 2) Color.White else deckColor
                                         )
                                         if (cardsInBox > 0) {
                                             Text(
                                                 text = stringResource(R.string.deck_card_count_plural, cardsInBox),
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.Bold,
-                                                color = deckColor
+                                                color = if (index >= boxCount / 2) Color.White else deckColor
                                             )
                                         }
                                     }
@@ -280,12 +285,12 @@ fun DeckDetailScreen(
                                                 stringResource(R.string.deck_box_empty)
                                             },
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Black
+                                            color = if (index >= boxCount / 2) Color.White else Color.Black
                                         )
                                         Text(
                                             text = stringResource(R.string.deck_box_interval, interval),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Black,
+                                            color = if (index >= boxCount / 2) Color.White else Color.Black,
                                             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                                         )
                                     }
@@ -339,7 +344,8 @@ fun RenameDeckDialog(
 fun CartesEnReserveCard(
     count: Int,
     deckColor: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onActivateClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -351,18 +357,29 @@ fun CartesEnReserveCard(
         ),
         border = androidx.compose.foundation.BorderStroke(1.dp, deckColor.copy(alpha = 0.2f))
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = stringResource(R.string.deck_detail_buffer_title),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = deckColor
-            )
-            Text(
-                text = stringResource(R.string.deck_detail_buffer_count, count),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.deck_detail_buffer_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = deckColor
+                )
+                Text(
+                    text = stringResource(R.string.deck_detail_buffer_count, count),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            TextButton(onClick = onActivateClick) {
+                Text(stringResource(R.string.activate))
+            }
         }
     }
 }

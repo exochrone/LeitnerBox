@@ -299,6 +299,13 @@ object DomainModule {
 
     @Provides
     @Singleton
+    fun provideActivateManualCardsUseCase(
+        cardRepository: CardRepository
+    ): com.jb.leitnerbox.core.domain.usecase.tampon.ActivateManualCardsUseCase = 
+        com.jb.leitnerbox.core.domain.usecase.tampon.ActivateManualCardsUseCase(cardRepository)
+
+    @Provides
+    @Singleton
     fun provideBackupSerializer(): BackupSerializer = BackupSerializer()
 
     @Provides

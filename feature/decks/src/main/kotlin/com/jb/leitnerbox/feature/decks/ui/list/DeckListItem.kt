@@ -112,23 +112,31 @@ private fun LeitnerBoxesRow(
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
-            val inactiveText = if (item.inactiveCardCount > 0) " (${item.inactiveCardCount})" else ""
             Text(
-                text     = "$totalCardCount$inactiveText",
+                text     = totalCardCount.toString(),
                 style    = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold
             )
         }
 
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.weight(1f))
+
+        if (item.inactiveCardCount > 0) {
+            Text(
+                text = "(${item.inactiveCardCount})",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.width(4.dp))
+        }
 
         val boxDarkColor = if (item.deck.color == Deck.DEFAULT_COLOR)
             DefaultDeckColorDark
         else
             deckColor
 
-        // Boîtes : weight(0.7f), couleur finale = boxDarkColor
-        Row(modifier = Modifier.weight(0.7f)) {
+        // Boîtes : weight(1.5f), hauteur 24.dp, alignées à droite
+        Row(modifier = Modifier.weight(1.5f)) {
             (1..boxCount).forEach { boxNumber ->
                 val count = cardsPerBox[boxNumber] ?: 0
                 val color = LeitnerColorUtils.boxColor(
@@ -153,8 +161,7 @@ private fun LeitnerBoxesRow(
             }
         }
 
-        // Pousser le trophée vers la droite (30% restants)
-        Spacer(Modifier.weight(0.3f))
+        Spacer(Modifier.width(12.dp))
 
         // Badge maîtrise : trophée (25.dp) + nombre
         Row(verticalAlignment = Alignment.CenterVertically) {
