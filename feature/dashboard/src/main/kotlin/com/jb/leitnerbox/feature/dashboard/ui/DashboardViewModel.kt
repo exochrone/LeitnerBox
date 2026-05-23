@@ -37,7 +37,8 @@ class DashboardViewModel @Inject constructor(
         initialValue = DashboardUiState()
     )
 
-    init {
+    // Appelé à chaque ON_RESUME du composable
+    fun onResume() {
         viewModelScope.launch {
             activateDailyCards()
         }

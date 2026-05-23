@@ -28,6 +28,10 @@ class DebugViewModel @Inject constructor(
     fun advanceOneDay() = launch("⏩ +1 jour simulé") { seeder.advanceTime(1) }
     fun advanceSevenDays() = launch("⏩ +7 jours simulés") { seeder.advanceTime(7) }
 
+    fun simulateNewDay() = launch("⏭ Nouveau jour simulé — rouvrez le dashboard") {
+        seeder.simulateNewDay()
+    }
+
     fun cleanTestData() = launch("🗑 Données [TEST] supprimées") { seeder.cleanAllTestData() }
 
     fun clearSessions() = launch("🗑 Table sessions vidée") { seeder.clearAllSessions() }

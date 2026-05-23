@@ -23,7 +23,7 @@ class SettingsRepositoryImpl(
                 2 -> AppTheme.DARK
                 else -> AppTheme.SYSTEM
             },
-            maxDailyNewCards = if (proto.newCardsPerDay == 0) 25 else proto.newCardsPerDay,
+            maxDailyNewCards = if (proto.newCardsPerDay == 0) 20 else proto.newCardsPerDay,
             cardsActivatedToday = proto.cardsActivatedToday,
             lastActivationDateIso = proto.lastActivationDateIso.takeIf { it.isNotEmpty() }
         )
@@ -109,6 +109,15 @@ class SettingsRepositoryImpl(
         dataStore.updateData { currentSettings ->
             currentSettings.toBuilder()
                 .setLastActivationDateIso(dateIso)
+                .build()
+        }
+    }
+
+    override suspend fun resetActivationDate() {
+        dataStore.updateData { currentSettings ->
+            currentSettings.toBuilder()
+                .setLastActivationDateIso("")
+                .setCardsActivatedToday(0)
                 .build()
         }
     }

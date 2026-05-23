@@ -50,6 +50,7 @@ class GetDashboardStatsUseCase(
         DashboardGlobalStats(
             streak            = streak,
             totalCards        = cards.size,
+            activeCards       = cards.count { it.isActive },
             masteredCards     = cards.count { it.isLearned },
             successRate       = successRate,
             progressionGlobal = progressionGlobal,

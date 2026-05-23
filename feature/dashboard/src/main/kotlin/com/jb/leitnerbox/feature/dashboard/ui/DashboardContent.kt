@@ -148,7 +148,7 @@ private fun StatsBlock(stats: DashboardGlobalStats) {
                         modifier = Modifier.weight(1f)
                     )
                     ValueItem(
-                        text = stats.totalCards.toString(),
+                        text = "${stats.activeCards} (${stats.totalCards})",
                         modifier = Modifier.weight(1f)
                     )
                     ValueItem(

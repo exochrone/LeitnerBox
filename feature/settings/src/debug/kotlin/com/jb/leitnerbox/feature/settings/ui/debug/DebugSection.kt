@@ -82,6 +82,12 @@ fun DebugSection(
         ) { Text("⏩ +7 jours") }
     }
 
+    DebugSectionTitle("Tampon de cartes")
+
+    DebugButton("⏭ Simuler nouveau jour (tampon)") {
+        viewModel.simulateNewDay()
+    }
+
     SnackbarHost(hostState = snackbarHostState)
 }
 
