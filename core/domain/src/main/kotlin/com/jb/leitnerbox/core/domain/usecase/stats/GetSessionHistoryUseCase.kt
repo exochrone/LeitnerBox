@@ -19,15 +19,26 @@ class GetSessionHistoryUseCase(
             .filter { !it.isReported && it.cardCount > 0 }
             .sortedByDescending { it.date }
             .map { session ->
-                val deckNames = session.deckIds
-                    .mapNotNull { deckMap[it]?.name }
-                    .distinct()
+                val decksDescription = if (session.deckBoxes.isEmpty()) {
+                    // Fallback for old sessions or challenge mode without deckBoxes
+                    session.deckIds
+                        .mapNotNull { deckMap[it]?.name }
+                        .distinct()
+                        .joinToString(", ")
+                } else {
+                    session.deckBoxes.entries.joinToString(", ") { (deckId, boxes) ->
+                        val name = deckMap[deckId]?.name ?: "Deck inconnu"
+                        val boxesText = boxes.joinToString(", ")
+                        "$name ($boxesText)"
+                    }
+                }
+
                 val successRate = if (session.cardCount > 0)
                     (session.successCount * 100) / session.cardCount else 0
 
                 SessionHistoryItem(
                     session = session,
-                    deckNames = deckNames,
+                    decksDescription = decksDescription,
                     successRate = successRate
                 )
             }

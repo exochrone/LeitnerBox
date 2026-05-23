@@ -15,7 +15,7 @@ import com.jb.leitnerbox.core.data.local.entity.SessionEntity
 
 @Database(
     entities = [DeckEntity::class, CardEntity::class, SessionEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(RoomConverters::class)
@@ -26,6 +26,14 @@ abstract class LeitnerDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "leitner_db"
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "ALTER TABLE sessions ADD COLUMN deckBoxes TEXT NOT NULL DEFAULT '{}'"
+                )
+            }
+        }
 
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {

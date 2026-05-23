@@ -11,5 +11,6 @@ data class Session(
     val masteredCount: Int,
     val advancedCount: Int = 0,
     val retreatedCount: Int = 0,
-    val isReported: Boolean = false
+    val isReported: Boolean = false,
+    val deckBoxes: Map<Long, List<Int>> = emptyMap()
 )

@@ -5,6 +5,8 @@ import com.jb.leitnerbox.core.domain.model.PresentationOrder
 import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
 import java.time.DayOfWeek
 import java.time.Instant
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class RoomConverters {
     @TypeConverter
@@ -50,5 +52,19 @@ class RoomConverters {
     fun toLongList(value: String): List<Long> {
         if (value.isEmpty()) return emptyList()
         return value.split(",").map { it.toLong() }
+    }
+
+    @TypeConverter
+    fun fromDeckBoxes(value: Map<Long, List<Int>>): String {
+        return Json.encodeToString(value)
+    }
+
+    @TypeConverter
+    fun toDeckBoxes(value: String): Map<Long, List<Int>> {
+        return try {
+            Json.decodeFromString(value)
+        } catch (e: Exception) {
+            emptyMap()
+        }
     }
 }

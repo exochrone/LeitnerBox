@@ -36,15 +36,7 @@ fun SessionHistoryCard(item: SessionHistoryItem) {
         .toLocalDate()
         .format(formatter)
 
-    val deckNamesText = when {
-        item.deckNames.isEmpty() -> stringResource(R.string.challenge_masters)
-        item.deckNames.size == 1 -> item.deckNames.first()
-        else -> stringResource(
-            R.string.stats_multiple_decks,
-            item.deckNames.first(),
-            item.deckNames.size - 1
-        )
-    }
+    val deckNamesText = item.decksDescription.ifEmpty { stringResource(R.string.challenge_masters) }
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -67,13 +59,13 @@ fun SessionHistoryCard(item: SessionHistoryItem) {
             Text(
                 text = deckNamesText,
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
+                maxLines = 2, // Allow 2 lines for long deck/box descriptions
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(4.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = stringResource(R.string.stats_cards_reviewed, item.session.cardCount),
+                    text = "${item.session.cardCount} cartes",
                     style = MaterialTheme.typography.bodySmall
                 )
                 if (item.session.masteredCount > 0) {

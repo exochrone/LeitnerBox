@@ -15,7 +15,8 @@ data class SessionEntity(
     val masteredCount: Int,
     val advancedCount: Int,
     val retreatedCount: Int,
-    val isReported: Boolean
+    val isReported: Boolean,
+    val deckBoxes: Map<Long, List<Int>> = emptyMap()
 )
 
 fun SessionEntity.toDomain() = Session(
@@ -27,7 +28,8 @@ fun SessionEntity.toDomain() = Session(
     masteredCount = masteredCount,
     advancedCount = advancedCount,
     retreatedCount = retreatedCount,
-    isReported = isReported
+    isReported = isReported,
+    deckBoxes = deckBoxes
 )
 
 fun Session.toEntity() = SessionEntity(
@@ -39,5 +41,6 @@ fun Session.toEntity() = SessionEntity(
     masteredCount = masteredCount,
     advancedCount = advancedCount,
     retreatedCount = retreatedCount,
-    isReported = isReported
+    isReported = isReported,
+    deckBoxes = deckBoxes
 )

@@ -228,15 +228,23 @@ class SessionViewModel @Inject constructor(
 
     private suspend fun onSessionComplete() {
         val state = _uiState.value
+        val selectedItems = sessionStateHolder.selectedItems
+        
+        // Group boxes by deckId
+        val deckBoxes = selectedItems
+            .groupBy { it.deck.id }
+            .mapValues { (_, items) -> items.map { it.boxNumber }.distinct().sorted() }
+
         val session = Session(
             date = Instant.now(),
-            deckIds = sessionStateHolder.selectedItems.map { it.deck.id }.distinct(),
+            deckIds = selectedItems.map { it.deck.id }.distinct(),
             cardCount = state.cards.size,
             successCount = state.successCount,
             masteredCount = if (state.isChallenge) 0 else state.masteredThisSession, // No new mastery in challenge
             advancedCount = state.advancedCount,
             retreatedCount = state.retreatedCount,
-            isReported = false
+            isReported = false,
+            deckBoxes = deckBoxes
         )
         // We might choose NOT to save challenge sessions to the history
         // to avoid skewing stats. Roadmap doesn't explicitly say.

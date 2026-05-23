@@ -4,6 +4,6 @@ import com.jb.leitnerbox.core.domain.model.Session
 
 data class SessionHistoryItem(
     val session: Session,
-    val deckNames: List<String>,
+    val decksDescription: String,
     val successRate: Int
 )
