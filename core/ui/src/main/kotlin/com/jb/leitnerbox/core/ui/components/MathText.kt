@@ -15,17 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
 
-/**
- * Composable qui affiche du texte avec rendu LaTeX si nécessaire.
- * - Texte sans délimiteurs valides → Text Compose standard (léger)
- * - Texte avec $ ou $$ → WebView KaTeX via auto-render
- */
 @Composable
 fun MathText(
     text: String,
@@ -36,12 +32,11 @@ fun MathText(
     onRendered: () -> Unit = {}
 ) {
     if (!LatexDetector.containsLatex(text)) {
-        // Texte pur → prêt immédiatement
         LaunchedEffect(Unit) { onRendered() }
         Text(
-            text     = text,
-            style    = style,
-            color    = color,
+            text = text,
+            style = style,
+            color = color,
             textAlign = textAlign,
             modifier = modifier
         )
@@ -49,10 +44,10 @@ fun MathText(
     }
 
     val context = LocalContext.current
+    val density = LocalDensity.current
     val textColorHex = "#%06X".format(color.toArgb() and 0xFFFFFF)
     val fontSizeSp = style.fontSize.value.takeIf { !it.isNaN() && it > 0 } ?: 16f
 
-    // Stockage de la hauteur rapportée par la WebView (en pixels)
     var contentHeightPx by remember { mutableIntStateOf(0) }
 
     val template = remember {
@@ -62,33 +57,44 @@ fun MathText(
             .use { it.readText() }
     }
 
+    val htmlTextAlign = when (textAlign) {
+        TextAlign.Start -> "left"
+        TextAlign.End -> "right"
+        TextAlign.Justify -> "justify"
+        else -> "center"
+    }
+
+    val html = remember(text, textColorHex, fontSizeSp, htmlTextAlign) {
+        val escapedContent = text
+            .replace("\\", "\\\\")
+            .replace("`", "\\`")
+
+        template
+            .replace("{{FONT_SIZE}}", fontSizeSp.toString())
+            .replace("{{TEXT_COLOR}}", textColorHex)
+            .replace("{{TEXT_ALIGN}}", htmlTextAlign)
+            .replace("{{LATEX_CONTENT}}", escapedContent)
+    }
+
     AndroidView(
         factory = { ctx ->
-            object : WebView(ctx) {
-                override fun onTouchEvent(event: MotionEvent): Boolean = false
-                override fun dispatchTouchEvent(event: MotionEvent): Boolean = false
-            }.apply {
-                settings.apply {
-                    javaScriptEnabled = true
-                    allowFileAccess = true
-                }
+            WebView(ctx).apply {
+                settings.javaScriptEnabled = true
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 
-                // Désactiver les interactions pour laisser passer les clics au parent (ex: FlipCard)
-                isEnabled = false
-                isClickable = false
-                isLongClickable = false
-                isFocusable = false
-                isFocusableInTouchMode = false
-
-                // Interface pour recevoir la hauteur depuis JS
+                // Permettre le scroll horizontal
+                isVerticalScrollBarEnabled = false
+                isHorizontalScrollBarEnabled = false // On le cache mais il fonctionne
+                
                 addJavascriptInterface(
                     object : Any() {
                         @JavascriptInterface
                         fun reportHeight(height: Int) {
                             Handler(Looper.getMainLooper()).post {
-                                contentHeightPx = height
-                                onRendered()
+                                if (contentHeightPx != height) {
+                                    contentHeightPx = height
+                                    onRendered()
+                                }
                             }
                         }
                     },
@@ -97,39 +103,23 @@ fun MathText(
             }
         },
         update = { webView ->
-            val escapedContent = text
-                .replace("\\", "\\\\")
-                .replace("`", "\\`")
-
-            val htmlTextAlign = when (textAlign) {
-                TextAlign.Start -> "left"
-                TextAlign.End -> "right"
-                TextAlign.Justify -> "justify"
-                else -> "center"
+            // On évite de recharger la page si le HTML est identique (évite boucle infinie)
+            if (webView.tag != html) {
+                webView.loadDataWithBaseURL(
+                    "file:///android_asset/katex/",
+                    html,
+                    "text/html",
+                    "UTF-8",
+                    null
+                )
+                webView.tag = html
             }
-
-            val html = template
-                .replace("{{FONT_SIZE}}", fontSizeSp.toString())
-                .replace("{{TEXT_COLOR}}", textColorHex)
-                .replace("{{TEXT_ALIGN}}", htmlTextAlign)
-                .replace("{{LATEX_CONTENT}}", escapedContent)
-
-            webView.loadDataWithBaseURL(
-                "file:///android_asset/katex/",
-                html,
-                "text/html",
-                "UTF-8",
-                null
-            )
-        },
-        onRelease = { webView ->
-            webView.destroy()
         },
         modifier = modifier
             .fillMaxWidth()
             .height(
-                if (contentHeightPx > 20) {
-                    contentHeightPx.dp
+                if (contentHeightPx > 0) {
+                    with(density) { contentHeightPx.toDp() }
                 } else {
                     80.dp
                 }

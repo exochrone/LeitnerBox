@@ -3,29 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>KaTeX Render</title>
+<title>KaTeX</title>
 <link rel="stylesheet" href="katex.min.css">
 <script src="katex.min.js"></script>
 <script src="auto-render.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
+  html, body {
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  #scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  #content {
+    display: inline-block;
+    min-width: 100%;
+    padding: 8px 4px; /* Air vertical pour les accents et horizontal */
+    text-align: {{TEXT_ALIGN}};
     font-family: -apple-system, sans-serif;
     font-size: {{FONT_SIZE}}px;
     color: {{TEXT_COLOR}};
-    background: transparent;
-    padding: 8px;
-    word-wrap: break-word;
-    line-height: 1.6;
-    overflow: hidden;
-    text-align: {{TEXT_ALIGN}};
+    line-height: 1.2;
   }
-  .katex { font-size: 1.1em; }
-  .katex-display { margin: 0.5em 0; overflow-x: auto; text-align: center; }
+  .katex-display {
+    margin: 0 !important;
+    display: inline-block; /* Crucial pour le scroll horizontal */
+    min-width: 100%;
+  }
 </style>
 </head>
 <body>
-  <div id="content"></div>
+  <div id="scroll-container">
+    <div id="content"></div>
+  </div>
   <script>
     const content = document.getElementById('content');
     content.textContent = `{{LATEX_CONTENT}}`;
@@ -39,21 +55,20 @@
     });
 
     function reportHeight() {
-        const height = document.body.scrollHeight;
+        // On mesure la hauteur réelle occupée par le texte rendu
+        const height = content.getBoundingClientRect().height;
         if (height > 0 && window.Android) {
-            window.Android.reportHeight(height);
+            window.Android.reportHeight(Math.ceil(height));
         }
     }
 
-    // Attendre que les fonts soient chargées avant de mesurer
-    if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(function() {
-            setTimeout(reportHeight, 50);
-        });
-    } else {
-        // Fallback pour navigateurs sans document.fonts
-        setTimeout(reportHeight, 300);
-    }
+    // Observer les changements de taille (rendu KaTeX asynchrone)
+    const ro = new ResizeObserver(() => reportHeight());
+    ro.observe(content);
+
+    window.addEventListener('load', reportHeight);
+    // Un petit délai au cas où les polices mettent du temps
+    setTimeout(reportHeight, 500);
   </script>
 </body>
 </html>
