@@ -73,8 +73,10 @@ fun SessionContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val progressLabel = if (uiState.isChallenge) {
                 stringResource(R.string.session_mastered_label, uiState.progressCurrent, uiState.progressTotal)
