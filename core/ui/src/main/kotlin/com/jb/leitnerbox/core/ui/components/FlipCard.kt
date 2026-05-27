@@ -6,16 +6,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -37,124 +35,103 @@ fun FlipCard(
     rectoSubLabel: String = "",
     versoLabel: String = "",
     versoSubLabel: String = "",
-    actions: @Composable () -> Unit = {}
+    actions: @Composable BoxScope.() -> Unit = {}
 ) {
+    var rectoReady by remember { mutableStateOf(false) }
+
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
-        animationSpec = tween(
-            durationMillis = 350,
-            easing = FastOutSlowInEasing
-        ),
-        label = "cardFlip"
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+        label = "CardFlipAnimation"
     )
 
     val isAtRecto = rotation <= 90f
 
-    // État de préparation du recto
-    var rectoReady by remember { mutableStateOf(false) }
-
-    val cardAlpha by animateFloatAsState(
-        targetValue = if (rectoReady) 1f else 0f,
-        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
-        label = "cardAlpha"
-    )
-
     Card(
         modifier = modifier
+            .fillMaxWidth()
+            .height(380.dp) // Hauteur délimitée de la carte pour forcer le scroll si débordement
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density
             }
-            .alpha(cardAlpha)
-            .clickable { onFlip() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            .clickable { onFlip() }, // Clic sur la structure globale de la carte
         colors = CardDefaults.cardColors(
-            containerColor = if (isAtRecto) CardRectoBackground else MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = if (isAtRecto) CardRectoContent else MaterialTheme.colorScheme.onSurfaceVariant
+            containerColor = if (isAtRecto) CardRectoBackground else Color.White
         ),
-        border = BorderStroke(2.dp, Color.Black)
+        border = if (isAtRecto) null else BorderStroke(1.dp, Color(0xFFE0E0E0)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp)
         ) {
-            // Ligne du haut avec Label + Actions
+            // Section Header de la Carte
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .graphicsLayer {
-                        if (rotation > 90f) rotationY = 180f
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .graphicsLayer { if (!isAtRecto) rotationY = 180f },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Espaceur à gauche pour centrer le titre
-                Spacer(modifier = Modifier.size(48.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = if (rotation <= 90f) rectoLabel else versoLabel,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    
-                    val subLabel = if (rotation <= 90f) rectoSubLabel else versoSubLabel
-                    if (subLabel.isNotBlank()) {
+                Column(modifier = Modifier.weight(1f)) {
+                    val subLabel = if (isAtRecto) rectoSubLabel else versoSubLabel
+                    if (subLabel.isNotEmpty()) {
                         Text(
-                            text = subLabel,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Center,
+                            text = subLabel.uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isAtRecto) CardRectoContent.copy(alpha = 0.6f) else Color.Gray,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                    Text(
+                        text = if (isAtRecto) rectoLabel else versoLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isAtRecto) CardRectoContent else Color.Black
+                    )
                 }
-
-                Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                    actions()
-                }
+                Box(modifier = Modifier.size(48.dp)) { actions() }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Section Contenu Central (Zone d'affichage KaTeX)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                // Face recto
-                MathText(
-                    text = recto,
-                    style = MaterialTheme.typography.headlineMedium,
-                    onRendered = { rectoReady = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .verticalScroll(rememberScrollState())
-                        .alpha(if (rotation <= 90f) 1f else 0f)
-                )
-
-                // Face verso
-                MathText(
-                    text = verso,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .graphicsLayer {
-                            rotationY = 180f
-                        }
-                        .padding(vertical = 8.dp)
-                        .verticalScroll(rememberScrollState())
-                        .alpha(if (rotation > 90f) 1f else 0f)
-                )
+                if (isAtRecto) {
+                    // Face RECTO : Visible uniquement si l'animation cible le Recto
+                    MathText(
+                        text = recto,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = if (isAtRecto) CardRectoContent else LocalContentColor.current,
+                        onRendered = { rectoReady = true },
+                        onClick = onFlip,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    // Face VERSO : Visible uniquement si l'animation cible le Verso
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer { rotationY = 180f },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        MathText(
+                            text = verso,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = Color.Black,
+                            onClick = onFlip,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
             }
         }
     }
