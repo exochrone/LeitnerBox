@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>KaTeX</title>
 <link rel="stylesheet" href="katex.min.css">
 <script src="katex.min.js"></script>
 <script src="auto-render.min.js"></script>
@@ -12,50 +11,40 @@
   html, body {
     background: transparent;
     width: 100%;
-    margin: 0;
-    padding: 0;
+    height: 100%;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
   }
   #content {
-    display: block;
     width: 100%;
-    padding: 8px 4px;
     text-align: {{TEXT_ALIGN}};
     font-family: -apple-system, sans-serif;
     font-size: {{FONT_SIZE}}px;
     color: {{TEXT_COLOR}};
-    line-height: 1.4;
+    line-height: 1.5;
+    word-wrap: break-word;
   }
-  .katex-display {
-    margin: 0.2em 0 !important;
-  }
+  .katex-display { margin: 0.3em 0; }
 </style>
 </head>
 <body>
   <div id="content"></div>
   <script>
-    const content = document.getElementById('content');
-    content.textContent = `{{LATEX_CONTENT}}`;
-
-    renderMathInElement(content, {
-        delimiters: [
-            { left: "$$", right: "$$", display: true  },
-            { left: "$",  right: "$",  display: false }
-        ],
-        throwOnError: false
+    document.getElementById('content').textContent = `{{LATEX_CONTENT}}`;
+    renderMathInElement(document.getElementById('content'), {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$",  right: "$",  display: false},
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\\[", right: "\\]", display: true}
+      ],
+      throwOnError: false
     });
-
-    function reportHeight() {
-        const height = content.offsetHeight;
-        if (height > 5 && window.Android) {
-            window.Android.reportHeight(height);
-        }
-    }
-
-    const ro = new ResizeObserver(() => reportHeight());
-    ro.observe(content);
-
-    window.addEventListener('load', reportHeight);
-    setTimeout(reportHeight, 500);
+    if (window.Android) window.Android.onRendered();
   </script>
 </body>
 </html>

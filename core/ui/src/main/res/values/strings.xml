@@ -2,4 +2,5 @@
     <string name="deck_progress_label">Progression</string>
     <string name="color_picker_title">Couleur du deck</string>
     <string name="close">Fermer</string>
+    <string name="session_box_label">Boîte %1$d</string>
 </resources>

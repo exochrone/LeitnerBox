@@ -1,10 +1,8 @@
 package com.jb.leitnerbox.feature.session.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
@@ -14,10 +12,8 @@ import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -26,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.ui.components.FlipCard
+import com.jb.leitnerbox.core.ui.components.SessionCardHeader
 import com.jb.leitnerbox.core.ui.components.SessionProgressIndicator
 import com.jb.leitnerbox.core.ui.components.SwipeableCard
 import com.jb.leitnerbox.core.ui.theme.SuccessGreen
@@ -44,7 +41,6 @@ fun SessionContent(
     onToggleTts: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,8 +73,7 @@ fun SessionContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(scrollState),
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val progressLabel = if (uiState.isChallenge) {
@@ -107,13 +102,16 @@ fun SessionContent(
             } else {
                 uiState.currentCard?.let { card ->
                     key(card.id) {
+                        SessionCardHeader(
+                            deckName = uiState.currentDeckName,
+                            boxNumber = card.box,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
                         SwipeableCard(
                             isFlipped = uiState.isFlipped && !card.needsInput,
                             onEvaluate = onEvaluate,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 250.dp, max = 400.dp)
-                                .padding(vertical = 16.dp)
+                            modifier = Modifier.weight(1f)
                         ) {
                             FlipCard(
                                 recto = card.recto,
@@ -126,13 +124,12 @@ fun SessionContent(
                                         onContinue()
                                     }
                                 },
-                                modifier = Modifier.fillMaxSize(),
-                                rectoLabel = uiState.currentDeckName,
-                                rectoSubLabel = stringResource(R.string.box_number, card.box),
-                                versoLabel = stringResource(R.string.session_answer_label)
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     if (card.needsInput) {
                         InputSection(
