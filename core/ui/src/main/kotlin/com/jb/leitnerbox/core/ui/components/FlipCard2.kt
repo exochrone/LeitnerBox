@@ -3,7 +3,6 @@ package com.jb.leitnerbox.core.ui.components
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,12 +21,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FlipCard(
+fun FlipCard2(
     recto: String,
     verso: String,
     isFlipped: Boolean,
-    onFlip: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    rectoZoom: Float = 1.0f,
+    versoZoom: Float = 1.0f
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
@@ -39,12 +39,12 @@ fun FlipCard(
 
     Card(
         modifier = modifier
+            .aspectRatio(1f) // Forme carrée
             .fillMaxWidth()
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density
-            }
-            .clickable { onFlip() },
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
@@ -54,20 +54,22 @@ fun FlipCard(
             contentAlignment = Alignment.Center
         ) {
             if (isAtRecto) {
-                CardFace(
+                CardFace2(
                     text = recto,
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     color = LocalContentColor.current,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    zoom = rectoZoom
                 )
             } else {
-                CardFace(
+                CardFace2(
                     text = verso,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     color = LocalContentColor.current,
                     modifier = Modifier
                         .fillMaxSize()
-                        .graphicsLayer { rotationY = 180f }
+                        .graphicsLayer { rotationY = 180f },
+                    zoom = versoZoom
                 )
             }
         }
@@ -75,26 +77,30 @@ fun FlipCard(
 }
 
 @Composable
-private fun CardFace(
+private fun CardFace2(
     text: String,
     style: TextStyle,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    zoom: Float = 1.0f
 ) {
+    // Note: verticalScroll est gardé au cas où le texte dépasse vraiment, 
+    // mais le WebView est censé être non-interactif. 
+    // Cependant, le WebView lui-même ne scrolle pas d'après la spec "transparente".
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = modifier
-            .verticalScroll(scrollState),
+        modifier = modifier.verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        MathText(
+        AlwaysMathWebView(
             text = text,
             style = style,
             color = color,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            zoom = zoom
         )
     }
 }

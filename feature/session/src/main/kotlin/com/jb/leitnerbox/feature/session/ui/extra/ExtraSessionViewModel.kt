@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.model.Session
+import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
@@ -22,7 +23,8 @@ class ExtraSessionViewModel @Inject constructor(
     private val buildExtraSession: BuildExtraSessionUseCase,
     private val getDeckById: GetDeckByIdUseCase,
     private val checkAnswer: CheckAnswerUseCase,
-    private val sessionStateHolder: SessionStateHolder
+    private val sessionStateHolder: SessionStateHolder,
+    private val cardRepository: CardRepository
 ) : ViewModel() {
 
     private val deckId: Long = checkNotNull(savedStateHandle["deckId"])
@@ -108,6 +110,31 @@ class ExtraSessionViewModel @Inject constructor(
     fun onSpeakRequest(text: String) {
         viewModelScope.launch {
             _events.send(ExtraSessionEvent.SpeakText(text))
+        }
+    }
+
+    fun onZoomChange(isIncrease: Boolean) {
+        val currentState = _uiState.value
+        val card = currentState.currentCard ?: return
+        val step = 0.1f
+
+        val updatedCard = if (currentState.isFlipped) {
+            val newZoom = if (isIncrease) card.versoZoom + step else card.versoZoom - step
+            card.copy(versoZoom = newZoom.coerceIn(0.5f, 3.0f))
+        } else {
+            val newZoom = if (isIncrease) card.rectoZoom + step else card.rectoZoom - step
+            card.copy(rectoZoom = newZoom.coerceIn(0.5f, 3.0f))
+        }
+
+        if (updatedCard != card) {
+            _uiState.update { state ->
+                state.copy(
+                    cards = state.cards.map { if (it.id == updatedCard.id) updatedCard else it }
+                )
+            }
+            viewModelScope.launch {
+                cardRepository.updateCard(updatedCard)
+            }
         }
     }
 

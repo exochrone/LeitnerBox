@@ -6,6 +6,7 @@ import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.Session
+import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
@@ -26,7 +27,8 @@ class SessionViewModel @Inject constructor(
     private val sessionStateHolder: SessionStateHolder,
     private val evaluateCard: EvaluateCardUseCase,
     private val checkAnswer: CheckAnswerUseCase,
-    private val saveSession: SaveSessionUseCase
+    private val saveSession: SaveSessionUseCase,
+    private val cardRepository: CardRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SessionUiState())
@@ -176,6 +178,32 @@ class SessionViewModel @Inject constructor(
     fun onSpeakRequest(text: String) {
         viewModelScope.launch {
             _events.send(SessionUiEvent.SpeakText(text))
+        }
+    }
+
+    fun onZoomChange(isIncrease: Boolean) {
+        val currentState = _uiState.value
+        val card = currentState.currentCard ?: return
+        val step = 0.1f
+        
+        val updatedCard = if (currentState.isFlipped) {
+            val newZoom = if (isIncrease) card.versoZoom + step else card.versoZoom - step
+            card.copy(versoZoom = newZoom.coerceIn(0.5f, 3.0f))
+        } else {
+            val newZoom = if (isIncrease) card.rectoZoom + step else card.rectoZoom - step
+            card.copy(rectoZoom = newZoom.coerceIn(0.5f, 3.0f))
+        }
+
+        if (updatedCard != card) {
+            _uiState.update { state ->
+                state.copy(
+                    cards = state.cards.map { if (it.id == updatedCard.id) updatedCard else it },
+                    currentCard = updatedCard
+                )
+            }
+            viewModelScope.launch {
+                cardRepository.updateCard(updatedCard)
+            }
         }
     }
 

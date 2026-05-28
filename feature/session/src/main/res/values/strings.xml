@@ -46,4 +46,7 @@
     <string name="session_tts_speak">Lire à voix haute</string>
     <string name="session_tts_disable">Désactiver le TTS</string>
     <string name="session_tts_enable">Activer le TTS</string>
+    <string name="session_mode_title">Choisir le mode d\'affichage</string>
+    <string name="session_mode_classic">Mode classique</string>
+    <string name="session_mode_v2">Session 2 (Webview)</string>
 </resources>

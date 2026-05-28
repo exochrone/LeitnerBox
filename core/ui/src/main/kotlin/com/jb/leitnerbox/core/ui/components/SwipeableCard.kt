@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
@@ -50,6 +51,10 @@ fun SwipeableCard(
     Box(
         modifier = modifier
             .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+            .graphicsLayer {
+                // Inclinaison progressive proportionnelle au déplacement
+                rotationZ = (animatedOffsetX / screenWidthPx) * 12f
+            }
             .then(
                 if (isFlipped) {
                     Modifier.draggable(

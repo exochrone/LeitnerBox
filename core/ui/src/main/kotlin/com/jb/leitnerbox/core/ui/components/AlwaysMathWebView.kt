@@ -10,43 +10,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.jb.leitnerbox.core.domain.utils.LatexDetector
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun MathText(
+fun AlwaysMathWebView(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
     color: Color = LocalContentColor.current,
     textAlign: TextAlign = TextAlign.Center,
+    zoom: Float = 1.0f,
     onRendered: () -> Unit = {}
 ) {
-    if (!LatexDetector.containsLatex(text)) {
-        LaunchedEffect(text) { onRendered() }
-        Text(
-            text = text,
-            style = style,
-            color = color,
-            textAlign = textAlign,
-            modifier = modifier
-        )
-        return
-    }
-
-    val context = LocalContext.current
     val textColorHex = "#%06X".format(0xFFFFFF and color.toArgb())
-    val fontSizeSp = style.fontSize.value.takeIf { !it.isNaN() && it > 0 } ?: 16f
+    val baseFontSize = style.fontSize.value.takeIf { !it.isNaN() && it > 0 } ?: 16f
+    val fontSizeSp = baseFontSize * zoom
     val htmlTextAlign = when (textAlign) {
         TextAlign.Start, TextAlign.Left -> "left"
         TextAlign.End, TextAlign.Right  -> "right"

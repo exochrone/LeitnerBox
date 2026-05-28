@@ -3,4 +3,8 @@
     <string name="color_picker_title">Couleur du deck</string>
     <string name="close">Fermer</string>
     <string name="session_box_label">Boîte %1$d</string>
+    <string name="session_mode_title">Choisir le mode d\'affichage</string>
+    <string name="session_mode_classic">Mode classique</string>
+    <string name="session_mode_v2">Session 2 (Webview)</string>
+    <string name="back">Retour</string>
 </resources>

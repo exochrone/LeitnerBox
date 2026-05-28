@@ -73,8 +73,7 @@ fun SessionContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -87,9 +86,7 @@ fun SessionContent(
                 current = uiState.progressCurrent,
                 total = uiState.progressTotal,
                 label = progressLabel,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                modifier = Modifier.fillMaxWidth()
             )
 
             if (uiState.isMasteredTransition) {
@@ -106,8 +103,7 @@ fun SessionContent(
                     key(card.id) {
                         SessionCardHeader(
                             deckName = uiState.currentDeckName,
-                            boxNumber = card.box,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            boxNumber = card.box
                         )
 
                         SwipeableCard(
@@ -131,8 +127,6 @@ fun SessionContent(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     if (card.needsInput) {
                         InputSection(
                             uiState = uiState,
@@ -140,17 +134,8 @@ fun SessionContent(
                             onInputValidated = onInputValidated,
                             onContinue = onContinue
                         )
-                    } else {
-                        if (uiState.isFlipped) {
-                            EvaluationButtons(onEvaluate = onEvaluate)
-                        } else {
-                            Button(
-                                onClick = onFlip,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(stringResource(R.string.session_flip_card))
-                            }
-                        }
+                    } else if (uiState.isFlipped) {
+                        EvaluationButtons(onEvaluate = onEvaluate)
                     }
                 }
             }

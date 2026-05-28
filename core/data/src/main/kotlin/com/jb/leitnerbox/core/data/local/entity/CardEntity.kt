@@ -33,7 +33,9 @@ data class CardEntity(
     val isLearned: Boolean,
     val needsInput: Boolean = false,
     val importOrder: Long = 0L,
-    val isActive: Boolean = true
+    val isActive: Boolean = true,
+    val rectoZoom: Float = 1.0f,
+    val versoZoom: Float = 1.0f
 ) {
     fun toDomain(): Card = Card(
         id = id,
@@ -48,7 +50,9 @@ data class CardEntity(
         isLearned = isLearned,
         needsInput = needsInput,
         importOrder = importOrder,
-        isActive = isActive
+        isActive = isActive,
+        rectoZoom = rectoZoom,
+        versoZoom = versoZoom
     )
 
     companion object {
@@ -65,7 +69,9 @@ data class CardEntity(
             isLearned = card.isLearned,
             needsInput = card.needsInput,
             importOrder = card.importOrder,
-            isActive = card.isActive
+            isActive = card.isActive,
+            rectoZoom = card.rectoZoom,
+            versoZoom = card.versoZoom
         )
     }
 }

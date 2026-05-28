@@ -15,5 +15,7 @@ data class Card(
     val isLearned: Boolean = false,
     val needsInput: Boolean = false, // P3-UI-22 : Saisie requise
     val importOrder: Long = 0L,
-    val isActive: Boolean = true
+    val isActive: Boolean = true,
+    val rectoZoom: Float = 1.0f,
+    val versoZoom: Float = 1.0f
 )

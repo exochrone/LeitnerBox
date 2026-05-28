@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.ui.components.EmptyState
 import com.jb.leitnerbox.feature.decks.R
+import com.jb.leitnerbox.core.ui.components.SessionModeDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -26,13 +27,14 @@ fun DeckListScreen(
     onDeckClick: (Long) -> Unit,
     onAddDeckClick: () -> Unit,
     onBackClick: () -> Unit,
-    onLaunchExtraSession: (Long) -> Unit,
+    onLaunchExtraSession: (Long, Int) -> Unit, // Ajout du mode
     deletedDeck: Deck? = null,
     onUndoDelete: (Deck) -> Unit = {},
     onSnackbarDismissed: () -> Unit = {}
 ) {
     val decks by viewModel.decks.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var selectedDeckIdForSession by remember { mutableStateOf<Long?>(null) }
     
     val deletedMessage = stringResource(R.string.deck_deleted_message)
     val cancelLabel = stringResource(R.string.cancel)
@@ -122,10 +124,20 @@ fun DeckListScreen(
                     DeckListItem(
                         item = item,
                         onClick = { onDeckClick(item.deck.id) },
-                        onLaunch = { onLaunchExtraSession(item.deck.id) }
+                        onLaunch = { selectedDeckIdForSession = item.deck.id }
                     )
                 }
             }
         }
+    }
+
+    selectedDeckIdForSession?.let { deckId ->
+        SessionModeDialog(
+            onDismiss = { selectedDeckIdForSession = null },
+            onModeSelected = { mode ->
+                onLaunchExtraSession(deckId, mode)
+                selectedDeckIdForSession = null
+            }
+        )
     }
 }

@@ -27,7 +27,9 @@ import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateScreen
 import com.jb.leitnerbox.feature.cards.ui.edit.CardUpdateViewModel
 import com.jb.leitnerbox.feature.session.selection.SessionSelectionScreen
 import com.jb.leitnerbox.feature.session.ui.SessionScreen
+import com.jb.leitnerbox.feature.session.ui.Session2Screen
 import com.jb.leitnerbox.feature.session.ui.extra.ExtraSessionScreen
+import com.jb.leitnerbox.feature.session.ui.extra.ExtraSession2Screen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultScreen
 import com.jb.leitnerbox.feature.session.ui.result.SessionResultViewModel
 import com.jb.leitnerbox.feature.stats.ui.StatsScreen
@@ -87,8 +89,13 @@ fun LeitnerNavHost(
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onLaunchExtraSession = { deckId ->
-                    navController.navigate(Screen.ExtraSession.createRoute(deckId))
+                onLaunchExtraSession = { deckId, mode ->
+                    val route = if (mode == 2) {
+                        Screen.ExtraSession2.createRoute(deckId)
+                    } else {
+                        Screen.ExtraSession.createRoute(deckId)
+                    }
+                    navController.navigate(route)
                 },
                 deletedDeck = lastDeletedDeck,
                 onUndoDelete = { deck ->
@@ -204,14 +211,25 @@ fun LeitnerNavHost(
         }
         composable(Screen.SessionSelection.route) {
             SessionSelectionScreen(
-                onStartSession = {
-                    navController.navigate(Screen.Session.route)
+                onStartSession = { mode ->
+                    val route = if (mode == 2) Screen.Session2.route else Screen.Session.route
+                    navController.navigate(route)
                 },
                 onBackClick = { navController.popBackStack() }
             )
         }
         composable(Screen.Session.route) {
             SessionScreen(
+                onSessionFinished = {
+                    navController.navigate(Screen.SessionResult.route) {
+                        popUpTo(Screen.SessionSelection.route) { inclusive = true }
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.Session2.route) {
+            Session2Screen(
                 onSessionFinished = {
                     navController.navigate(Screen.SessionResult.route) {
                         popUpTo(Screen.SessionSelection.route) { inclusive = true }
@@ -244,8 +262,9 @@ fun LeitnerNavHost(
         }
         composable(Screen.Challenge.route) {
             ChallengeScreen(
-                onStartChallenge = {
-                    navController.navigate(Screen.Session.route)
+                onStartChallenge = { mode ->
+                    val route = if (mode == 2) Screen.Session2.route else Screen.Session.route
+                    navController.navigate(route)
                 },
                 onBackClick = {
                     navController.popBackStack()
@@ -301,6 +320,19 @@ fun LeitnerNavHost(
                 onSessionFinished = {
                     navController.navigate(Screen.SessionResult.route) {
                         popUpTo(Screen.ExtraSession.route) { inclusive = true }
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route     = Screen.ExtraSession2.route,
+            arguments = listOf(navArgument("deckId") { type = NavType.LongType })
+        ) {
+            ExtraSession2Screen(
+                onSessionFinished = {
+                    navController.navigate(Screen.SessionResult.route) {
+                        popUpTo(Screen.ExtraSession2.route) { inclusive = true }
                     }
                 },
                 onBackClick = { navController.popBackStack() }

@@ -22,6 +22,7 @@ sealed class Screen(val route: String) {
     }
     object SessionSelection : Screen("session/selection")
     object Session : Screen("session/active")
+    object Session2 : Screen("session/active2")
     object SessionResult : Screen("session/result")
     object Stats : Screen("stats")
     object Challenge : Screen("challenge")
@@ -32,5 +33,8 @@ sealed class Screen(val route: String) {
     object CsvExport : Screen("csv-export")
     object ExtraSession : Screen("extra-session/{deckId}") {
         fun createRoute(deckId: Long) = "extra-session/$deckId"
+    }
+    object ExtraSession2 : Screen("extra-session2/{deckId}") {
+        fun createRoute(deckId: Long) = "extra-session2/$deckId"
     }
 }
