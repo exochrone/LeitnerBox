@@ -9,9 +9,14 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.CardDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,12 +29,15 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-fun SwipeableCard(
+fun SwipeableFlipCard2(
+    recto: String,
+    verso: String,
     isFlipped: Boolean,
     onFlip: () -> Unit,
     onEvaluate: (isCorrect: Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    rectoZoom: Float = 1.0f,
+    versoZoom: Float = 1.0f
 ) {
     val density = LocalDensity.current
     val screenWidthPx = with(density) {
@@ -46,7 +54,7 @@ fun SwipeableCard(
     val animatedOffsetX by animateFloatAsState(
         targetValue = offsetX,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "SwipeOffset",
+        label = "SwipeOffset2",
         finishedListener = { finalValue ->
             if (abs(finalValue) > threshold) {
                 onEvaluate(finalValue > 0)
@@ -69,12 +77,13 @@ fun SwipeableCard(
         modifier = modifier
             .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
             .graphicsLayer {
-                // Inclinaison progressive accentuée
+                // Inclinaison progressive — accentuée à 15f
                 rotationZ = (animatedOffsetX / screenWidthPx) * 15f
             }
             .clip(CardDefaults.shape)
             .clickable { onFlip() }
             .then(
+                // draggable(Horizontal) uniquement sur le verso
                 if (isFlipped) {
                     Modifier.draggable(
                         orientation = Orientation.Horizontal,
@@ -94,13 +103,24 @@ fun SwipeableCard(
                 }
             )
     ) {
-        content()
+        // La Card conserve ses coins arrondis Material 3.
+        // Le clip est géré par Card elle-même via sa forme par défaut.
+        FlipCard2(
+            recto = recto,
+            verso = verso,
+            isFlipped = isFlipped,
+            onFlip = onFlip,
+            rectoZoom = rectoZoom,
+            versoZoom = versoZoom,
+            modifier = Modifier.fillMaxWidth()
+        )
 
+        // Overlay coloré — par-dessus la carte, clippé à la même forme arrondie
         if (overlayAlpha > 0f) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .clip(CardDefaults.shape)
+                    .clip(CardDefaults.shape)   // même forme que Card
                     .background(overlayColor)
             )
         }

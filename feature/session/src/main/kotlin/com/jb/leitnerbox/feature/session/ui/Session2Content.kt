@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jb.leitnerbox.core.domain.utils.LatexDetector
-import com.jb.leitnerbox.core.ui.components.FlipCard2
 import com.jb.leitnerbox.core.ui.components.SessionProgressIndicator
+import com.jb.leitnerbox.core.ui.components.SwipeableFlipCard2
 import com.jb.leitnerbox.core.ui.theme.SuccessGreen
 import com.jb.leitnerbox.feature.session.R
 
@@ -26,6 +26,7 @@ fun Session2Content(
     onFlip: () -> Unit,
     onEvaluate: (Boolean) -> Unit,
     onToggleTts: () -> Unit,
+    onToggleButtons: () -> Unit,
     onSpeak: (String) -> Unit,
     onZoomChange: (Boolean) -> Unit,
     onBackClick: () -> Unit
@@ -85,17 +86,43 @@ fun Session2Content(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Zoom +") },
+                                text = {
+                                    Text(
+                                        if (uiState.showButtons)
+                                            stringResource(R.string.session2_menu_hide_buttons)
+                                        else
+                                            stringResource(R.string.session2_menu_show_buttons)
+                                    )
+                                },
                                 onClick = {
                                     showMenu = false
+                                    onToggleButtons()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = if (uiState.showButtons)
+                                            Icons.Default.VisibilityOff
+                                        else
+                                            Icons.Default.Visibility,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+
+                            HorizontalDivider()
+
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.session2_menu_zoom_in)) },
+                                onClick = {
+                                    // showMenu reste true : le menu reste ouvert
                                     onZoomChange(true)
                                 },
                                 leadingIcon = { Icon(Icons.Default.ZoomIn, contentDescription = null) }
                             )
                             DropdownMenuItem(
-                                text = { Text("Zoom -") },
+                                text = { Text(stringResource(R.string.session2_menu_zoom_out)) },
                                 onClick = {
-                                    showMenu = false
+                                    // showMenu reste true : le menu reste ouvert
                                     onZoomChange(false)
                                 },
                                 leadingIcon = { Icon(Icons.Default.ZoomOut, contentDescription = null) }
@@ -110,9 +137,9 @@ fun Session2Content(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Barre de progression avec compteur au-dessus
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -149,10 +176,12 @@ fun Session2Content(
             // Carte carrée
             uiState.currentCard?.let { card ->
                 key(card.id) {
-                    FlipCard2(
+                    SwipeableFlipCard2(
                         recto = card.recto,
                         verso = card.verso,
                         isFlipped = uiState.isFlipped,
+                        onFlip = onFlip,
+                        onEvaluate = onEvaluate,
                         rectoZoom = card.rectoZoom,
                         versoZoom = card.versoZoom,
                         modifier = Modifier.fillMaxWidth()
@@ -163,43 +192,45 @@ fun Session2Content(
             Spacer(modifier = Modifier.weight(1f))
 
             // Boutons d'action
-            if (!uiState.isFlipped) {
-                Button(
-                    onClick = onFlip,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text(stringResource(R.string.session_flip_card))
-                }
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+            if (uiState.showButtons) {
+                if (!uiState.isFlipped) {
                     Button(
-                        onClick = { onEvaluate(false) },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
+                        onClick = onFlip,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ThumbDown,
-                            contentDescription = stringResource(R.string.eval_wrong)
-                        )
+                        Text(stringResource(R.string.session_flip_card))
                     }
-
-                    Button(
-                        onClick = { onEvaluate(true) },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SuccessGreen
-                        )
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ThumbUp,
-                            contentDescription = stringResource(R.string.eval_correct)
-                        )
+                        Button(
+                            onClick = { onEvaluate(false) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ThumbDown,
+                                contentDescription = stringResource(R.string.eval_wrong)
+                            )
+                        }
+
+                        Button(
+                            onClick = { onEvaluate(true) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SuccessGreen
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ThumbUp,
+                                contentDescription = stringResource(R.string.eval_correct)
+                            )
+                        }
                     }
                 }
             }

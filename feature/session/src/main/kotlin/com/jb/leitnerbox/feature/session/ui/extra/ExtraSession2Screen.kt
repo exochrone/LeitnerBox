@@ -59,7 +59,8 @@ fun ExtraSession2Screen(
             inputValidated = uiState.inputValidated,
             checkResult = uiState.checkResult,
             isChallenge = false,
-            isTextToSpeechEnabled = uiState.isTextToSpeechEnabled
+            isTextToSpeechEnabled = uiState.isTextToSpeechEnabled,
+            showButtons = uiState.showButtons
         )
 
         Session2Content(
@@ -67,6 +68,7 @@ fun ExtraSession2Screen(
             onFlip = viewModel::onFlipCard,
             onEvaluate = viewModel::onEvaluate,
             onToggleTts = viewModel::toggleTextToSpeech,
+            onToggleButtons = viewModel::onToggleButtons,
             onSpeak = viewModel::onSpeakRequest,
             onZoomChange = viewModel::onZoomChange,
             onBackClick = onBackClick

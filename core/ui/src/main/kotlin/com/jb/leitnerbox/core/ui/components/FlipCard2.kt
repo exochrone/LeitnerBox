@@ -3,6 +3,7 @@ package com.jb.leitnerbox.core.ui.components
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,7 @@ fun FlipCard2(
     recto: String,
     verso: String,
     isFlipped: Boolean,
+    onFlip: () -> Unit,
     modifier: Modifier = Modifier,
     rectoZoom: Float = 1.0f,
     versoZoom: Float = 1.0f
@@ -32,15 +34,15 @@ fun FlipCard2(
     val rotation by animateFloatAsState(
         targetValue = if (isFlipped) 180f else 0f,
         animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing),
-        label = "CardFlip"
+        label = "CardFlip2"
     )
 
     val isAtRecto = rotation <= 90f
 
     Card(
         modifier = modifier
-            .aspectRatio(1f) // Forme carrée
             .fillMaxWidth()
+            .heightIn(min = 200.dp, max = 380.dp)
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density

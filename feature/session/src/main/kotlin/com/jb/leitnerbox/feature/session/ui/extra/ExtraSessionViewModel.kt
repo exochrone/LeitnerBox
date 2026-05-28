@@ -153,6 +153,10 @@ class ExtraSessionViewModel @Inject constructor(
         }
     }
 
+    fun onToggleButtons() {
+        _uiState.update { it.copy(showButtons = !it.showButtons) }
+    }
+
     private fun moveToNextCard() {
         val state = _uiState.value
         val nextIndex = state.currentIndex + 1

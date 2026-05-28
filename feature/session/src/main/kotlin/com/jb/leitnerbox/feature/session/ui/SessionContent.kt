@@ -108,6 +108,13 @@ fun SessionContent(
 
                         SwipeableCard(
                             isFlipped = uiState.isFlipped && !card.needsInput,
+                            onFlip = {
+                                if (!card.needsInput) {
+                                    onFlip()
+                                } else if (uiState.inputValidated) {
+                                    onContinue()
+                                }
+                            },
                             onEvaluate = onEvaluate,
                             modifier = Modifier.weight(1f)
                         ) {
@@ -115,13 +122,7 @@ fun SessionContent(
                                 recto = card.recto,
                                 verso = card.verso,
                                 isFlipped = uiState.isFlipped,
-                                onFlip = {
-                                    if (!card.needsInput) {
-                                        onFlip()
-                                    } else if (uiState.inputValidated) {
-                                        onContinue()
-                                    }
-                                },
+                                onFlip = {}, // Action gérée par SwipeableCard
                                 modifier = Modifier.fillMaxSize()
                             )
                         }

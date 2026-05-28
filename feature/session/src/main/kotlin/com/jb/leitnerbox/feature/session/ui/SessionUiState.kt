@@ -19,7 +19,8 @@ data class SessionUiState(
     val isTextToSpeechEnabled: Boolean = false,
     val userInput: String = "",
     val inputValidated: Boolean = false,
-    val checkResult: AnswerCheckResult? = null
+    val checkResult: AnswerCheckResult? = null,
+    val showButtons: Boolean = true
 )
 
 // Propriétés dérivées (calculées hors du composable)

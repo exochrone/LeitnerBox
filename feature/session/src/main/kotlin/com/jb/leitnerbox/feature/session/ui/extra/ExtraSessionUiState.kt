@@ -14,7 +14,8 @@ data class ExtraSessionUiState(
     val checkResult: AnswerCheckResult? = null,
     val currentDeckName: String = "",
     val isLoading: Boolean = true,
-    val isTextToSpeechEnabled: Boolean = false
+    val isTextToSpeechEnabled: Boolean = false,
+    val showButtons: Boolean = true
 )
 
 val ExtraSessionUiState.progressFraction: Float

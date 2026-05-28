@@ -44,6 +44,7 @@ fun Session2Screen(
             onFlip = viewModel::onFlipCard,
             onEvaluate = viewModel::onEvaluate,
             onToggleTts = viewModel::toggleTextToSpeech,
+            onToggleButtons = viewModel::onToggleButtons,
             onSpeak = viewModel::onSpeakRequest,
             onZoomChange = viewModel::onZoomChange,
             onBackClick = onBackClick
