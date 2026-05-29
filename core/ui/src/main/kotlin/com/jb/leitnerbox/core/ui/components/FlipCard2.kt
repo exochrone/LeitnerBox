@@ -46,7 +46,8 @@ fun FlipCard2(
             .graphicsLayer {
                 rotationY = rotation
                 cameraDistance = 12f * density
-            },
+            }
+            .clickable { onFlip() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(

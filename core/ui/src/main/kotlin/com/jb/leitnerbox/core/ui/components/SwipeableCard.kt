@@ -4,7 +4,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -26,7 +25,6 @@ import kotlin.math.roundToInt
 @Composable
 fun SwipeableCard(
     isFlipped: Boolean,
-    onFlip: () -> Unit,
     onEvaluate: (isCorrect: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
@@ -38,6 +36,8 @@ fun SwipeableCard(
     val threshold = screenWidthPx * 0.4f
 
     var offsetX by remember { mutableFloatStateOf(0f) }
+    var pendingEvaluation by remember { mutableStateOf<Boolean?>(null) }
+    
     // Mémorise la direction pour éviter le clignotement lors de l'overshoot du ressort
     var swipeDirection by remember { mutableFloatStateOf(0f) }
     if (offsetX > 0) swipeDirection = 1f
@@ -49,7 +49,8 @@ fun SwipeableCard(
         label = "SwipeOffset",
         finishedListener = { finalValue ->
             if (abs(finalValue) > threshold) {
-                onEvaluate(finalValue > 0)
+                pendingEvaluation?.let { onEvaluate(it) }
+                pendingEvaluation = null
                 offsetX = 0f
             }
             if (finalValue == 0f) {
@@ -73,7 +74,6 @@ fun SwipeableCard(
                 rotationZ = (animatedOffsetX / screenWidthPx) * 15f
             }
             .clip(CardDefaults.shape)
-            .clickable { onFlip() }
             .then(
                 if (isFlipped) {
                     Modifier.draggable(
@@ -83,8 +83,14 @@ fun SwipeableCard(
                         },
                         onDragStopped = {
                             when {
-                                offsetX > threshold  -> offsetX = screenWidthPx * 1.5f
-                                offsetX < -threshold -> offsetX = -screenWidthPx * 1.5f
+                                offsetX > threshold  -> {
+                                    pendingEvaluation = true
+                                    offsetX = screenWidthPx * 1.5f
+                                }
+                                offsetX < -threshold -> {
+                                    pendingEvaluation = false
+                                    offsetX = -screenWidthPx * 1.5f
+                                }
                                 else                 -> offsetX = 0f
                             }
                         }
