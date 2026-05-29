@@ -4,10 +4,15 @@ import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.model.SessionPlanItem
 
+enum class SessionType {
+    NORMAL, EXTRA, CHALLENGE
+}
+
 class SessionStateHolder {
     var pendingCards: List<Card> = emptyList()
     var selectedItems: List<SessionPlanItem> = emptyList()
     var lastSessionResult: Session? = null
     var isChallengeMode: Boolean = false
     var isExtraSession: Boolean = false
+    var lastSessionType: SessionType = SessionType.NORMAL
 }

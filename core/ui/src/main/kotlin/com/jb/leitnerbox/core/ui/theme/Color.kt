@@ -24,3 +24,4 @@ val ErrorRed = Color(0xFFF44336)
 // Card Colors
 val CardRectoBackground = Color(0xFF51545D)
 val CardRectoContent = Color(0xFFE1E2EC)
+val CardVersoBackground = Color(0xFFD1D2DA)

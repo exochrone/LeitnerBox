@@ -8,6 +8,7 @@ import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
+import com.jb.leitnerbox.core.domain.session.SessionType
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.card.EvaluateCardUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.SaveSessionUseCase
@@ -287,12 +288,16 @@ class SessionViewModel @Inject constructor(
         // I'll save it for now, as it's activity.
         saveSession(session)
 
+        // capture whether it was a challenge before resetting
+        val isChallenge = state.isChallenge
+        
         // Reset challenge mode flag
         sessionStateHolder.isChallengeMode = false
 
         // Stocker le résultat pour l'écran suivant
         sessionStateHolder.lastSessionResult = session
-        sessionStateHolder.isExtraSession = false
+        sessionStateHolder.isExtraSession = isChallenge
+        sessionStateHolder.lastSessionType = if (isChallenge) SessionType.CHALLENGE else SessionType.NORMAL
         _events.send(SessionUiEvent.SessionFinished)
     }
 

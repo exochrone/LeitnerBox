@@ -43,7 +43,7 @@ fun Session2Content(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Session 2") },
+                title = { Text("Révision") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(

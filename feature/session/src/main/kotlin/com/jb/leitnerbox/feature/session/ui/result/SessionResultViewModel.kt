@@ -3,6 +3,7 @@ package com.jb.leitnerbox.feature.session.ui.result
 import androidx.lifecycle.ViewModel
 import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
+import com.jb.leitnerbox.core.domain.session.SessionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,6 +35,14 @@ class SessionResultViewModel @Inject constructor(
         get() = if (session.cardCount == 0) 0
         else (session.successCount * 100) / session.cardCount
 
-    val isExtraSession: Boolean
-        get() = sessionStateHolder.isExtraSession
+    val isSimplifiedDisplay: Boolean
+        get() = sessionStateHolder.lastSessionType == SessionType.EXTRA || 
+                sessionStateHolder.lastSessionType == SessionType.CHALLENGE
+
+    val navigationTarget: String
+        get() = if (sessionStateHolder.lastSessionType == SessionType.EXTRA) {
+            "decks" // Screen.Decks.route
+        } else {
+            "dashboard" // Screen.Dashboard.route
+        }
 }

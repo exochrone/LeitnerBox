@@ -14,9 +14,6 @@ import com.jb.leitnerbox.feature.session.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-import androidx.compose.runtime.*
-import com.jb.leitnerbox.core.ui.components.SessionModeDialog
-
 @Composable
 fun SessionSelectionScreen(
     viewModel: SessionSelectionViewModel = hiltViewModel(),
@@ -26,7 +23,6 @@ fun SessionSelectionScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    var showModeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.items, uiState.isLoading) {
         if (!uiState.isLoading && uiState.items.isEmpty()) {
@@ -37,7 +33,7 @@ fun SessionSelectionScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                is SessionSelectionEvent.NavigateToSession -> showModeDialog = true
+                is SessionSelectionEvent.NavigateToSession -> onStartSession(2)
                 is SessionSelectionEvent.ShowUndoPostpone -> {
                     val timerJob = launch {
                         delay(7000)
@@ -69,14 +65,4 @@ fun SessionSelectionScreen(
         onStartSession = viewModel::onStartSession,
         onBackClick = onBackClick
     )
-
-    if (showModeDialog) {
-        SessionModeDialog(
-            onDismiss = { showModeDialog = false },
-            onModeSelected = { mode ->
-                showModeDialog = false
-                onStartSession(mode)
-            }
-        )
-    }
 }

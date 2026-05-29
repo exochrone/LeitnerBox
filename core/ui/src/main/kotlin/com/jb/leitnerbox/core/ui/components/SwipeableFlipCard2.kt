@@ -56,7 +56,6 @@ fun SwipeableFlipCard2(
             if (abs(finalValue) > threshold) {
                 pendingEvaluation?.let { onEvaluate(it) }
                 pendingEvaluation = null
-                offsetX = 0f
             }
             if (finalValue == 0f) {
                 swipeDirection = 0f

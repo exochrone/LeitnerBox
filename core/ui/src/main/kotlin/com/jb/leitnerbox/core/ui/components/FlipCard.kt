@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.jb.leitnerbox.core.ui.theme.CardRectoBackground
+import com.jb.leitnerbox.core.ui.theme.CardRectoContent
+import com.jb.leitnerbox.core.ui.theme.CardVersoBackground
 
 @Composable
 fun FlipCard(
@@ -45,6 +48,12 @@ fun FlipCard(
                 cameraDistance = 12f * density
             }
             .clickable { onFlip() },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isAtRecto)
+                CardRectoBackground
+            else
+                CardVersoBackground
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
@@ -57,7 +66,7 @@ fun FlipCard(
                 CardFace(
                     text = recto,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = LocalContentColor.current,
+                    color = CardRectoContent,
                     modifier = Modifier.fillMaxSize()
                 )
             } else {

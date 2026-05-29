@@ -43,7 +43,7 @@ fun SessionResultScreen(
         session = viewModel.session,
         successRate = viewModel.successRate,
         showCelebration = showCelebration,
-        isExtraSession = viewModel.isExtraSession,
+        isSimplifiedDisplay = viewModel.isSimplifiedDisplay,
         onCelebrationFinished = viewModel::onCelebrationFinished,
         onFinish = onFinish
     )
@@ -55,7 +55,7 @@ internal fun SessionResultContent(
     session: Session,
     successRate: Int,
     showCelebration: Boolean,
-    isExtraSession: Boolean = false,
+    isSimplifiedDisplay: Boolean = false,
     onCelebrationFinished: () -> Unit,
     onFinish: () -> Unit
 ) {
@@ -140,7 +140,7 @@ internal fun SessionResultContent(
                     dimmed = session.successCount == 0
                 )
 
-                if (!isExtraSession) {
+                if (!isSimplifiedDisplay) {
                     ResultItem(
                         icon = Icons.Default.EmojiEvents,
                         label = stringResource(R.string.session_result_newly_mastered),

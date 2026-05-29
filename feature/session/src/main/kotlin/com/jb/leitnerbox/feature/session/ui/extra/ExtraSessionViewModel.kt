@@ -7,6 +7,7 @@ import com.jb.leitnerbox.core.domain.model.AnswerCheckResult
 import com.jb.leitnerbox.core.domain.model.Session
 import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.session.SessionStateHolder
+import com.jb.leitnerbox.core.domain.session.SessionType
 import com.jb.leitnerbox.core.domain.usecase.card.CheckAnswerUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
 import com.jb.leitnerbox.core.domain.usecase.session.BuildExtraSessionUseCase
@@ -178,6 +179,7 @@ class ExtraSessionViewModel @Inject constructor(
             )
             sessionStateHolder.lastSessionResult = fakeSession
             sessionStateHolder.isExtraSession = true
+            sessionStateHolder.lastSessionType = SessionType.EXTRA
 
             viewModelScope.launch {
                 _events.send(ExtraSessionEvent.SessionFinished)
