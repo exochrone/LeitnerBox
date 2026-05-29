@@ -71,7 +71,7 @@ class SessionViewModel @Inject constructor(
     }
 
     fun onFlipCard() {
-        _uiState.update { it.copy(isFlipped = !it.isFlipped) }
+        _uiState.update { it.copy(isFlipped = true) }
         val state = _uiState.value
         // Utilisation du helper centralisé
         TtsSessionHelper.resolveTextAndSpeak(
@@ -80,6 +80,10 @@ class SessionViewModel @Inject constructor(
             isTtsEnabled = state.isTextToSpeechEnabled,
             onSpeakRequest = ::onSpeakRequest
         )
+    }
+
+    fun onToggleFlip() {
+        _uiState.update { it.copy(isFlipped = !it.isFlipped) }
     }
 
     fun onInputChanged(text: String) {

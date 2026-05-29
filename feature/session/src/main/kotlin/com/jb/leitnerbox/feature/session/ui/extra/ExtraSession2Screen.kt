@@ -65,7 +65,7 @@ fun ExtraSession2Screen(
 
         Session2Content(
             uiState = mappedState,
-            onFlip = viewModel::onFlipCard,
+            onFlip = viewModel::onToggleFlip,
             onEvaluate = viewModel::onEvaluate,
             onToggleTts = viewModel::toggleTextToSpeech,
             onToggleButtons = viewModel::onToggleButtons,

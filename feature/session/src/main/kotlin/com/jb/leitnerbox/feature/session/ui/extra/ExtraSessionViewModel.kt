@@ -58,6 +58,10 @@ class ExtraSessionViewModel @Inject constructor(
         )
     }
 
+    fun onToggleFlip() {
+        _uiState.update { it.copy(isFlipped = !it.isFlipped) }
+    }
+
     fun onEvaluate(isCorrect: Boolean) {
         _uiState.update {
             it.copy(

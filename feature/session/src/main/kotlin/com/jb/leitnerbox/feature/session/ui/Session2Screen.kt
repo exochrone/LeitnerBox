@@ -41,7 +41,7 @@ fun Session2Screen(
     Box(modifier = Modifier.fillMaxSize()) {
         Session2Content(
             uiState = uiState,
-            onFlip = viewModel::onFlipCard,
+            onFlip = viewModel::onToggleFlip,
             onEvaluate = viewModel::onEvaluate,
             onToggleTts = viewModel::toggleTextToSpeech,
             onToggleButtons = viewModel::onToggleButtons,
