@@ -290,13 +290,12 @@ class SessionViewModel @Inject constructor(
 
         // capture whether it was a challenge before resetting
         val isChallenge = state.isChallenge
-        
+
         // Reset challenge mode flag
         sessionStateHolder.isChallengeMode = false
 
         // Stocker le résultat pour l'écran suivant
         sessionStateHolder.lastSessionResult = session
-        sessionStateHolder.isExtraSession = isChallenge
         sessionStateHolder.lastSessionType = if (isChallenge) SessionType.CHALLENGE else SessionType.NORMAL
         _events.send(SessionUiEvent.SessionFinished)
     }

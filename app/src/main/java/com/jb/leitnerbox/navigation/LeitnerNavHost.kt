@@ -243,7 +243,8 @@ fun LeitnerNavHost(
             SessionResultScreen(
                 viewModel = viewModel,
                 onFinish = {
-                    navController.navigate(viewModel.navigationTarget) {
+                    val target = if (viewModel.isExtraSession) Screen.Decks.route else Screen.Dashboard.route
+                    navController.navigate(target) {
                         popUpTo(Screen.Dashboard.route) { inclusive = false }
                     }
                 }

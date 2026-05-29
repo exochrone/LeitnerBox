@@ -178,7 +178,6 @@ class ExtraSessionViewModel @Inject constructor(
                 isReported = false
             )
             sessionStateHolder.lastSessionResult = fakeSession
-            sessionStateHolder.isExtraSession = true
             sessionStateHolder.lastSessionType = SessionType.EXTRA
 
             viewModelScope.launch {

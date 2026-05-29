@@ -49,6 +49,7 @@
     <string name="session_mode_title">Choisir le mode d\'affichage</string>
     <string name="session_mode_classic">Mode classique</string>
     <string name="session_mode_v2">Session 2 (Webview)</string>
+    <string name="session2_title">Révision</string>
     <string name="session2_menu_show_buttons">Afficher les boutons</string>
     <string name="session2_menu_hide_buttons">Masquer les boutons</string>
     <string name="session2_menu_zoom_in">Zoom +</string>

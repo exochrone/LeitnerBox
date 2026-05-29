@@ -13,6 +13,5 @@ class SessionStateHolder {
     var selectedItems: List<SessionPlanItem> = emptyList()
     var lastSessionResult: Session? = null
     var isChallengeMode: Boolean = false
-    var isExtraSession: Boolean = false
     var lastSessionType: SessionType = SessionType.NORMAL
 }

@@ -43,7 +43,7 @@ fun Session2Content(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Révision") },
+                title = { Text(stringResource(R.string.session2_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(

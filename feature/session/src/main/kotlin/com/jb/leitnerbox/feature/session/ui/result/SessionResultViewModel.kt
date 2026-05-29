@@ -39,10 +39,6 @@ class SessionResultViewModel @Inject constructor(
         get() = sessionStateHolder.lastSessionType == SessionType.EXTRA || 
                 sessionStateHolder.lastSessionType == SessionType.CHALLENGE
 
-    val navigationTarget: String
-        get() = if (sessionStateHolder.lastSessionType == SessionType.EXTRA) {
-            "decks" // Screen.Decks.route
-        } else {
-            "dashboard" // Screen.Dashboard.route
-        }
+    val isExtraSession: Boolean
+        get() = sessionStateHolder.lastSessionType == SessionType.EXTRA
 }
