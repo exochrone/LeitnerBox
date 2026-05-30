@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,12 +40,14 @@ fun BoxDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    val title = if (viewModel.boxNumber == 0) {
+                    val baseTitle = if (viewModel.boxNumber == 0) {
                         stringResource(R.string.deck_detail_buffer_title)
                     } else {
                         stringResource(R.string.box_label, viewModel.boxNumber)
                     }
-                    Text(title)
+                    val count = cards.size
+                    val cardsLabel = pluralStringResource(R.plurals.card_count_plural, count, count)
+                    Text("$baseTitle - $cardsLabel")
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {

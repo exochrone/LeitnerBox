@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.PresentationOrder
 import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
+import com.jb.leitnerbox.core.domain.repository.CardRepository
+import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.UpdateDeckUseCase
@@ -15,7 +17,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class DeckEditUiState(
-    val step: Int = 1,
     val name: String = "",
     val nameError: Boolean = false,
     val presentationOrder: PresentationOrder = PresentationOrder.BY_BOX,
@@ -25,7 +26,10 @@ data class DeckEditUiState(
     val intervals: List<String> = listOf("1", "3", "5", "7", "14"),
     val isLoading: Boolean = false,
     val isEditing: Boolean = false,
-    val showExitConfirm: Boolean = false
+    val showExitConfirm: Boolean = false,
+    val showBoxReductionConfirm: Boolean = false,
+    val disappearingBoxes: List<Int> = emptyList(),
+    val targetBox: Int = 0
 )
 
 sealed class DeckEditEvent {
@@ -38,10 +42,13 @@ class DeckEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getDeckByIdUseCase: GetDeckByIdUseCase,
     private val addDeckUseCase: AddDeckUseCase,
-    private val updateDeckUseCase: UpdateDeckUseCase
+    private val updateDeckUseCase: UpdateDeckUseCase,
+    private val getCardsUseCase: GetCardsUseCase,
+    private val cardRepository: CardRepository
 ) : ViewModel() {
 
     private val deckId: Long? = savedStateHandle.get<Long>("deckId")
+    private var initialBoxCount: Int = 0
 
     private val _uiState = MutableStateFlow(DeckEditUiState())
     val uiState: StateFlow<DeckEditUiState> = _uiState.asStateFlow()
@@ -56,6 +63,7 @@ class DeckEditViewModel @Inject constructor(
             if (id > 0) {
                 viewModelScope.launch {
                     getDeckByIdUseCase(id).firstOrNull()?.let { deck ->
+                        initialBoxCount = deck.intervals.size
                         _uiState.update {
                             it.copy(
                                 name = deck.name,
@@ -106,24 +114,6 @@ class DeckEditViewModel @Inject constructor(
         }
     }
 
-    fun nextStep() {
-        if (_uiState.value.step == 1 && _uiState.value.name.trim().isEmpty()) {
-            _uiState.update { it.copy(nameError = true) }
-            return
-        }
-        if (_uiState.value.step < 2) {
-            _uiState.update { it.copy(step = it.step + 1) }
-        } else {
-            saveDeck()
-        }
-    }
-
-    fun previousStep() {
-        if (_uiState.value.step > 1) {
-            _uiState.update { it.copy(step = it.step - 1) }
-        }
-    }
-
     fun onBackRequest() {
         _uiState.update { it.copy(showExitConfirm = true) }
     }
@@ -138,7 +128,57 @@ class DeckEditViewModel @Inject constructor(
         }
     }
 
-    private fun saveDeck() {
+    fun saveDeck() {
+        if (_uiState.value.name.trim().isEmpty()) {
+            _uiState.update { it.copy(nameError = true) }
+            return
+        }
+
+        val newBoxCount = _uiState.value.boxCount
+        if (_uiState.value.isEditing && newBoxCount < initialBoxCount) {
+            viewModelScope.launch {
+                val cards = getCardsUseCase(deckId!!).first()
+                val disappearingBoxes = (newBoxCount + 1..initialBoxCount).toList()
+                val cardsInDisappearingBoxes = cards.filter { it.box in disappearingBoxes }
+                
+                if (cardsInDisappearingBoxes.isNotEmpty()) {
+                    _uiState.update {
+                        it.copy(
+                            showBoxReductionConfirm = true,
+                            disappearingBoxes = disappearingBoxes,
+                            targetBox = newBoxCount
+                        )
+                    }
+                    return@launch
+                }
+                performSave()
+            }
+        } else {
+            performSave()
+        }
+    }
+
+    fun onConfirmBoxReduction() {
+        _uiState.update { it.copy(showBoxReductionConfirm = false) }
+        viewModelScope.launch {
+            val cards = getCardsUseCase(deckId!!).first()
+            val disappearingBoxes = _uiState.value.disappearingBoxes
+            val targetBox = _uiState.value.targetBox
+            
+            val cardsToMove = cards.filter { it.box in disappearingBoxes }
+            if (cardsToMove.isNotEmpty()) {
+                val updatedCards = cardsToMove.map { it.copy(box = targetBox) }
+                cardRepository.updateCards(updatedCards)
+            }
+            performSave()
+        }
+    }
+
+    fun onDismissBoxReduction() {
+        _uiState.update { it.copy(showBoxReductionConfirm = false) }
+    }
+
+    private fun performSave() {
         val name = _uiState.value.name.trim()
         val intervals = _uiState.value.intervals.map { it.toIntOrNull() ?: 1 }
         

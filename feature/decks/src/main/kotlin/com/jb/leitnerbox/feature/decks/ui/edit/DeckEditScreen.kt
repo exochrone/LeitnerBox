@@ -59,11 +59,7 @@ fun DeckEditScreen(
     }
 
     val onBack = {
-        if (uiState.step > 1) {
-            viewModel.previousStep()
-        } else {
-            viewModel.onBackRequest()
-        }
+        viewModel.onBackRequest()
     }
 
     BackHandler(onBack = onBack)
@@ -97,6 +93,28 @@ fun DeckEditScreen(
         )
     }
 
+    if (uiState.showBoxReductionConfirm) {
+        val boxesLabels = uiState.disappearingBoxes.map { stringResource(R.string.box_label, it) }
+        val boxesString = boxesLabels.joinToString(", ")
+        AlertDialog(
+            onDismissRequest = viewModel::onDismissBoxReduction,
+            title = { Text(stringResource(R.string.deck_edit_reduce_boxes_title)) },
+            text = {
+                Text(stringResource(R.string.deck_edit_reduce_boxes_message, boxesString, uiState.targetBox))
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::onConfirmBoxReduction) {
+                    Text(stringResource(R.string.yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::onDismissBoxReduction) {
+                    Text(stringResource(R.string.no))
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,7 +123,7 @@ fun DeckEditScreen(
                         stringResource(R.string.deck_edit_title_edit) 
                     else 
                         stringResource(R.string.deck_edit_title_new)
-                    Text("$prefix ${stringResource(R.string.deck_edit_step, uiState.step).trim()}")
+                    Text(prefix)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -120,15 +138,11 @@ fun DeckEditScreen(
                 shadowElevation = 8.dp
             ) {
                 Button(
-                    onClick = viewModel::nextStep,
+                    onClick = viewModel::saveDeck,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    enabled = !uiState.isLoading && when (uiState.step) {
-                        1    -> true
-                        2    -> uiState.intervals.all { it.isNotBlank() }
-                        else -> false
-                    }
+                    enabled = !uiState.isLoading && uiState.name.isNotBlank() && uiState.intervals.all { it.isNotBlank() }
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(
@@ -136,12 +150,7 @@ fun DeckEditScreen(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        val label = when {
-                            uiState.step < 2 -> stringResource(R.string.next)
-                            uiState.isEditing -> stringResource(R.string.save)
-                            else -> stringResource(R.string.create_deck)
-                        }
-                        Text(label)
+                        Text(stringResource(R.string.save))
                     }
                 }
             }
@@ -156,13 +165,9 @@ fun DeckEditScreen(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            when (uiState.step) {
-                1 -> {
-                    StepOne(uiState, viewModel, onShowColorPicker = { showColorPicker = true })
-                    StepTwo(uiState, viewModel)
-                }
-                2 -> StepThree(uiState, viewModel)
-            }
+            StepOne(uiState, viewModel, onShowColorPicker = { showColorPicker = true })
+            StepTwo(uiState, viewModel)
+            StepThree(uiState, viewModel)
         }
     }
 }

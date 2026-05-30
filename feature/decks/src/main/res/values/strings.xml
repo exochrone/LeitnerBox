@@ -7,9 +7,10 @@
 
     <string name="deck_edit_title_new">Nouveau deck</string>
     <string name="deck_edit_title_edit">Modifier le deck</string>
-    <string name="deck_edit_step"> (%1$d/2)</string>
     <string name="deck_edit_exit_title">Quitter la configuration</string>
-    <string name="deck_edit_exit_message">Quitter la configuration de ce deck ?</string>
+    <string name="deck_edit_exit_message">Quitter la configuration de ce deck sans enregistrer ?</string>
+    <string name="deck_edit_reduce_boxes_title">Réduction du nombre de boîtes</string>
+    <string name="deck_edit_reduce_boxes_message">Vous avez réduit le nombre de boîtes. Toutes les cartes dans %1$s seront transférées dans la Boîte %2$d. Confirmer ?</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="next">Suivant</string>
@@ -57,6 +58,10 @@
     <string name="deck_empty_message">Ce deck n\'a pas encore de cartes.</string>
     <string name="deck_add_card_button">Ajouter une carte</string>
     <string name="deck_card_count_plural">%1$d cartes</string>
+    <plurals name="card_count_plural">
+        <item quantity="one">%1$d carte</item>
+        <item quantity="other">%1$d cartes</item>
+    </plurals>
     <string name="deck_box_label">Boîte %1$d</string>
     <string name="deck_next_session_label">Prochaine session : %1$s</string>
     <string name="deck_box_empty">Vide</string>
