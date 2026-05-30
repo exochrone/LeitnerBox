@@ -57,7 +57,6 @@
     <string name="deck_add_card_cd">Ajouter une carte</string>
     <string name="deck_empty_message">Ce deck n\'a pas encore de cartes.</string>
     <string name="deck_add_card_button">Ajouter une carte</string>
-    <string name="deck_card_count_plural">%1$d cartes</string>
     <plurals name="card_count_plural">
         <item quantity="one">%1$d carte</item>
         <item quantity="other">%1$d cartes</item>

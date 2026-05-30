@@ -194,7 +194,7 @@ fun DeckDetailScreen(
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
-                                        text = stringResource(R.string.deck_card_count_plural, uiState.cards.size),
+                                        text = pluralStringResource(R.plurals.card_count_plural, uiState.cards.size, uiState.cards.size),
                                         style = MaterialTheme.typography.titleMedium,
                                         color = summaryTextColor
                                     )
@@ -265,7 +265,7 @@ fun DeckDetailScreen(
                                         )
                                         if (cardsInBox > 0) {
                                             Text(
-                                                text = stringResource(R.string.deck_card_count_plural, cardsInBox),
+                                                text = pluralStringResource(R.plurals.card_count_plural, cardsInBox, cardsInBox),
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 color = if (index >= boxCount / 2) Color.White else deckColor

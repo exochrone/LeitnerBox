@@ -3,11 +3,12 @@ package com.jb.leitnerbox.feature.decks.ui.edit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jb.leitnerbox.core.domain.model.Card
 import com.jb.leitnerbox.core.domain.model.Deck
 import com.jb.leitnerbox.core.domain.model.PresentationOrder
 import com.jb.leitnerbox.core.domain.model.WrongAnswerRule
-import com.jb.leitnerbox.core.domain.repository.CardRepository
 import com.jb.leitnerbox.core.domain.usecase.card.GetCardsUseCase
+import com.jb.leitnerbox.core.domain.usecase.card.MoveCardsToBoxUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.AddDeckUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.GetDeckByIdUseCase
 import com.jb.leitnerbox.core.domain.usecase.deck.UpdateDeckUseCase
@@ -29,7 +30,8 @@ data class DeckEditUiState(
     val showExitConfirm: Boolean = false,
     val showBoxReductionConfirm: Boolean = false,
     val disappearingBoxes: List<Int> = emptyList(),
-    val targetBox: Int = 0
+    val targetBox: Int = 0,
+    val cardsToMove: List<Card> = emptyList()
 )
 
 sealed class DeckEditEvent {
@@ -44,7 +46,7 @@ class DeckEditViewModel @Inject constructor(
     private val addDeckUseCase: AddDeckUseCase,
     private val updateDeckUseCase: UpdateDeckUseCase,
     private val getCardsUseCase: GetCardsUseCase,
-    private val cardRepository: CardRepository
+    private val moveCardsToBoxUseCase: MoveCardsToBoxUseCase
 ) : ViewModel() {
 
     private val deckId: Long? = savedStateHandle.get<Long>("deckId")
@@ -136,8 +138,9 @@ class DeckEditViewModel @Inject constructor(
 
         val newBoxCount = _uiState.value.boxCount
         if (_uiState.value.isEditing && newBoxCount < initialBoxCount) {
+            val id = deckId ?: return
             viewModelScope.launch {
-                val cards = getCardsUseCase(deckId!!).first()
+                val cards = getCardsUseCase(id).first()
                 val disappearingBoxes = (newBoxCount + 1..initialBoxCount).toList()
                 val cardsInDisappearingBoxes = cards.filter { it.box in disappearingBoxes }
                 
@@ -146,7 +149,8 @@ class DeckEditViewModel @Inject constructor(
                         it.copy(
                             showBoxReductionConfirm = true,
                             disappearingBoxes = disappearingBoxes,
-                            targetBox = newBoxCount
+                            targetBox = newBoxCount,
+                            cardsToMove = cardsInDisappearingBoxes
                         )
                     }
                     return@launch
@@ -161,14 +165,9 @@ class DeckEditViewModel @Inject constructor(
     fun onConfirmBoxReduction() {
         _uiState.update { it.copy(showBoxReductionConfirm = false) }
         viewModelScope.launch {
-            val cards = getCardsUseCase(deckId!!).first()
-            val disappearingBoxes = _uiState.value.disappearingBoxes
-            val targetBox = _uiState.value.targetBox
-            
-            val cardsToMove = cards.filter { it.box in disappearingBoxes }
+            val cardsToMove = _uiState.value.cardsToMove
             if (cardsToMove.isNotEmpty()) {
-                val updatedCards = cardsToMove.map { it.copy(box = targetBox) }
-                cardRepository.updateCards(updatedCards)
+                moveCardsToBoxUseCase(cardsToMove, _uiState.value.targetBox)
             }
             performSave()
         }
